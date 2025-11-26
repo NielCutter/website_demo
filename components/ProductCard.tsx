@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ProductDetailDialog } from "./ProductDetailDialog";
+import { getVoteCount, saveVoteCount, hasUserVoted, markAsVoted, subscribeToVoteUpdates } from "../utils/voteStorage";
 
 interface ProductCardProps {
   id: number;
@@ -11,85 +12,27 @@ interface ProductCardProps {
   delay?: number;
 }
 
-// Improved vote storage with error handling and persistence
-const getVoteCount = (productId: number): number => {
-  if (typeof window === 'undefined') return 0;
-  try {
-    const votes = localStorage.getItem('productVotes');
-    if (!votes) return 0;
-    const votesData = JSON.parse(votes);
-    return votesData[productId] || 0;
-  } catch (error) {
-    console.error('Error reading vote count:', error);
-    return 0;
-  }
-};
-
-const saveVoteCount = (productId: number, count: number): void => {
-  if (typeof window === 'undefined') return;
-  try {
-    const votes = localStorage.getItem('productVotes');
-    const votesData = votes ? JSON.parse(votes) : {};
-    votesData[productId] = count;
-    localStorage.setItem('productVotes', JSON.stringify(votesData));
-    
-    // Also save a timestamp for data integrity
-    const timestamp = Date.now();
-    const voteHistory = localStorage.getItem('voteHistory') || '{}';
-    const history = JSON.parse(voteHistory);
-    if (!history[productId]) history[productId] = [];
-    history[productId].push({ count, timestamp });
-    localStorage.setItem('voteHistory', JSON.stringify(history));
-  } catch (error) {
-    console.error('Error saving vote count:', error);
-  }
-};
-
 export function ProductCard({ id, name, price, image, delay = 0 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [voteCount, setVoteCount] = useState(0);
   const [hasVoted, setHasVoted] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
 
+  // Load vote count and status on mount
   useEffect(() => {
-    // Load vote count from localStorage
+    // Load immediately
     setVoteCount(getVoteCount(id));
+    setHasVoted(hasUserVoted(id));
     
-    // Check if user has already voted for this product
-    try {
-      const votedProducts = localStorage.getItem('votedProducts');
-      if (votedProducts) {
-        const voted = JSON.parse(votedProducts);
-        setHasVoted(voted.includes(id));
+    // Subscribe to updates
+    const unsubscribe = subscribeToVoteUpdates((productId, count) => {
+      if (productId === id) {
+        setVoteCount(count);
+        setHasVoted(hasUserVoted(id));
       }
-    } catch (error) {
-      console.error('Error checking vote status:', error);
-    }
-  }, [id]);
-
-  // Listen for vote updates from detail dialog
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setVoteCount(getVoteCount(id));
-      try {
-        const votedProducts = localStorage.getItem('votedProducts');
-        if (votedProducts) {
-          const voted = JSON.parse(votedProducts);
-          setHasVoted(voted.includes(id));
-        }
-      } catch (error) {
-        console.error('Error checking vote status:', error);
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    // Also check on focus (for same-tab updates)
-    window.addEventListener('focus', handleStorageChange);
+    });
     
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('focus', handleStorageChange);
-    };
+    return unsubscribe;
   }, [id]);
 
   const handleVote = () => {
@@ -98,19 +41,8 @@ export function ProductCard({ id, name, price, image, delay = 0 }: ProductCardPr
     const newCount = voteCount + 1;
     setVoteCount(newCount);
     saveVoteCount(id, newCount);
-    
-    // Mark as voted
-    try {
-      const votedProducts = localStorage.getItem('votedProducts');
-      const voted = votedProducts ? JSON.parse(votedProducts) : [];
-      if (!voted.includes(id)) {
-        voted.push(id);
-        localStorage.setItem('votedProducts', JSON.stringify(voted));
-      }
-      setHasVoted(true);
-    } catch (error) {
-      console.error('Error saving vote status:', error);
-    }
+    markAsVoted(id);
+    setHasVoted(true);
   };
 
   return (

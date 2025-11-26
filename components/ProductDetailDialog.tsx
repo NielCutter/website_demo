@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useState, useEffect } from "react";
+import { getVoteCount, saveVoteCount, hasUserVoted, markAsVoted, subscribeToVoteUpdates } from "../utils/voteStorage";
 
 interface ProductDetailDialogProps {
   open: boolean;
@@ -13,40 +14,6 @@ interface ProductDetailDialogProps {
   };
 }
 
-// Improved vote storage with error handling and persistence
-const getVoteCount = (productId: number): number => {
-  if (typeof window === 'undefined') return 0;
-  try {
-    const votes = localStorage.getItem('productVotes');
-    if (!votes) return 0;
-    const votesData = JSON.parse(votes);
-    return votesData[productId] || 0;
-  } catch (error) {
-    console.error('Error reading vote count:', error);
-    return 0;
-  }
-};
-
-const saveVoteCount = (productId: number, count: number): void => {
-  if (typeof window === 'undefined') return;
-  try {
-    const votes = localStorage.getItem('productVotes');
-    const votesData = votes ? JSON.parse(votes) : {};
-    votesData[productId] = count;
-    localStorage.setItem('productVotes', JSON.stringify(votesData));
-    
-    // Also save a timestamp for data integrity
-    const timestamp = Date.now();
-    const voteHistory = localStorage.getItem('voteHistory') || '{}';
-    const history = JSON.parse(voteHistory);
-    if (!history[productId]) history[productId] = [];
-    history[productId].push({ count, timestamp });
-    localStorage.setItem('voteHistory', JSON.stringify(history));
-  } catch (error) {
-    console.error('Error saving vote count:', error);
-  }
-};
-
 export function ProductDetailDialog({ open, onOpenChange, product }: ProductDetailDialogProps) {
   const [voteCount, setVoteCount] = useState(0);
   const [hasVoted, setHasVoted] = useState(false);
@@ -55,17 +22,17 @@ export function ProductDetailDialog({ open, onOpenChange, product }: ProductDeta
     if (open) {
       // Load vote count when dialog opens
       setVoteCount(getVoteCount(product.id));
+      setHasVoted(hasUserVoted(product.id));
       
-      // Check if user has already voted
-      try {
-        const votedProducts = localStorage.getItem('votedProducts');
-        if (votedProducts) {
-          const voted = JSON.parse(votedProducts);
-          setHasVoted(voted.includes(product.id));
+      // Subscribe to updates
+      const unsubscribe = subscribeToVoteUpdates((productId, count) => {
+        if (productId === product.id) {
+          setVoteCount(count);
+          setHasVoted(hasUserVoted(product.id));
         }
-      } catch (error) {
-        console.error('Error checking vote status:', error);
-      }
+      });
+      
+      return unsubscribe;
     }
   }, [open, product.id]);
 
@@ -75,19 +42,8 @@ export function ProductDetailDialog({ open, onOpenChange, product }: ProductDeta
     const newCount = voteCount + 1;
     setVoteCount(newCount);
     saveVoteCount(product.id, newCount);
-    
-    // Mark as voted
-    try {
-      const votedProducts = localStorage.getItem('votedProducts');
-      const voted = votedProducts ? JSON.parse(votedProducts) : [];
-      if (!voted.includes(product.id)) {
-        voted.push(product.id);
-        localStorage.setItem('votedProducts', JSON.stringify(voted));
-      }
-      setHasVoted(true);
-    } catch (error) {
-      console.error('Error saving vote status:', error);
-    }
+    markAsVoted(product.id);
+    setHasVoted(true);
   };
 
   return (
