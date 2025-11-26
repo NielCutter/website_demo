@@ -79,7 +79,7 @@ export function Hero() {
             }}
           >
             <span className="relative z-10 text-[#1D1D2C] font-bold text-lg">
-              Shop Now
+              Browse
             </span>
             <div 
               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"

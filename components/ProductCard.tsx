@@ -1,16 +1,63 @@
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface ProductCardProps {
+  id: number;
   name: string;
   price: string;
   image: string;
   delay?: number;
 }
 
-export function ProductCard({ name, price, image, delay = 0 }: ProductCardProps) {
+// Helper functions for localStorage
+const getVoteCount = (productId: number): number => {
+  if (typeof window === 'undefined') return 0;
+  const votes = localStorage.getItem('productVotes');
+  if (!votes) return 0;
+  const votesData = JSON.parse(votes);
+  return votesData[productId] || 0;
+};
+
+const saveVoteCount = (productId: number, count: number): void => {
+  if (typeof window === 'undefined') return;
+  const votes = localStorage.getItem('productVotes');
+  const votesData = votes ? JSON.parse(votes) : {};
+  votesData[productId] = count;
+  localStorage.setItem('productVotes', JSON.stringify(votesData));
+};
+
+export function ProductCard({ id, name, price, image, delay = 0 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [voteCount, setVoteCount] = useState(0);
+  const [hasVoted, setHasVoted] = useState(false);
+
+  useEffect(() => {
+    // Load vote count from localStorage
+    setVoteCount(getVoteCount(id));
+    
+    // Check if user has already voted for this product
+    const votedProducts = localStorage.getItem('votedProducts');
+    if (votedProducts) {
+      const voted = JSON.parse(votedProducts);
+      setHasVoted(voted.includes(id));
+    }
+  }, [id]);
+
+  const handleVote = () => {
+    if (hasVoted) return; // Prevent multiple votes
+    
+    const newCount = voteCount + 1;
+    setVoteCount(newCount);
+    saveVoteCount(id, newCount);
+    
+    // Mark as voted
+    const votedProducts = localStorage.getItem('votedProducts');
+    const voted = votedProducts ? JSON.parse(votedProducts) : [];
+    voted.push(id);
+    localStorage.setItem('votedProducts', JSON.stringify(voted));
+    setHasVoted(true);
+  };
 
   return (
     <motion.div
@@ -63,14 +110,27 @@ export function ProductCard({ name, price, image, delay = 0 }: ProductCardProps)
         {/* Product info */}
         <div className="p-6">
           <h3 className="text-xl font-semibold text-white mb-2">{name}</h3>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <span className="text-2xl font-bold bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
               {price}
             </span>
-            <button className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/20 text-white text-sm transition-all duration-300 hover:border-[#00FFE5]">
-              Add to Cart
-            </button>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-400">
+                {voteCount} {voteCount === 1 ? 'vote' : 'votes'}
+              </span>
+            </div>
           </div>
+          <button
+            onClick={handleVote}
+            disabled={hasVoted}
+            className={`w-full px-4 py-2 rounded-lg border text-sm font-semibold transition-all duration-300 ${
+              hasVoted
+                ? 'bg-white/5 border-white/20 text-gray-500 cursor-not-allowed'
+                : 'bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] border-transparent text-[#1D1D2C] hover:shadow-lg hover:shadow-[#00FFE5]/50'
+            }`}
+          >
+            {hasVoted ? '✓ Voted' : 'Vote'}
+          </button>
         </div>
       </div>
     </motion.div>
