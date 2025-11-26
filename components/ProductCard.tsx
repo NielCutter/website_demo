@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { ProductDetailDialog } from "./ProductDetailDialog";
-import { getVoteCount, saveVoteCount, hasUserVoted, markAsVoted, subscribeToVoteUpdates } from "../utils/voteStorage";
+import { getVoteCount, getVoteCountSync, incrementVote, hasUserVoted, markAsVoted, subscribeToVoteUpdates } from "../utils/voteStorage";
 
 interface ProductCardProps {
   id: number;
@@ -17,32 +17,42 @@ export function ProductCard({ id, name, price, image, delay = 0 }: ProductCardPr
   const [voteCount, setVoteCount] = useState(0);
   const [hasVoted, setHasVoted] = useState(false);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
 
   // Load vote count and status on mount
   useEffect(() => {
-    // Load immediately
-    setVoteCount(getVoteCount(id));
+    // Load from localStorage immediately (for instant display)
+    setVoteCount(getVoteCountSync(id));
     setHasVoted(hasUserVoted(id));
     
-    // Subscribe to updates
-    const unsubscribe = subscribeToVoteUpdates((productId, count) => {
-      if (productId === id) {
-        setVoteCount(count);
-        setHasVoted(hasUserVoted(id));
-      }
+    // Then load from Firebase (async, will update when ready)
+    getVoteCount(id).then(count => {
+      setVoteCount(count);
+    });
+    
+    // Subscribe to real-time updates
+    const unsubscribe = subscribeToVoteUpdates(id, (count) => {
+      setVoteCount(count);
+      setHasVoted(hasUserVoted(id));
     });
     
     return unsubscribe;
   }, [id]);
 
-  const handleVote = () => {
-    if (hasVoted) return; // Prevent multiple votes
+  const handleVote = async () => {
+    if (hasVoted || isVoting) return; // Prevent multiple votes
     
-    const newCount = voteCount + 1;
-    setVoteCount(newCount);
-    saveVoteCount(id, newCount);
-    markAsVoted(id);
-    setHasVoted(true);
+    setIsVoting(true);
+    try {
+      const newCount = await incrementVote(id);
+      setVoteCount(newCount);
+      markAsVoted(id);
+      setHasVoted(true);
+    } catch (error) {
+      console.error('Error voting:', error);
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   return (

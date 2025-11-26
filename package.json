@@ -44,7 +44,8 @@
     "react-hook-form": "^7.55.0",
     "recharts": "^2.15.2",
     "sonner": "^2.0.3",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "firebase": "^10.13.2"
   },
   "devDependencies": {
     "@types/react": "^19.2.7",

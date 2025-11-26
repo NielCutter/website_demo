@@ -1,15 +1,57 @@
 // Centralized vote storage utility with proper persistence
+// Uses both localStorage (for immediate updates) and Firebase (for cross-device sync)
+
+import {
+  isFirebaseAvailable,
+  getVoteCountFromFirebase,
+  saveVoteToFirebase,
+  incrementVoteInFirebase,
+  subscribeToVoteUpdatesFirebase
+} from './firebase';
 
 const STORAGE_KEYS = {
   VOTES: 'newculturetrends_productVotes',
   VOTED_PRODUCTS: 'newculturetrends_votedProducts',
   VOTE_HISTORY: 'newculturetrends_voteHistory',
+  FIREBASE_SYNCED: 'newculturetrends_firebaseSynced',
 } as const;
 
 // Custom event for vote updates (works in same tab)
 const VOTE_UPDATE_EVENT = 'voteUpdate';
 
-export const getVoteCount = (productId: number): number => {
+export const getVoteCount = async (productId: number): Promise<number> => {
+  if (typeof window === 'undefined') return 0;
+  
+  // Try Firebase first if available
+  if (isFirebaseAvailable()) {
+    try {
+      const firebaseCount = await getVoteCountFromFirebase(productId);
+      // Update localStorage with Firebase data
+      const votes = localStorage.getItem(STORAGE_KEYS.VOTES);
+      const votesData = votes ? JSON.parse(votes) : {};
+      votesData[productId] = firebaseCount;
+      localStorage.setItem(STORAGE_KEYS.VOTES, JSON.stringify(votesData));
+      return firebaseCount;
+    } catch (error) {
+      console.warn('Firebase read failed, using localStorage:', error);
+    }
+  }
+  
+  // Fallback to localStorage
+  try {
+    const votes = localStorage.getItem(STORAGE_KEYS.VOTES);
+    if (!votes) return 0;
+    const votesData = JSON.parse(votes);
+    const count = votesData[productId];
+    return typeof count === 'number' ? count : 0;
+  } catch (error) {
+    console.error('Error reading vote count:', error);
+    return 0;
+  }
+};
+
+// Synchronous version for immediate UI updates
+export const getVoteCountSync = (productId: number): number => {
   if (typeof window === 'undefined') return 0;
   try {
     const votes = localStorage.getItem(STORAGE_KEYS.VOTES);
@@ -23,17 +65,14 @@ export const getVoteCount = (productId: number): number => {
   }
 };
 
-export const saveVoteCount = (productId: number, count: number): void => {
+export const saveVoteCount = async (productId: number, count: number): Promise<void> => {
   if (typeof window === 'undefined') return;
+  
+  // Save to localStorage immediately (for instant UI update)
   try {
-    // Get existing votes
     const votes = localStorage.getItem(STORAGE_KEYS.VOTES);
     const votesData = votes ? JSON.parse(votes) : {};
-    
-    // Update vote count
     votesData[productId] = count;
-    
-    // Save to localStorage
     localStorage.setItem(STORAGE_KEYS.VOTES, JSON.stringify(votesData));
     
     // Save timestamp for data integrity
@@ -49,22 +88,13 @@ export const saveVoteCount = (productId: number, count: number): void => {
       detail: { productId, count } 
     }));
     
-    // Also trigger storage event manually for cross-tab sync
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: STORAGE_KEYS.VOTES,
-      newValue: JSON.stringify(votesData),
-      storageArea: localStorage
-    }));
-    
-    console.log(`Vote saved: Product ${productId} now has ${count} votes`);
+    console.log(`Vote saved locally: Product ${productId} now has ${count} votes`);
   } catch (error) {
-    console.error('Error saving vote count:', error);
-    // Try to handle quota exceeded error
+    console.error('Error saving vote to localStorage:', error);
+    // Handle quota exceeded
     if (error instanceof DOMException && error.code === 22) {
-      console.error('LocalStorage quota exceeded. Clearing old vote history...');
       try {
         localStorage.removeItem(STORAGE_KEYS.VOTE_HISTORY);
-        // Retry saving
         const votes = localStorage.getItem(STORAGE_KEYS.VOTES);
         const votesData = votes ? JSON.parse(votes) : {};
         votesData[productId] = count;
@@ -74,6 +104,52 @@ export const saveVoteCount = (productId: number, count: number): void => {
       }
     }
   }
+  
+  // Sync to Firebase (async, don't block)
+  if (isFirebaseAvailable()) {
+    try {
+      const success = await saveVoteToFirebase(productId, count);
+      if (success) {
+        localStorage.setItem(STORAGE_KEYS.FIREBASE_SYNCED, JSON.stringify({ [productId]: Date.now() }));
+        console.log(`Vote synced to Firebase: Product ${productId}`);
+      }
+    } catch (error) {
+      console.warn('Failed to sync vote to Firebase:', error);
+    }
+  }
+};
+
+// Increment vote (atomic operation)
+export const incrementVote = async (productId: number): Promise<number> => {
+  if (typeof window === 'undefined') return 0;
+  
+  // Try Firebase first for atomic increment
+  if (isFirebaseAvailable()) {
+    try {
+      const newCount = await incrementVoteInFirebase(productId);
+      if (newCount !== null) {
+        // Update localStorage with Firebase result
+        const votes = localStorage.getItem(STORAGE_KEYS.VOTES);
+        const votesData = votes ? JSON.parse(votes) : {};
+        votesData[productId] = newCount;
+        localStorage.setItem(STORAGE_KEYS.VOTES, JSON.stringify(votesData));
+        
+        window.dispatchEvent(new CustomEvent(VOTE_UPDATE_EVENT, { 
+          detail: { productId, count: newCount } 
+        }));
+        
+        return newCount;
+      }
+    } catch (error) {
+      console.warn('Firebase increment failed, using localStorage:', error);
+    }
+  }
+  
+  // Fallback to localStorage
+  const currentCount = getVoteCountSync(productId);
+  const newCount = currentCount + 1;
+  await saveVoteCount(productId, newCount);
+  return newCount;
 };
 
 export const hasUserVoted = (productId: number): boolean => {
@@ -107,19 +183,30 @@ export const markAsVoted = (productId: number): void => {
   }
 };
 
-export const subscribeToVoteUpdates = (callback: (productId: number, count: number) => void): (() => void) => {
+export const subscribeToVoteUpdates = (
+  productId: number,
+  callback: (count: number) => void
+): (() => void) => {
   if (typeof window === 'undefined') return () => {};
   
+  const unsubscribers: (() => void)[] = [];
+  
+  // Subscribe to Firebase real-time updates
+  if (isFirebaseAvailable()) {
+    const firebaseUnsub = subscribeToVoteUpdatesFirebase(productId, callback);
+    unsubscribers.push(firebaseUnsub);
+  }
+  
+  // Subscribe to localStorage updates (same-tab and cross-tab)
   const handleUpdate = (event: Event) => {
-    if (event instanceof CustomEvent && event.detail) {
-      callback(event.detail.productId, event.detail.count);
+    if (event instanceof CustomEvent && event.detail && event.detail.productId === productId) {
+      callback(event.detail.count);
     } else if (event instanceof StorageEvent && event.key === STORAGE_KEYS.VOTES && event.newValue) {
       try {
         const votesData = JSON.parse(event.newValue);
-        // Notify for all products (or we could track which one changed)
-        Object.keys(votesData).forEach(id => {
-          callback(Number(id), votesData[id]);
-        });
+        if (votesData[productId] !== undefined) {
+          callback(votesData[productId]);
+        }
       } catch (error) {
         console.error('Error parsing storage event:', error);
       }
@@ -129,9 +216,13 @@ export const subscribeToVoteUpdates = (callback: (productId: number, count: numb
   window.addEventListener(VOTE_UPDATE_EVENT, handleUpdate);
   window.addEventListener('storage', handleUpdate);
   
-  return () => {
+  unsubscribers.push(() => {
     window.removeEventListener(VOTE_UPDATE_EVENT, handleUpdate);
     window.removeEventListener('storage', handleUpdate);
+  });
+  
+  return () => {
+    unsubscribers.forEach(unsub => unsub());
   };
 };
 
