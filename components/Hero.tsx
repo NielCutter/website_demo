@@ -72,7 +72,13 @@ export function Hero() {
           className="mb-12"
         >
           <button 
-            className="group relative px-12 py-4 rounded-full overflow-hidden transition-all duration-300"
+            onClick={() => {
+              const productsSection = document.getElementById('featured-products');
+              if (productsSection) {
+                productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }}
+            className="group relative px-12 py-4 rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
             style={{
               background: 'linear-gradient(135deg, #00FFE5, #FF00B3)',
               boxShadow: '0 0 20px rgba(0, 255, 229, 0.3)'

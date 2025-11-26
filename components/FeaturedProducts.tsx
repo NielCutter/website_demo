@@ -40,8 +40,16 @@ const products = [
 ];
 
 export function FeaturedProducts() {
+  const handleViewAll = () => {
+    // Scroll to products section smoothly
+    const productsSection = document.getElementById('featured-products');
+    if (productsSection) {
+      productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
-    <section className="py-20 px-4 relative">
+    <section id="featured-products" className="py-20 px-4 relative">
       {/* Background accent */}
       <div 
         className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-20 blur-3xl"
@@ -80,7 +88,10 @@ export function FeaturedProducts() {
 
         {/* View all button */}
         <div className="text-center mt-16">
-          <button className="group relative px-10 py-4 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold overflow-hidden transition-all duration-300 hover:text-[#1D1D2C]">
+          <button 
+            onClick={handleViewAll}
+            className="group relative px-10 py-4 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold overflow-hidden transition-all duration-300 hover:text-[#1D1D2C] cursor-pointer"
+          >
             <span className="relative z-10">View All Products</span>
             <div className="absolute inset-0 bg-[#00FFE5] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
           </button>

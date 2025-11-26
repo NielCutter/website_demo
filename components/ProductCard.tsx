@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { useState, useEffect } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { ProductDetailDialog } from "./ProductDetailDialog";
 
 interface ProductCardProps {
   id: number;
@@ -10,38 +11,85 @@ interface ProductCardProps {
   delay?: number;
 }
 
-// Helper functions for localStorage
+// Improved vote storage with error handling and persistence
 const getVoteCount = (productId: number): number => {
   if (typeof window === 'undefined') return 0;
-  const votes = localStorage.getItem('productVotes');
-  if (!votes) return 0;
-  const votesData = JSON.parse(votes);
-  return votesData[productId] || 0;
+  try {
+    const votes = localStorage.getItem('productVotes');
+    if (!votes) return 0;
+    const votesData = JSON.parse(votes);
+    return votesData[productId] || 0;
+  } catch (error) {
+    console.error('Error reading vote count:', error);
+    return 0;
+  }
 };
 
 const saveVoteCount = (productId: number, count: number): void => {
   if (typeof window === 'undefined') return;
-  const votes = localStorage.getItem('productVotes');
-  const votesData = votes ? JSON.parse(votes) : {};
-  votesData[productId] = count;
-  localStorage.setItem('productVotes', JSON.stringify(votesData));
+  try {
+    const votes = localStorage.getItem('productVotes');
+    const votesData = votes ? JSON.parse(votes) : {};
+    votesData[productId] = count;
+    localStorage.setItem('productVotes', JSON.stringify(votesData));
+    
+    // Also save a timestamp for data integrity
+    const timestamp = Date.now();
+    const voteHistory = localStorage.getItem('voteHistory') || '{}';
+    const history = JSON.parse(voteHistory);
+    if (!history[productId]) history[productId] = [];
+    history[productId].push({ count, timestamp });
+    localStorage.setItem('voteHistory', JSON.stringify(history));
+  } catch (error) {
+    console.error('Error saving vote count:', error);
+  }
 };
 
 export function ProductCard({ id, name, price, image, delay = 0 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [voteCount, setVoteCount] = useState(0);
   const [hasVoted, setHasVoted] = useState(false);
+  const [showDetailDialog, setShowDetailDialog] = useState(false);
 
   useEffect(() => {
     // Load vote count from localStorage
     setVoteCount(getVoteCount(id));
     
     // Check if user has already voted for this product
-    const votedProducts = localStorage.getItem('votedProducts');
-    if (votedProducts) {
-      const voted = JSON.parse(votedProducts);
-      setHasVoted(voted.includes(id));
+    try {
+      const votedProducts = localStorage.getItem('votedProducts');
+      if (votedProducts) {
+        const voted = JSON.parse(votedProducts);
+        setHasVoted(voted.includes(id));
+      }
+    } catch (error) {
+      console.error('Error checking vote status:', error);
     }
+  }, [id]);
+
+  // Listen for vote updates from detail dialog
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setVoteCount(getVoteCount(id));
+      try {
+        const votedProducts = localStorage.getItem('votedProducts');
+        if (votedProducts) {
+          const voted = JSON.parse(votedProducts);
+          setHasVoted(voted.includes(id));
+        }
+      } catch (error) {
+        console.error('Error checking vote status:', error);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    // Also check on focus (for same-tab updates)
+    window.addEventListener('focus', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleStorageChange);
+    };
   }, [id]);
 
   const handleVote = () => {
@@ -52,11 +100,17 @@ export function ProductCard({ id, name, price, image, delay = 0 }: ProductCardPr
     saveVoteCount(id, newCount);
     
     // Mark as voted
-    const votedProducts = localStorage.getItem('votedProducts');
-    const voted = votedProducts ? JSON.parse(votedProducts) : [];
-    voted.push(id);
-    localStorage.setItem('votedProducts', JSON.stringify(voted));
-    setHasVoted(true);
+    try {
+      const votedProducts = localStorage.getItem('votedProducts');
+      const voted = votedProducts ? JSON.parse(votedProducts) : [];
+      if (!voted.includes(id)) {
+        voted.push(id);
+        localStorage.setItem('votedProducts', JSON.stringify(voted));
+      }
+      setHasVoted(true);
+    } catch (error) {
+      console.error('Error saving vote status:', error);
+    }
   };
 
   return (
@@ -98,7 +152,8 @@ export function ProductCard({ id, name, price, image, delay = 0 }: ProductCardPr
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 20 }}
             transition={{ duration: 0.3 }}
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#1D1D2C] font-semibold whitespace-nowrap"
+            onClick={() => setShowDetailDialog(true)}
+            className="absolute bottom-4 left-1/2 -translate-x-1/2 px-6 py-2 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#1D1D2C] font-semibold whitespace-nowrap cursor-pointer z-10"
             style={{
               boxShadow: '0 0 20px rgba(0, 255, 229, 0.5)'
             }}
@@ -133,6 +188,13 @@ export function ProductCard({ id, name, price, image, delay = 0 }: ProductCardPr
           </button>
         </div>
       </div>
+      
+      {/* Product Detail Dialog */}
+      <ProductDetailDialog
+        open={showDetailDialog}
+        onOpenChange={setShowDetailDialog}
+        product={{ id, name, price, image }}
+      />
     </motion.div>
   );
 }
