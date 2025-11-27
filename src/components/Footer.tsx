@@ -1,14 +1,21 @@
 import { useState } from "react";
-import { Instagram, Facebook, Twitter, ChevronDown } from "lucide-react";
+import { Instagram, Facebook, ShoppingBag, ChevronDown } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const [faqModalOpen, setFaqModalOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   const socialLinks = [
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" }
+    { icon: Facebook, href: "https://facebook.com/newculturetrends", label: "Facebook" },
+    { icon: ShoppingBag, href: "https://shopee.ph/newculturetrends", label: "Shopee" },
+    { icon: Instagram, href: "#", label: "Instagram" }
   ];
 
   const footerLinks = [
@@ -86,34 +93,15 @@ export function Footer() {
             </div>
           </div>
 
-          {/* FAQ Section */}
+          {/* FAQ Button */}
           <div className="md:col-span-2 lg:col-span-1">
-            <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">People always ask</h4>
-            <div className="space-y-2">
-              {faqItems.map((faq) => (
-                <div
-                  key={faq.question}
-                  className="border border-white/10 rounded-lg bg-black/20 overflow-hidden"
-                >
-                  <button
-                    onClick={() => setOpenFaq(openFaq === faq.question ? null : faq.question)}
-                    className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
-                  >
-                    <span className="text-white font-medium text-sm">{faq.question}</span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${
-                        openFaq === faq.question ? "transform rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {openFaq === faq.question && (
-                    <div className="px-4 pb-3">
-                      <p className="text-gray-400 text-sm leading-relaxed">{faq.answer}</p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+            <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">Support</h4>
+            <button
+              onClick={() => setFaqModalOpen(true)}
+              className="w-full px-6 py-3 rounded-lg border border-white/10 bg-black/20 text-white hover:bg-white/5 hover:border-[#00FFE5] transition-all duration-300 text-left"
+            >
+              <span className="font-medium text-sm">FAQ</span>
+            </button>
           </div>
 
           {/* Links sections */}
@@ -135,6 +123,45 @@ export function Footer() {
             </div>
           ))}
         </div>
+
+        {/* FAQ Modal */}
+        <Dialog open={faqModalOpen} onOpenChange={setFaqModalOpen}>
+          <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+            <DialogHeader className="p-6 border-b border-white/10">
+              <DialogTitle className="text-2xl sm:text-3xl font-bold">
+                <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
+                  People always ask
+                </span>
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="flex-1 overflow-y-auto p-6 space-y-3">
+              {faqItems.map((faq) => (
+                <div
+                  key={faq.question}
+                  className="border border-white/10 rounded-lg bg-black/20 overflow-hidden"
+                >
+                  <button
+                    onClick={() => setOpenFaq(openFaq === faq.question ? null : faq.question)}
+                    className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-white font-medium text-sm sm:text-base">{faq.question}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-400 transition-transform duration-300 flex-shrink-0 ${
+                        openFaq === faq.question ? "transform rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {openFaq === faq.question && (
+                    <div className="px-4 pb-3">
+                      <p className="text-gray-400 text-sm sm:text-base leading-relaxed">{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Bottom section */}
         <div className="pt-8 border-t border-white/10">
