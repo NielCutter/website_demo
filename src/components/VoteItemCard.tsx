@@ -200,11 +200,12 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                 </span>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2">
+            <div className="grid grid-cols-3 gap-2">
+              {/* Heart Button */}
               <button
                 onClick={handleVote}
                 disabled={submitting || item.status === "archived"}
-                className={`flex items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
+                className={`flex items-center justify-center gap-1 rounded-full px-2 sm:px-3 py-2 text-xs font-semibold transition-all ${
                   hasVoted
                     ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
                     : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] hover:opacity-90 hover:scale-105"
@@ -213,25 +214,27 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                 <Heart
                   className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${hasVoted ? "fill-current" : ""}`}
                 />
-                <span className="hidden sm:inline">
+                <span className="hidden sm:inline text-[10px]">
                   {submitting
                     ? hasVoted
-                      ? "Unhearting..."
-                      : "Hearts..."
+                      ? "..."
+                      : "..."
                     : hasVoted
-                    ? "Unheart"
-                    : "Heart"}
+                    ? "❤️"
+                    : "🤍"}
                 </span>
                 <span className="sm:hidden">
                   {submitting ? "..." : hasVoted ? "❤️" : "🤍"}
                 </span>
               </button>
-              {item.shopeeLink && item.shopeeLink.trim() && (
+              
+              {/* Shopee Button - Always reserve space */}
+              {item.shopeeLink && item.shopeeLink.trim() ? (
                 <a
                   href={item.shopeeLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg shadow-[#EE4D2D]/20"
+                  className="flex items-center justify-center gap-1 rounded-full px-2 sm:px-3 py-2 text-xs font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg shadow-[#EE4D2D]/20"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <svg
@@ -242,15 +245,21 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                   >
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                   </svg>
-                  <span className="hidden sm:inline">Shopee</span>
-                  <span className="sm:hidden">Shop</span>
+                  <span className="hidden sm:inline text-[10px]">Shop</span>
                 </a>
+              ) : (
+                <div className="flex items-center justify-center rounded-full px-2 sm:px-3 py-2 bg-black/20 border border-white/5 opacity-30">
+                  <span className="text-[8px] sm:text-[10px] text-gray-500">-</span>
+                </div>
               )}
+              
+              {/* Details Button */}
               <button
                 onClick={() => setDetailOpen(true)}
-                className={`${item.shopeeLink ? "flex-1" : "flex-1"} rounded-full border border-white/20 text-xs sm:text-sm py-2 hover:bg-white/10 transition-all hover:border-white/30`}
+                className="flex items-center justify-center rounded-full px-2 sm:px-3 py-2 text-xs border border-white/20 hover:bg-white/10 transition-all hover:border-white/30"
               >
-                {item.shopeeLink ? "Details" : "View Details"}
+                <span className="hidden sm:inline text-[10px]">View</span>
+                <span className="sm:hidden text-[10px]">👁</span>
               </button>
             </div>
           </div>

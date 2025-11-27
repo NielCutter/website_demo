@@ -12,7 +12,7 @@ export function ImageCarousel({ images, alt, className = "" }: ImageCarouselProp
 
   if (images.length === 0) {
     return (
-      <div className={`aspect-square bg-black/20 flex items-center justify-center ${className}`}>
+      <div className={`aspect-[4/3] bg-black/20 flex items-center justify-center ${className}`}>
         <div className="text-gray-500 text-sm text-center p-4">No image</div>
       </div>
     );
@@ -20,11 +20,11 @@ export function ImageCarousel({ images, alt, className = "" }: ImageCarouselProp
 
   if (images.length === 1) {
     return (
-      <div className={`aspect-square bg-black/20 ${className}`}>
+      <div className={`aspect-[4/3] bg-black/20 ${className}`}>
         <img
           src={images[0]}
           alt={alt}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
           loading="lazy"
           decoding="async"
         />
@@ -45,11 +45,11 @@ export function ImageCarousel({ images, alt, className = "" }: ImageCarouselProp
   };
 
   return (
-    <div className={`relative aspect-square bg-black/20 overflow-hidden ${className}`}>
+    <div className={`relative aspect-[4/3] bg-black/20 overflow-hidden ${className}`}>
       <img
         src={images[currentIndex]}
         alt={`${alt} - Image ${currentIndex + 1}`}
-        className="w-full h-full object-contain"
+        className="w-full h-full object-cover"
         loading="lazy"
         decoding="async"
       />
