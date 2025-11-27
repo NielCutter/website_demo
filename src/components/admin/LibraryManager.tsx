@@ -696,19 +696,32 @@ export function LibraryManager() {
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Shopee Link (optional)</label>
+            <label htmlFor="shopee-link-input" className="block text-sm text-gray-400 mb-2">
+              Shopee Link (optional)
+            </label>
             <input
+              id="shopee-link-input"
               type="url"
               name="shopeeLink"
+              autoComplete="url"
               placeholder="https://shopee.ph/product/..."
-              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 focus:outline-none focus:border-[#00FFE5]"
               value={formState.shopeeLink || ""}
               onChange={(event) => {
                 const value = event.target.value;
                 console.log("Shopee link input changed:", value);
-                setFormState((prev) => ({ ...prev, shopeeLink: value }));
+                setFormState((prev) => {
+                  const newState = { ...prev, shopeeLink: value };
+                  console.log("Updated formState.shopeeLink:", newState.shopeeLink);
+                  return newState;
+                });
               }}
             />
+            {formState.shopeeLink && (
+              <p className="text-xs text-gray-500 mt-1">
+                Preview: {formState.shopeeLink.substring(0, 50)}...
+              </p>
+            )}
           </div>
         </div>
         <div className="space-y-4">
