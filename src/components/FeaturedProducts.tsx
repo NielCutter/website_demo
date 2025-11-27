@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { X, Grid3x3, List } from "lucide-react";
+import { Grid3x3, List } from "lucide-react";
 
 export function FeaturedProducts() {
   const [showAllProducts, setShowAllProducts] = useState(false);
@@ -202,106 +202,99 @@ export function FeaturedProducts() {
 
         {/* All Products Dialog */}
         <Dialog open={showAllProducts} onOpenChange={setShowAllProducts}>
-          <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-7xl max-h-[90vh] overflow-hidden flex flex-col p-0">
-            <DialogHeader className="p-6 border-b border-white/10">
-              <div className="flex items-center justify-between">
-                <DialogTitle className="text-3xl font-bold">
-                  <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
-                    All Products
-                  </span>
-                  <span className="text-white ml-2">
-                    ({sortedItems.length} {sortedItems.length === 1 ? "item" : "items"})
-                  </span>
-                </DialogTitle>
-                <button
-                  onClick={() => setShowAllProducts(false)}
-                  className="rounded-full p-2 hover:bg-white/10 transition-colors"
-                  aria-label="Close"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+          <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-7xl w-[calc(100%-1rem)] max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col p-0 m-4 sm:m-8">
+            <DialogHeader className="p-4 sm:p-6 border-b border-white/10">
+              <DialogTitle className="text-2xl sm:text-3xl font-bold">
+                <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
+                  All Products
+                </span>
+                <span className="text-white ml-2 text-lg sm:text-2xl">
+                  ({sortedItems.length} {sortedItems.length === 1 ? "item" : "items"})
+                </span>
+              </DialogTitle>
             </DialogHeader>
 
             {/* Filters and View Mode */}
-            <div className="px-6 py-4 border-b border-white/10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-black/20">
-              {/* Category Filter */}
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedCategory("all")}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    selectedCategory === "all"
-                      ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
-                      : "bg-white/5 border border-white/10 hover:bg-white/10"
-                  }`}
-                >
-                  All
-                </button>
-                {categories.map((category) => (
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 flex flex-col gap-3 sm:gap-4 bg-black/20">
+              {/* Category Filter - Scrollable on mobile */}
+              <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+                <div className="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
                   <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                      selectedCategory === category
+                    onClick={() => setSelectedCategory("all")}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
+                      selectedCategory === "all"
                         ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
                         : "bg-white/5 border border-white/10 hover:bg-white/10"
                     }`}
                   >
-                    {category}
+                    All
                   </button>
-                ))}
+                  {categories.map((category) => (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
+                        selectedCategory === category
+                          ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                          : "bg-white/5 border border-white/10 hover:bg-white/10"
+                      }`}
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* View Mode Toggle */}
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full p-1">
+              <div className="flex items-center justify-end sm:justify-start gap-2 bg-white/5 border border-white/10 rounded-full p-1 w-fit">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`p-2 rounded-full transition-all ${
+                  className={`p-1.5 sm:p-2 rounded-full transition-all ${
                     viewMode === "grid"
                       ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
                       : "text-gray-400 hover:text-white"
                   }`}
                   aria-label="Grid view"
                 >
-                  <Grid3x3 className="w-4 h-4" />
+                  <Grid3x3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`p-2 rounded-full transition-all ${
+                  className={`p-1.5 sm:p-2 rounded-full transition-all ${
                     viewMode === "list"
                       ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
                       : "text-gray-400 hover:text-white"
                   }`}
                   aria-label="List view"
                 >
-                  <List className="w-4 h-4" />
+                  <List className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </div>
             </div>
 
             {/* Products Grid/List */}
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
               {loading ? (
-                <div className="text-center py-20">
-                  <p className="text-gray-400">Loading products...</p>
+                <div className="text-center py-12 sm:py-20">
+                  <p className="text-gray-400 text-sm sm:text-base">Loading products...</p>
                 </div>
               ) : sortedItems.length === 0 ? (
-                <div className="text-center py-20">
-                  <p className="text-gray-400 text-lg">No products found</p>
-                  <p className="text-gray-500 text-sm mt-2">
+                <div className="text-center py-12 sm:py-20">
+                  <p className="text-gray-400 text-base sm:text-lg">No products found</p>
+                  <p className="text-gray-500 text-xs sm:text-sm mt-2">
                     {selectedCategory !== "all"
                       ? `Try selecting a different category`
                       : "Check back soon for new drops"}
                   </p>
                 </div>
               ) : viewMode === "grid" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                   {sortedItems.map((item) => (
                     <VoteItemCard key={item.id} item={item} />
                   ))}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {sortedItems.map((item) => (
                     <VoteItemCard key={item.id} item={item} />
                   ))}
