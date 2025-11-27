@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 export function Hero() {
   const [count, setCount] = useState(0);
-  const targetCount = 250;
+  const targetCount = 150;
 
   useEffect(() => {
     let start = 0;
@@ -92,11 +92,11 @@ export function Hero() {
             onClick={() => {
               const productsSection = document.getElementById('featured-products');
               if (productsSection) {
-                const offset = 80; // Offset for fixed headers if any
-                const elementPosition = productsSection.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                // Use scrollIntoView for reliable scrolling
+                const yOffset = -80; // Offset for fixed headers
+                const y = productsSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
                 window.scrollTo({
-                  top: offsetPosition,
+                  top: y,
                   behavior: 'smooth'
                 });
               }
