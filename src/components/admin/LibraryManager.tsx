@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
+import { Search, Filter, X, Grid3x3, List, ChevronDown, Plus } from "lucide-react";
 
 type ItemStatus = "active" | "archived";
 type DisplayOption = "hot" | "new" | "featured" | null;
@@ -80,6 +81,8 @@ const initialForm = {
   displayOption: null as DisplayOption,
 };
 
+const ITEMS_PER_PAGE = 20;
+
 export function LibraryManager() {
   const {
     data: items,
@@ -96,6 +99,14 @@ export function LibraryManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
+  const [selectedDisplay, setSelectedDisplay] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
 
   const resetForm = () => {
     setFormState(initialForm);
@@ -196,12 +207,232 @@ export function LibraryManager() {
     }
   };
 
+  // Filter and search items
+  const filteredItems = useMemo(() => {
+    let filtered = items;
+
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query) ||
+          item.description?.toLowerCase().includes(query) ||
+          item.category.toLowerCase().includes(query)
+      );
+    }
+
+    // Category filter
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+
+    // Status filter
+    if (selectedStatus !== "all") {
+      filtered = filtered.filter((item) => item.status === selectedStatus);
+    }
+
+    // Display option filter
+    if (selectedDisplay !== "all") {
+      if (selectedDisplay === "none") {
+        filtered = filtered.filter((item) => !item.displayOption);
+      } else {
+        filtered = filtered.filter((item) => item.displayOption === selectedDisplay);
+      }
+    }
+
+    return filtered;
+  }, [items, searchQuery, selectedCategory, selectedStatus, selectedDisplay]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+  const paginatedItems = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredItems.slice(start, start + ITEMS_PER_PAGE);
+  }, [filteredItems, currentPage]);
+
+  // Get unique categories
+  const availableCategories = useMemo(() => {
+    const cats = new Set(items.map((item) => item.category));
+    return Array.from(cats).sort();
+  }, [items]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("all");
+    setSelectedStatus("all");
+    setSelectedDisplay("all");
+    setCurrentPage(1);
+  };
+
+  const hasActiveFilters =
+    searchQuery.trim() ||
+    selectedCategory !== "all" ||
+    selectedStatus !== "all" ||
+    selectedDisplay !== "all";
+
   return (
-    <div className="space-y-8">
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 rounded-2xl border border-white/5 p-6"
-      >
+    <div className="space-y-6">
+      {/* Header with Add Button and Stats */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-xl font-semibold mb-1">Item Library</h3>
+          <p className="text-sm text-gray-400">
+            {filteredItems.length} {filteredItems.length === 1 ? "item" : "items"}
+            {items.length !== filteredItems.length && ` of ${items.length} total`}
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setShowForm(!showForm);
+            if (editingId) resetForm();
+          }}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold hover:opacity-90 transition-opacity"
+        >
+          <Plus className="w-4 h-4" />
+          {showForm ? "Hide Form" : "Add Item"}
+        </button>
+      </div>
+
+      {/* Search and Filters Bar */}
+      <div className="space-y-4">
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search items..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-black/40 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00FFE5] transition-colors"
+          />
+        </div>
+
+        {/* Filters Row */}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Mobile Filter Toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-sm hover:bg-white/10 transition-colors md:hidden"
+          >
+            <Filter className="w-4 h-4" />
+            Filters
+            {hasActiveFilters && (
+              <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] text-xs font-semibold">
+                {[searchQuery, selectedCategory, selectedStatus, selectedDisplay].filter((f) => f !== "all" && f).length}
+              </span>
+            )}
+          </button>
+
+          {/* Desktop Filters */}
+          <div className={`${showFilters ? "flex" : "hidden"} md:flex flex-wrap items-center gap-3 w-full md:w-auto`}>
+            <select
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:outline-none focus:border-[#00FFE5] transition-colors"
+            >
+              <option value="all">All Categories</option>
+              {availableCategories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedStatus}
+              onChange={(e) => {
+                setSelectedStatus(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:outline-none focus:border-[#00FFE5] transition-colors"
+            >
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
+
+            <select
+              value={selectedDisplay}
+              onChange={(e) => {
+                setSelectedDisplay(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-sm focus:outline-none focus:border-[#00FFE5] transition-colors"
+            >
+              <option value="all">All Badges</option>
+              <option value="none">No Badge</option>
+              <option value="hot">HOT</option>
+              <option value="new">NEW</option>
+              <option value="featured">Featured</option>
+            </select>
+
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm hover:bg-white/10 transition-colors"
+              >
+                <X className="w-4 h-4" />
+                Clear
+              </button>
+            )}
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 bg-white/5 border border-white/10 rounded-lg p-1 ml-auto">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={`p-1.5 rounded transition-all ${
+                  viewMode === "grid"
+                    ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <Grid3x3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-1.5 rounded transition-all ${
+                  viewMode === "list"
+                    ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Add/Edit Form - Collapsible */}
+      {showForm && (
+        <form
+          onSubmit={handleSubmit}
+          className="bg-black/20 rounded-2xl border border-white/5 p-4 sm:p-6 space-y-4"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold">
+              {editingId ? "Edit Item" : "Add New Item"}
+            </h4>
+            <button
+              type="button"
+              onClick={() => {
+                setShowForm(false);
+                resetForm();
+              }}
+              className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-gray-400 mb-2">
@@ -335,82 +566,231 @@ export function LibraryManager() {
           {editingId && (
             <button
               type="button"
-              onClick={resetForm}
-              className="w-full rounded-xl border border-white/20 py-3"
+              onClick={() => {
+                resetForm();
+                setShowForm(false);
+              }}
+              className="w-full rounded-xl border border-white/20 py-3 hover:bg-white/10 transition-colors"
             >
               Cancel Edit
             </button>
           )}
         </div>
-      </form>
+          </div>
+        </form>
+      )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading && <p className="text-gray-400">Loading items...</p>}
-        {!loading && items.length === 0 && (
-          <p className="text-gray-400">No items yet. Add your first piece.</p>
-        )}
-        {items.map((item) => (
-          <article
-            key={item.id}
-            className="rounded-2xl border border-white/10 bg-black/30 overflow-hidden flex flex-col"
-          >
-            <div className="aspect-[4/3] bg-black/40">
-              <img
-                src={item.imageUrl}
-                alt={item.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-4 space-y-3 flex-1 flex flex-col">
-              <div>
-                <p className="text-xs uppercase tracking-[0.4em] text-gray-500">
-                  {item.category}
-                </p>
-                <h3 className="text-xl font-semibold">{item.title}</h3>
-              </div>
-              {item.description && (
-                <p className="text-sm text-gray-400 line-clamp-3">
-                  {item.description}
-                </p>
-              )}
-              <div className="mt-auto space-y-3">
-                {item.price !== undefined && (
-                  <p className="text-sm text-gray-400">
-                    ${item.price.toFixed(2)}
-                  </p>
-                )}
-                <p className="text-sm text-gray-400">
-                  Votes: {item.votes ?? 0}
-                </p>
-                <div className="flex items-center gap-2 flex-wrap">
+      {/* Items Grid/List */}
+      {loading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-400">Loading items...</p>
+        </div>
+      ) : filteredItems.length === 0 ? (
+        <div className="text-center py-12 bg-black/20 rounded-2xl border border-white/10">
+          <p className="text-gray-400 mb-2">
+            {hasActiveFilters ? "No items match your filters" : "No items yet"}
+          </p>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="text-sm text-[#00FFE5] hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+      ) : viewMode === "grid" ? (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {paginatedItems.map((item) => (
+              <article
+                key={item.id}
+                className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 overflow-hidden flex flex-col hover:border-white/20 transition-colors"
+              >
+                <div className="aspect-[4/3] bg-black/40 relative">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
                   {item.displayOption && (
-                    <span className="text-xs uppercase tracking-[0.2em] px-2 py-1 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
-                      {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
-                    </span>
+                    <div className="absolute top-2 right-2 z-10">
+                      <span className="text-xs uppercase tracking-[0.2em] px-2 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold shadow-lg">
+                        {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
+                      </span>
+                    </div>
                   )}
-                  <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                    {item.status === "archived" ? "Archived" : "Live"}
-                  </p>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEdit(item)}
-                    className="flex-1 rounded-lg border border-white/20 py-2 text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item)}
-                    className="flex-1 rounded-lg border border-red-400/40 text-red-300 py-2 text-sm"
-                  >
-                    Delete
-                  </button>
+                <div className="p-3 sm:p-4 space-y-2 sm:space-y-3 flex-1 flex flex-col">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-1">
+                      {item.category}
+                    </p>
+                    <h3 className="text-base sm:text-lg font-semibold line-clamp-2">{item.title}</h3>
+                  </div>
+                  {item.description && (
+                    <p className="text-xs sm:text-sm text-gray-400 line-clamp-2">
+                      {item.description}
+                    </p>
+                  )}
+                  <div className="mt-auto space-y-2">
+                    <div className="flex items-center justify-between text-xs sm:text-sm">
+                      {item.price !== undefined && (
+                        <span className="text-gray-300 font-medium">
+                          ${item.price.toFixed(2)}
+                        </span>
+                      )}
+                      <span className={`px-2 py-0.5 rounded text-xs ${
+                        item.status === "archived" ? "bg-gray-500/20 text-gray-400" : "bg-[#00FFE5]/20 text-[#00FFE5]"
+                      }`}>
+                        {item.status === "archived" ? "Archived" : "Live"}
+                      </span>
+                    </div>
+                    <p className="text-xs sm:text-sm text-gray-400">
+                      ❤️ {item.votes ?? 0} hearts
+                    </p>
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        onClick={() => {
+                          handleEdit(item);
+                          setShowForm(true);
+                        }}
+                        className="flex-1 rounded-lg border border-white/20 py-1.5 sm:py-2 text-xs sm:text-sm hover:bg-white/10 transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item)}
+                        className="flex-1 rounded-lg border border-red-400/40 text-red-300 py-1.5 sm:py-2 text-xs sm:text-sm hover:bg-red-400/10 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2 text-sm text-gray-400">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <div className="space-y-3">
+            {paginatedItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex gap-4 p-4 rounded-lg border border-white/10 bg-black/20 hover:bg-black/30 transition-colors"
+              >
+                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-4 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-1">
+                        {item.category}
+                      </p>
+                      <h3 className="text-base font-semibold truncate">{item.title}</h3>
+                      {item.description && (
+                        <p className="text-sm text-gray-400 line-clamp-2 mt-1">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {item.displayOption && (
+                        <span className="text-xs uppercase tracking-[0.2em] px-2 py-1 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
+                          {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
+                        </span>
+                      )}
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        item.status === "archived" ? "bg-gray-500/20 text-gray-400" : "bg-[#00FFE5]/20 text-[#00FFE5]"
+                      }`}>
+                        {item.status === "archived" ? "Archived" : "Live"}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                      {item.price !== undefined && (
+                        <span>${item.price.toFixed(2)}</span>
+                      )}
+                      <span>Hearts: {item.votes ?? 0}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          handleEdit(item);
+                          setShowForm(true);
+                        }}
+                        className="px-3 py-1.5 rounded-lg border border-white/20 text-sm hover:bg-white/10 transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item)}
+                        className="px-3 py-1.5 rounded-lg border border-red-400/40 text-red-300 text-sm hover:bg-red-400/10 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <span className="px-4 py-2 text-sm text-gray-400">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
             </div>
-          </article>
-        ))}
-      </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

@@ -28,19 +28,18 @@ export function AdminDashboard() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-10 space-y-10">
-        <section className="bg-white/5 border border-white/10 rounded-3xl p-6">
-          <h2 className="text-2xl font-semibold mb-6">Item Library</h2>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
+        <section className="bg-white/5 border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6">
           <LibraryManager />
         </section>
 
-        <section className="bg-white/5 border border-white/10 rounded-3xl p-6">
-          <h2 className="text-2xl font-semibold mb-6">Poll Manager</h2>
+        <section className="bg-white/5 border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Poll Manager</h2>
           <PollManager />
         </section>
 
-        <section className="bg-white/5 border border-white/10 rounded-3xl p-6">
-          <h2 className="text-2xl font-semibold mb-6">Newsletter</h2>
+        <section className="bg-white/5 border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6">Newsletter</h2>
           <NewsletterManager />
         </section>
       </main>
