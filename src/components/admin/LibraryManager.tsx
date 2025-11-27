@@ -267,29 +267,37 @@ export function LibraryManager() {
         payload.imageUrls = imageUrls;
       }
       
-      // Only include optional fields if they have values
-      if (formState.description?.trim()) {
-        let cleanDescription = formState.description.trim();
-        
-        // Remove shopee links from description before saving
-        if (formState.shopeeLink && formState.shopeeLink.trim()) {
-          const escaped = formState.shopeeLink.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          cleanDescription = cleanDescription.replace(new RegExp(escaped, 'gi'), '');
-        }
-        
-        // Remove shopee.ph URLs in various formats
-        cleanDescription = cleanDescription.replace(/https?:\/\/shopee\.ph[^\s\)\]\}]*/gi, '');
-        cleanDescription = cleanDescription.replace(/shopee\.ph[^\s\)\]\}]*/gi, '');
-        cleanDescription = cleanDescription.replace(/https?:\/\/[^\s\)\]\}]*shopee[^\s\)\]\}]*/gi, '');
-        cleanDescription = cleanDescription.replace(/www\.shopee\.ph[^\s\)\]\}]*/gi, '');
-        cleanDescription = cleanDescription.replace(/https?:\/\/[^\s\)\]\}]*%2Fshopee[^\s\)\]\}]*/gi, '');
-        
-        // Clean up: remove multiple spaces, trim
-        cleanDescription = cleanDescription.replace(/\s+/g, ' ').trim();
-        cleanDescription = cleanDescription.replace(/^[,\s\-\.]+|[,\s\-\.]+$/g, '').trim();
-        
-        if (cleanDescription) {
-          payload.description = cleanDescription;
+      // Handle description - always include it to allow clearing
+      if (formState.description !== undefined) {
+        if (formState.description.trim()) {
+          let cleanDescription = formState.description.trim();
+          
+          // Remove shopee links from description before saving
+          if (formState.shopeeLink && formState.shopeeLink.trim()) {
+            const escaped = formState.shopeeLink.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            cleanDescription = cleanDescription.replace(new RegExp(escaped, 'gi'), '');
+          }
+          
+          // Remove shopee.ph URLs in various formats
+          cleanDescription = cleanDescription.replace(/https?:\/\/shopee\.ph[^\s\)\]\}]*/gi, '');
+          cleanDescription = cleanDescription.replace(/shopee\.ph[^\s\)\]\}]*/gi, '');
+          cleanDescription = cleanDescription.replace(/https?:\/\/[^\s\)\]\}]*shopee[^\s\)\]\}]*/gi, '');
+          cleanDescription = cleanDescription.replace(/www\.shopee\.ph[^\s\)\]\}]*/gi, '');
+          cleanDescription = cleanDescription.replace(/https?:\/\/[^\s\)\]\}]*%2Fshopee[^\s\)\]\}]*/gi, '');
+          
+          // Clean up: remove multiple spaces, trim
+          cleanDescription = cleanDescription.replace(/\s+/g, ' ').trim();
+          cleanDescription = cleanDescription.replace(/^[,\s\-\.]+|[,\s\-\.]+$/g, '').trim();
+          
+          if (cleanDescription) {
+            payload.description = cleanDescription;
+          } else {
+            // Explicitly set to empty string to clear the field
+            payload.description = "";
+          }
+        } else {
+          // User cleared the description - explicitly set to empty string
+          payload.description = "";
         }
       }
       if (formState.price && formState.price.trim()) {

@@ -68,6 +68,7 @@ export function useFirestoreCollection<T extends { id?: string }>(
   }, [path, options.orderByField, options.orderDirection, options.limit, JSON.stringify(options.whereClause)]);
 
   // Helper function to remove undefined values from objects
+  // Note: Empty strings are kept to allow clearing fields
   const removeUndefined = (obj: Record<string, unknown>): Record<string, unknown> => {
     const cleaned: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
