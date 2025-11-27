@@ -29,11 +29,10 @@ export function FeaturedProducts() {
     return !item.status || item.status === "active";
   });
 
-  // Debug: Log items and errors
+  // Handle errors silently
   if (error) {
-    console.error("Firestore error:", error);
+    // Error is handled in the UI below
   }
-  console.log("FeaturedProducts - All items:", allItems, "Filtered items:", items, "Loading:", loading, "Error:", error);
 
   // Organize items by display tags
   const organizedItems = useMemo(() => {
