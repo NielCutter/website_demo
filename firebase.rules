@@ -13,9 +13,10 @@ service cloud.firestore {
       allow create, delete: if isAdmin();
       // Allow anonymous vote updates (increment votes by 1)
       // Handles both cases: votes exists or is null/undefined
+      // Note: updatedAt is a serverTimestamp transform, not in data.keys()
       allow update: if isAdmin() ||
         (
-          request.resource.data.keys().hasOnly(['votes', 'updatedAt']) &&
+          request.resource.data.keys().hasOnly(['votes']) &&
           (
             (resource.data.votes == null && request.resource.data.votes == 1) ||
             (resource.data.votes != null && request.resource.data.votes == resource.data.votes + 1)
