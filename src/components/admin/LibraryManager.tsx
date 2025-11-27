@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
 import { Search, Filter, X, Grid3x3, List, ChevronDown, Plus } from "lucide-react";
+import { ImageCarousel } from "../ImageCarousel";
 
 type ItemStatus = "active" | "archived";
 type DisplayOption = "hot" | "new" | "featured" | null;
@@ -11,7 +12,8 @@ export interface LibraryItem {
   category: string;
   description?: string;
   price?: number;
-  imageUrl?: string; // Can be base64 data URI or external URL (optional)
+  imageUrl?: string; // Deprecated: use imageUrls array instead (kept for backward compatibility)
+  imageUrls?: string[]; // Array of base64 data URIs or external URLs
   votes: number;
   status?: ItemStatus;
   displayOption?: DisplayOption;
@@ -76,6 +78,7 @@ const initialForm = {
   description: "",
   price: "",
   imageUrl: "",
+  imageUrls: [] as string[],
   votes: 0,
   status: "active" as ItemStatus,
   displayOption: null as DisplayOption,
@@ -97,7 +100,7 @@ export function LibraryManager() {
 
   const [formState, setFormState] = useState(initialForm);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -111,34 +114,41 @@ export function LibraryManager() {
   const resetForm = () => {
     setFormState(initialForm);
     setEditingId(null);
-    setFile(null);
+    setFiles([]);
   };
 
-  const uploadImageIfNeeded = async (): Promise<string | undefined> => {
-    // If no file and no URL, return undefined (image is optional)
-    if (!file && !formState.imageUrl.trim()) {
-      return undefined;
-    }
+  // Convert multiple files to base64
+  const uploadImagesIfNeeded = async (): Promise<string[]> => {
+    const imageUrls: string[] = [];
     
-    if (!file) {
-      return formState.imageUrl.trim() || undefined;
-    }
+    // Process uploaded files
+    for (const file of files) {
+      // Check file size (max 2MB before compression)
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error(`Image "${file.name}" is too large. Please use images smaller than 2MB.`);
+      }
 
-    // Check file size (max 2MB before compression)
-    if (file.size > 2 * 1024 * 1024) {
-      throw new Error("Image is too large. Please use an image smaller than 2MB.");
-    }
-
-    // Convert to base64
-    const base64 = await fileToBase64(file);
-    
-    // Check if base64 is too large (Firestore limit is 1MB per document)
-    // Base64 is ~33% larger than binary, so ~750KB base64 = ~1MB binary
-    if (base64.length > 750 * 1024) {
-      throw new Error("Image is too large after compression. Please use a smaller image.");
+      // Convert to base64
+      const base64 = await fileToBase64(file);
+      
+      // Check if base64 is too large (Firestore limit is 1MB per document)
+      // Base64 is ~33% larger than binary, so ~750KB base64 = ~1MB binary
+      if (base64.length > 750 * 1024) {
+        throw new Error(`Image "${file.name}" is too large after compression. Please use a smaller image.`);
+      }
+      
+      imageUrls.push(base64);
     }
     
-    return base64;
+    // Add external URLs
+    if (formState.imageUrl.trim()) {
+      imageUrls.push(formState.imageUrl.trim());
+    }
+    
+    // Add existing imageUrls from form state
+    imageUrls.push(...formState.imageUrls.filter(url => url.trim()));
+    
+    return imageUrls;
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -153,7 +163,7 @@ export function LibraryManager() {
     setUploading(true);
 
     try {
-      const imageUrl = await uploadImageIfNeeded();
+      const imageUrls = await uploadImagesIfNeeded();
       const payload: Record<string, unknown> = {
         title: formState.title.trim(),
         category: formState.category,
@@ -161,10 +171,12 @@ export function LibraryManager() {
         status: formState.status,
       };
       
-      // Only include optional fields if they have values
-      if (imageUrl) {
-        payload.imageUrl = imageUrl;
+      // Include imageUrls array if there are any images
+      if (imageUrls.length > 0) {
+        payload.imageUrls = imageUrls;
       }
+      
+      // Only include optional fields if they have values
       if (formState.description?.trim()) {
         payload.description = formState.description.trim();
       }
@@ -192,17 +204,20 @@ export function LibraryManager() {
 
   const handleEdit = (item: LibraryItem) => {
     setEditingId(item.id);
+    // Convert single imageUrl to array for backward compatibility
+    const existingImages = item.imageUrls || (item.imageUrl ? [item.imageUrl] : []);
     setFormState({
       title: item.title,
       category: item.category,
       description: item.description ?? "",
       price: item.price?.toString() ?? "",
-      imageUrl: item.imageUrl,
+      imageUrl: "", // Clear URL input for new additions
+      imageUrls: existingImages,
       votes: item.votes ?? 0,
       status: item.status ?? "active",
       displayOption: item.displayOption ?? null,
     });
-    setFile(null);
+    setFiles([]);
   };
 
   const handleDelete = async (item: LibraryItem) => {
@@ -505,28 +520,115 @@ export function LibraryManager() {
         </div>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Image File</label>
+            <label className="block text-sm text-gray-400 mb-2">
+              Upload Images <span className="text-gray-500 text-xs">(multiple allowed)</span>
+            </label>
             <input
               type="file"
               accept="image/*"
+              multiple
               className="w-full rounded-xl bg-black/20 border border-dashed border-white/20 px-4 py-3"
-              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+              onChange={(event) => {
+                const selectedFiles = Array.from(event.target.files || []);
+                setFiles(selectedFiles);
+              }}
             />
+            {files.length > 0 && (
+              <div className="mt-2 text-xs text-gray-400">
+                {files.length} file{files.length > 1 ? "s" : ""} selected
+              </div>
+            )}
           </div>
           <div>
             <label className="block text-sm text-gray-400 mb-2">
-              External Image URL <span className="text-gray-500 text-xs">(optional)</span>
+              Add External Image URL <span className="text-gray-500 text-xs">(optional)</span>
             </label>
-            <input
-              type="url"
-              placeholder="https://example.com/image.jpg (optional)"
-              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
-              value={formState.imageUrl}
-              onChange={(event) =>
-                setFormState((prev) => ({ ...prev, imageUrl: event.target.value }))
-              }
-            />
+            <div className="flex gap-2">
+              <input
+                type="url"
+                placeholder="https://example.com/image.jpg"
+                className="flex-1 rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+                value={formState.imageUrl}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, imageUrl: event.target.value }))
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && formState.imageUrl.trim()) {
+                    e.preventDefault();
+                    setFormState((prev) => ({
+                      ...prev,
+                      imageUrls: [...prev.imageUrls, prev.imageUrl.trim()],
+                      imageUrl: "",
+                    }));
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (formState.imageUrl.trim()) {
+                    setFormState((prev) => ({
+                      ...prev,
+                      imageUrls: [...prev.imageUrls, prev.imageUrl.trim()],
+                      imageUrl: "",
+                    }));
+                  }
+                }}
+                className="px-4 py-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition-colors"
+              >
+                Add
+              </button>
+            </div>
           </div>
+          
+          {/* Display existing images */}
+          {(formState.imageUrls.length > 0 || files.length > 0) && (
+            <div>
+              <label className="block text-sm text-gray-400 mb-2">Images Preview</label>
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {formState.imageUrls.map((url, index) => (
+                  <div key={index} className="flex items-center gap-2 p-2 rounded-lg bg-black/20 border border-white/10">
+                    <img src={url} alt={`Preview ${index + 1}`} className="w-16 h-16 object-cover rounded" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-400 truncate">{url.substring(0, 50)}...</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormState((prev) => ({
+                          ...prev,
+                          imageUrls: prev.imageUrls.filter((_, i) => i !== index),
+                        }));
+                      }}
+                      className="p-1 rounded hover:bg-red-500/20 text-red-400 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                {files.map((file, index) => (
+                  <div key={`file-${index}`} className="flex items-center gap-2 p-2 rounded-lg bg-black/20 border border-white/10">
+                    <div className="w-16 h-16 rounded bg-white/5 flex items-center justify-center">
+                      <span className="text-xs text-gray-400">File</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-400 truncate">{file.name}</p>
+                      <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFiles((prev) => prev.filter((_, i) => i !== index));
+                      }}
+                      className="p-1 rounded hover:bg-red-500/20 text-red-400 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           <div>
             <label className="block text-sm text-gray-400 mb-2">Display Badge</label>
             <select
@@ -617,21 +719,13 @@ export function LibraryManager() {
                 key={item.id}
                 className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 overflow-hidden flex flex-col hover:border-white/20 transition-colors"
               >
-                <div className="aspect-[4/3] bg-black/40 relative flex items-center justify-center">
-                  {item.imageUrl ? (
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="text-gray-500 text-xs text-center p-4">
-                      No image
-                    </div>
-                  )}
+                <div className="relative">
+                  {(() => {
+                    const images = item.imageUrls || (item.imageUrl ? [item.imageUrl] : []);
+                    return <ImageCarousel images={images} alt={item.title} />;
+                  })()}
                   {item.displayOption && (
-                    <div className="absolute top-2 right-2 z-10">
+                    <div className="absolute top-2 right-2 z-20">
                       <span className="text-xs uppercase tracking-[0.2em] px-2 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold shadow-lg">
                         {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
                       </span>
@@ -720,18 +814,23 @@ export function LibraryManager() {
                 key={item.id}
                 className="flex gap-4 p-4 rounded-lg border border-white/10 bg-black/20 hover:bg-black/30 transition-colors"
               >
-                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-black/40 flex items-center justify-center">
-                  {item.imageUrl ? (
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="text-gray-500 text-[10px] text-center p-2">
-                      No image
-                    </div>
-                  )}
+                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-black/40">
+                  {(() => {
+                    const images = item.imageUrls || (item.imageUrl ? [item.imageUrl] : []);
+                    return images.length > 0 ? (
+                      <img
+                        src={images[0]}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="text-gray-500 text-[10px] text-center p-2">
+                          No image
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4 mb-2">
