@@ -4,11 +4,20 @@ import { useFirestoreCollection } from "../hooks/useFirestoreCollection";
 import type { LibraryItem } from "./admin/LibraryManager";
 
 export function FeaturedProducts() {
-  const { data: items, loading } = useFirestoreCollection<LibraryItem>("items", {
-    whereClause: ["status", "==", "active"],
-    orderByField: "createdAt",
-    orderDirection: "desc",
+  // First try to get all active items, then filter client-side if needed
+  const { data: allItems, loading, error } = useFirestoreCollection<LibraryItem>("items");
+  
+  // Filter active items client-side (more forgiving if status field is missing)
+  const items = allItems.filter((item) => {
+    // Include items with status "active" or items without status field (assume active)
+    return !item.status || item.status === "active";
   });
+
+  // Debug: Log items and errors
+  if (error) {
+    console.error("Firestore error:", error);
+  }
+  console.log("FeaturedProducts - All items:", allItems, "Filtered items:", items, "Loading:", loading, "Error:", error);
 
   // Organize items by display tags
   const organizedItems = useMemo(() => {
@@ -93,10 +102,26 @@ export function FeaturedProducts() {
           <p className="text-gray-400 text-center">Loading drops...</p>
         )}
 
-        {!loading && items.length === 0 && (
-          <p className="text-gray-400 text-center">
-            No drops yet. Check back soon.
-          </p>
+        {error && (
+          <div className="text-center space-y-2">
+            <p className="text-red-400">Error loading items: {error}</p>
+            <p className="text-gray-400 text-sm">
+              Check browser console for details. Make sure Firestore is enabled and rules allow read access.
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && items.length === 0 && (
+          <div className="text-center space-y-2">
+            <p className="text-gray-400">
+              No drops yet. Check back soon.
+            </p>
+            <p className="text-gray-500 text-sm">
+              {allItems.length > 0 
+                ? `Found ${allItems.length} item(s) but none are active. Check admin panel.`
+                : "No items found in database. Add items in the admin panel."}
+            </p>
+          </div>
         )}
 
         {!loading && items.length > 0 && (
