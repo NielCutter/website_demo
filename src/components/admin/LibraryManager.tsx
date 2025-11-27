@@ -515,11 +515,11 @@ export function LibraryManager() {
           </div>
           <div>
             <label className="block text-sm text-gray-400 mb-2">
-              External Image URL (optional)
+              External Image URL <span className="text-gray-500 text-xs">(optional)</span>
             </label>
             <input
               type="url"
-              placeholder="https://example.com/image.jpg"
+              placeholder="https://example.com/image.jpg (optional)"
               className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
               value={formState.imageUrl}
               onChange={(event) =>
