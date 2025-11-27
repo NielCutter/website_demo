@@ -11,7 +11,7 @@ export interface LibraryItem {
   category: string;
   description?: string;
   price?: number;
-  imageUrl: string; // Can be base64 data URI or external URL
+  imageUrl?: string; // Can be base64 data URI or external URL (optional)
   votes: number;
   status?: ItemStatus;
   displayOption?: DisplayOption;
@@ -617,13 +617,19 @@ export function LibraryManager() {
                 key={item.id}
                 className="rounded-xl sm:rounded-2xl border border-white/10 bg-black/30 overflow-hidden flex flex-col hover:border-white/20 transition-colors"
               >
-                <div className="aspect-[4/3] bg-black/40 relative">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                <div className="aspect-[4/3] bg-black/40 relative flex items-center justify-center">
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="text-gray-500 text-xs text-center p-4">
+                      No image
+                    </div>
+                  )}
                   {item.displayOption && (
                     <div className="absolute top-2 right-2 z-10">
                       <span className="text-xs uppercase tracking-[0.2em] px-2 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold shadow-lg">
@@ -714,12 +720,18 @@ export function LibraryManager() {
                 key={item.id}
                 className="flex gap-4 p-4 rounded-lg border border-white/10 bg-black/20 hover:bg-black/30 transition-colors"
               >
-                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-black/40 flex items-center justify-center">
+                  {item.imageUrl ? (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-gray-500 text-[10px] text-center p-2">
+                      No image
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-4 mb-2">

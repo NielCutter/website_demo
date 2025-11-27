@@ -134,14 +134,20 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
             </span>
           </div>
         )}
-        <div className="aspect-[4/3] bg-black/20">
-          <img
-            src={item.imageUrl}
-            alt={item.title}
-            className="w-full h-full object-cover"
-            loading="lazy"
-            decoding="async"
-          />
+        <div className="aspect-[4/3] bg-black/20 flex items-center justify-center">
+          {item.imageUrl ? (
+            <img
+              src={item.imageUrl}
+              alt={item.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+            />
+          ) : (
+            <div className="text-gray-500 text-sm text-center p-4">
+              No image
+            </div>
+          )}
         </div>
         <div className="p-5 space-y-4 flex-1 flex flex-col">
           <div>
@@ -205,11 +211,17 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <img
-              src={item.imageUrl}
-              alt={item.title}
-              className="w-full rounded-2xl object-cover"
-            />
+            {item.imageUrl ? (
+              <img
+                src={item.imageUrl}
+                alt={item.title}
+                className="w-full rounded-2xl object-cover"
+              />
+            ) : (
+              <div className="w-full aspect-[4/3] bg-black/40 rounded-2xl flex items-center justify-center">
+                <p className="text-gray-500 text-sm">No image available</p>
+              </div>
+            )}
             {item.description && (
               <p className="text-gray-300 leading-relaxed">{item.description}</p>
             )}
