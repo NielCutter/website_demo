@@ -390,6 +390,24 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                       ? "Unheart"
                       : "Heart"}
                   </button>
+                  {item.shopeeLink && (
+                    <a
+                      href={item.shopeeLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                      </svg>
+                      Shop on Shopee
+                    </a>
+                  )}
                   {item.status === "archived" && (
                     <div className="px-4 py-3 rounded-full bg-gray-500/20 border border-gray-500/40 text-gray-400 text-center text-sm">
                       This item is archived

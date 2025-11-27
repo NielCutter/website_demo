@@ -29,6 +29,7 @@ export interface LibraryItem {
   status?: ItemStatus;
   displayOption?: DisplayOption;
   variants?: ProductVariant; // Product variants
+  shopeeLink?: string; // Shopee product link
 }
 
 // Convert image file to base64 with compression
@@ -114,6 +115,7 @@ const initialForm = {
     printType: "",
     designTheme: "",
   } as ProductVariant,
+  shopeeLink: "",
 };
 
 const ITEMS_PER_PAGE = 20;
@@ -344,6 +346,7 @@ export function LibraryManager() {
       votes: item.votes ?? 0,
       status: item.status ?? "active",
       displayOption: item.displayOption ?? null,
+      shopeeLink: item.shopeeLink ?? "",
       variants: (() => {
         try {
           // Handle backward compatibility: convert old 'size' to 'sizes' array
@@ -682,6 +685,18 @@ export function LibraryManager() {
               value={formState.price}
               onChange={(event) =>
                 setFormState((prev) => ({ ...prev, price: event.target.value }))
+              }
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Shopee Link (optional)</label>
+            <input
+              type="url"
+              placeholder="https://shopee.ph/product/..."
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+              value={formState.shopeeLink}
+              onChange={(event) =>
+                setFormState((prev) => ({ ...prev, shopeeLink: event.target.value }))
               }
             />
           </div>
