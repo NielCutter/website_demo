@@ -238,85 +238,165 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
       </article>
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="text-2xl">{item.title}</DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Category: {item.category}
-            </DialogDescription>
+        <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+          <DialogHeader className="p-4 sm:p-6 border-b border-white/10">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">{item.title}</DialogTitle>
+                <DialogDescription className="text-gray-400 text-sm sm:text-base">
+                  {item.category}
+                  {item.displayOption && (
+                    <span className="ml-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold text-xs">
+                      {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
+                    </span>
+                  )}
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
-          <div className="space-y-4">
-            <ImageCarousel images={images} alt={item.title} className="rounded-2xl" />
-            {item.description && (
-              <p className="text-gray-300 leading-relaxed">{item.description}</p>
-            )}
-            
-            {/* Variants in Detail View */}
-            {item.variants && (
-              <div className="space-y-2">
-                <h5 className="text-sm font-semibold text-gray-300">Variants</h5>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  {item.variants.sizes && item.variants.sizes.length > 0 && (
-                    <div className="col-span-2">
-                      <span className="text-gray-400">Sizes Available:</span>{" "}
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {item.variants.sizes.map((size, idx) => (
-                          <span
-                            key={size}
-                            className={`px-2 py-1 rounded text-xs ${
-                              idx === 0
-                                ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold"
-                                : "bg-white/10 text-gray-300"
-                            }`}
-                          >
-                            {size}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  {item.variants.color && (
+          
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+              {/* Image Section */}
+              <div className="space-y-4">
+                <ImageCarousel images={images} alt={item.title} className="rounded-2xl" />
+                
+                {/* Hearts and Price */}
+                <div className="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/10">
+                  <div className="flex items-center gap-2">
+                    <Heart className={`w-5 h-5 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-gray-400"}`} />
                     <div>
-                      <span className="text-gray-400">Color:</span> <span className="text-white">{item.variants.color}</span>
+                      <p className="text-xs text-gray-400">Hearts</p>
+                      <p className="text-lg font-bold text-white">{localVotes}</p>
                     </div>
-                  )}
-                  {item.variants.shirtType && (
-                    <div>
-                      <span className="text-gray-400">Type:</span> <span className="text-white">{item.variants.shirtType}</span>
-                    </div>
-                  )}
-                  {item.variants.neckType && (
-                    <div>
-                      <span className="text-gray-400">Neck:</span> <span className="text-white">{item.variants.neckType}</span>
-                    </div>
-                  )}
-                  {item.variants.fit && (
-                    <div>
-                      <span className="text-gray-400">Fit:</span> <span className="text-white">{item.variants.fit}</span>
-                    </div>
-                  )}
-                  {item.variants.material && (
-                    <div>
-                      <span className="text-gray-400">Material:</span> <span className="text-white">{item.variants.material}</span>
-                    </div>
-                  )}
-                  {item.variants.designTheme && (
-                    <div className="col-span-2">
-                      <span className="text-gray-400">Collection:</span>{" "}
-                      <span className="px-2 py-1 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold text-xs">
-                        {item.variants.designTheme}
-                      </span>
+                  </div>
+                  {item.price !== undefined && (
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400">Price</p>
+                      <p className="text-xl font-bold text-white">${item.price.toFixed(2)}</p>
                     </div>
                   )}
                 </div>
               </div>
-            )}
-            
-            <div className="flex items-center justify-between text-sm text-gray-400">
-              {item.price !== undefined && (
-                <span>Price: ${item.price.toFixed(2)}</span>
-              )}
-              <span>Hearts: {localVotes}</span>
+              
+              {/* Details Section */}
+              <div className="space-y-6">
+                {/* Description */}
+                {item.description && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">Description</h4>
+                    <p className="text-sm sm:text-base text-gray-300 leading-relaxed">{item.description}</p>
+                  </div>
+                )}
+                
+                {/* Variants */}
+                {item.variants && (
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Product Details</h4>
+                    <div className="space-y-3">
+                      {/* Sizes */}
+                      {item.variants.sizes && item.variants.sizes.length > 0 && (
+                        <div>
+                          <p className="text-xs text-gray-400 mb-2">Sizes Available</p>
+                          <div className="flex flex-wrap gap-2">
+                            {item.variants.sizes.map((size, idx) => (
+                              <span
+                                key={size}
+                                className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
+                                  idx === 0
+                                    ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold"
+                                    : "bg-white/10 text-gray-300 border border-white/20"
+                                }`}
+                              >
+                                {size} {idx === 0 && "(Primary)"}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Other Variants Grid */}
+                      <div className="grid grid-cols-2 gap-3">
+                        {item.variants.color && (
+                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-1">Color</p>
+                            <p className="text-sm font-medium text-white">{item.variants.color}</p>
+                          </div>
+                        )}
+                        {item.variants.shirtType && (
+                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-1">Type</p>
+                            <p className="text-sm font-medium text-white">{item.variants.shirtType}</p>
+                          </div>
+                        )}
+                        {item.variants.neckType && (
+                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-1">Neck</p>
+                            <p className="text-sm font-medium text-white">{item.variants.neckType}</p>
+                          </div>
+                        )}
+                        {item.variants.fit && (
+                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-1">Fit</p>
+                            <p className="text-sm font-medium text-white">{item.variants.fit}</p>
+                          </div>
+                        )}
+                        {item.variants.material && (
+                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-1">Material</p>
+                            <p className="text-sm font-medium text-white">{item.variants.material}</p>
+                          </div>
+                        )}
+                        {item.variants.printType && (
+                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-1">Print Type</p>
+                            <p className="text-sm font-medium text-white">{item.variants.printType}</p>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Design Theme */}
+                      {item.variants.designTheme && (
+                        <div className="p-4 rounded-lg bg-gradient-to-r from-[#00FFE5]/10 to-[#FF00B3]/10 border border-[#00FFE5]/20">
+                          <p className="text-xs text-gray-400 mb-2">Collection</p>
+                          <span className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold text-sm">
+                            {item.variants.designTheme}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
+                  <button
+                    onClick={handleVote}
+                    disabled={submitting || item.status === "archived"}
+                    className={`flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-all ${
+                      hasVoted
+                        ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                        : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] hover:opacity-90 hover:scale-105"
+                    } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    <Heart
+                      className={`w-5 h-5 ${hasVoted ? "fill-current" : ""}`}
+                    />
+                    {submitting
+                      ? hasVoted
+                        ? "Unhearting..."
+                        : "Hearts..."
+                      : hasVoted
+                      ? "Unheart"
+                      : "Heart"}
+                  </button>
+                  {item.status === "archived" && (
+                    <div className="px-4 py-3 rounded-full bg-gray-500/20 border border-gray-500/40 text-gray-400 text-center text-sm">
+                      This item is archived
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </DialogContent>
