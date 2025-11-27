@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { storage } from "../../firebase/config";
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
 
 type ItemStatus = "active" | "archived";
@@ -11,24 +9,66 @@ export interface LibraryItem {
   category: string;
   description?: string;
   price?: number;
-  imageUrl: string;
-  imagePath?: string;
+  imageUrl: string; // Can be base64 data URI or external URL
   votes: number;
   status?: ItemStatus;
 }
 
+// Convert image file to base64 with compression
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        
+        // Resize if too large (max 800px width/height, keep aspect ratio)
+        const maxSize = 800;
+        if (width > maxSize || height > maxSize) {
+          if (width > height) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          } else {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Could not get canvas context"));
+          return;
+        }
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to base64 with quality compression (0.8 = 80% quality)
+        const base64 = canvas.toDataURL("image/jpeg", 0.8);
+        resolve(base64);
+      };
+      img.onerror = reject;
+      img.src = reader.result as string;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+};
+
 const categories = ["Headwear", "Pants", "Jacket", "Hoodie", "Accessories"];
 
-const initialForm = {
-  title: "",
-  category: categories[0] ?? "Headwear",
-  description: "",
-  price: "",
-  imageUrl: "",
-  imagePath: "",
-  votes: 0,
-  status: "active" as ItemStatus,
-};
+  const initialForm = {
+    title: "",
+    category: categories[0] ?? "Headwear",
+    description: "",
+    price: "",
+    imageUrl: "",
+    votes: 0,
+    status: "active" as ItemStatus,
+  };
 
 export function LibraryManager() {
   const {
@@ -53,25 +93,29 @@ export function LibraryManager() {
     setFile(null);
   };
 
-  const uploadImageIfNeeded = async () => {
+  const uploadImageIfNeeded = async (): Promise<string> => {
     if (!file) {
       if (!formState.imageUrl) {
         throw new Error("Please select an image or provide an external URL.");
       }
-      return {
-        url: formState.imageUrl,
-        path: formState.imagePath,
-      };
+      return formState.imageUrl;
     }
 
-    const storagePath = `items/${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, storagePath);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    return {
-      url,
-      path: storagePath,
-    };
+    // Check file size (max 2MB before compression)
+    if (file.size > 2 * 1024 * 1024) {
+      throw new Error("Image is too large. Please use an image smaller than 2MB.");
+    }
+
+    // Convert to base64
+    const base64 = await fileToBase64(file);
+    
+    // Check if base64 is too large (Firestore limit is 1MB per document)
+    // Base64 is ~33% larger than binary, so ~750KB base64 = ~1MB binary
+    if (base64.length > 750 * 1024) {
+      throw new Error("Image is too large after compression. Please use a smaller image.");
+    }
+    
+    return base64;
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -79,14 +123,13 @@ export function LibraryManager() {
     setUploading(true);
 
     try {
-      const { url, path } = await uploadImageIfNeeded();
+      const imageUrl = await uploadImageIfNeeded();
       const payload = {
         title: formState.title,
         category: formState.category,
         description: formState.description || undefined,
         price: formState.price ? Number(formState.price) : undefined,
-        imageUrl: url,
-        imagePath: path,
+        imageUrl,
         votes: editingId ? formState.votes : 0,
         status: formState.status,
       };
@@ -100,6 +143,7 @@ export function LibraryManager() {
       resetForm();
     } catch (error) {
       console.error("Error saving item:", error);
+      alert(error instanceof Error ? error.message : "Failed to save item");
     } finally {
       setUploading(false);
     }
@@ -113,7 +157,6 @@ export function LibraryManager() {
       description: item.description ?? "",
       price: item.price?.toString() ?? "",
       imageUrl: item.imageUrl,
-      imagePath: item.imagePath ?? "",
       votes: item.votes ?? 0,
       status: item.status ?? "active",
     });
@@ -125,12 +168,10 @@ export function LibraryManager() {
     if (!confirmation) return;
 
     try {
-      if (item.imagePath) {
-        await deleteObject(ref(storage, item.imagePath));
-      }
       await deleteDocument(item.id);
     } catch (error) {
       console.error("Unable to delete item:", error);
+      alert("Failed to delete item");
     }
   };
 

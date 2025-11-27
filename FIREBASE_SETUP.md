@@ -82,10 +82,66 @@ service cloud.firestore {
 2. Check Firebase Console > Firestore Database to see the vote
 3. Open the site on another device - votes should sync automatically
 
+## Step 5: Image Storage (No Firebase Storage Billing Required!)
+
+✅ **Images are stored as base64 in Firestore** - No Firebase Storage billing needed!
+
+The admin panel automatically:
+- Converts uploaded images to base64 format
+- Compresses and resizes images (max 800px, 80% quality)
+- Stores them directly in Firestore documents
+
+**Limitations:**
+- Max image size: 2MB before upload (will be compressed)
+- Firestore document limit: 1MB (compressed images should be under 750KB)
+- Works great for product images, thumbnails, etc.
+
+**Alternative: Use External URLs**
+- You can also paste external image URLs (Imgur, Cloudinary, etc.)
+- Just paste the URL in the "External image URL" field
+- No file upload needed
+
+## Step 6: Create Admin User (Required for Admin Dashboard)
+
+1. Go to [Firebase Console](https://console.firebase.google.com/project/nctr-34dd5/authentication/users)
+2. Click **"Add user"** or **"Users"** tab
+3. Click **"Add user"**
+4. Enter:
+   - **Email:** `admin@newculturetrends.com`
+   - **Password:** (choose a strong password)
+5. Click **"Add user"**
+6. Save this password - you'll use it to log into `/admin`
+
+## Step 7: (Optional) Configure Firebase Storage Security Rules
+
+**Note:** If you're using base64 images in Firestore (default), you don't need Firebase Storage at all!
+
+If you want to use Firebase Storage instead (requires billing):
+1. Go to [Firebase Console](https://console.firebase.google.com/project/nctr-34dd5/storage)
+2. Click on **"Rules"** tab
+3. Replace with:
+
+```javascript
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /items/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null 
+        && request.auth.token.email in ['admin@newculturetrends.com'];
+    }
+  }
+}
+```
+
+4. Click **"Publish"**
+
 ## Troubleshooting
 
-- If votes don't sync, check browser console for Firebase errors
-- Verify your Firebase config is correct
-- Make sure Firestore is enabled and rules allow read/write
-- Check that environment variables are set correctly
+- **Image too large error**: Use images smaller than 2MB, or use external URLs instead
+- **Admin login 400 error**: Create the admin user in Firebase Auth (Step 6)
+- **Votes don't sync**: Check browser console for Firebase errors
+- **Verify your Firebase config is correct**: Check `.env` file or GitHub Secrets
+- **Make sure Firestore is enabled**: Go to Firestore Database and create if needed
+- **Base64 images not loading**: Check browser console, ensure imageUrl starts with `data:image/`
 
