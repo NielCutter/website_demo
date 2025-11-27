@@ -92,16 +92,7 @@ export function Hero() {
             onClick={() => {
               const productsSection = document.getElementById('featured-products');
               if (productsSection) {
-                // Calculate position accounting for any fixed headers
-                const headerOffset = 80;
-                const elementPosition = productsSection.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                
-                // Scroll to the position
-                window.scrollTo({
-                  top: Math.max(0, offsetPosition), // Ensure we don't scroll to negative position
-                  behavior: 'smooth'
-                });
+                productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }
             }}
             className="group relative px-12 py-4 rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
