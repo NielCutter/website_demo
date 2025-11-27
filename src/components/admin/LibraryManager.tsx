@@ -277,13 +277,26 @@ export function LibraryManager() {
       }
       
       // Include variants if any are set
-      const hasVariants = formState.variants && Object.values(formState.variants).some(v => v && v.trim());
+      const hasVariants = formState.variants && Object.entries(formState.variants).some(([key, value]) => {
+        if (key === 'sizes') {
+          return Array.isArray(value) && value.length > 0;
+        }
+        return value && typeof value === 'string' && value.trim();
+      });
       if (hasVariants) {
         // Remove empty variant fields
         const cleanedVariants: ProductVariant = {};
         Object.entries(formState.variants).forEach(([key, value]) => {
-          if (value && value.trim()) {
-            cleanedVariants[key as keyof ProductVariant] = value;
+          if (key === 'sizes') {
+            // Handle sizes array
+            if (Array.isArray(value) && value.length > 0) {
+              cleanedVariants.sizes = value;
+            }
+          } else {
+            // Handle string values
+            if (value && typeof value === 'string' && value.trim()) {
+              cleanedVariants[key as keyof ProductVariant] = value;
+            }
           }
         });
         if (Object.keys(cleanedVariants).length > 0) {
