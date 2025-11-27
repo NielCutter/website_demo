@@ -114,14 +114,14 @@ export function LibraryManager() {
     setFile(null);
   };
 
-  const uploadImageIfNeeded = async (): Promise<string> => {
-    // Image is required - either file upload or external URL
+  const uploadImageIfNeeded = async (): Promise<string | undefined> => {
+    // If no file and no URL, return undefined (image is optional)
     if (!file && !formState.imageUrl.trim()) {
-      throw new Error("Please select an image file or provide an external image URL.");
+      return undefined;
     }
     
     if (!file) {
-      return formState.imageUrl.trim();
+      return formState.imageUrl.trim() || undefined;
     }
 
     // Check file size (max 2MB before compression)
@@ -154,16 +154,26 @@ export function LibraryManager() {
 
     try {
       const imageUrl = await uploadImageIfNeeded();
-      const payload = {
+      const payload: Record<string, unknown> = {
         title: formState.title.trim(),
         category: formState.category,
-        description: formState.description?.trim() || undefined,
-        price: formState.price && formState.price.trim() ? Number(formState.price) : undefined,
-        imageUrl,
         votes: editingId ? formState.votes : 0,
         status: formState.status,
-        displayOption: formState.displayOption || undefined,
       };
+      
+      // Only include optional fields if they have values
+      if (imageUrl) {
+        payload.imageUrl = imageUrl;
+      }
+      if (formState.description?.trim()) {
+        payload.description = formState.description.trim();
+      }
+      if (formState.price && formState.price.trim()) {
+        payload.price = Number(formState.price);
+      }
+      if (formState.displayOption) {
+        payload.displayOption = formState.displayOption;
+      }
 
       if (editingId) {
         await updateDocument(editingId, payload);
@@ -505,11 +515,11 @@ export function LibraryManager() {
           </div>
           <div>
             <label className="block text-sm text-gray-400 mb-2">
-              External Image URL <span className="text-red-400">*</span>
+              External Image URL (optional)
             </label>
             <input
               type="url"
-              placeholder="https://example.com/image.jpg (required if no file)"
+              placeholder="https://example.com/image.jpg"
               className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
               value={formState.imageUrl}
               onChange={(event) =>
