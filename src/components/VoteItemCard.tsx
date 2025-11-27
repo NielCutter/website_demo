@@ -111,6 +111,8 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
             src={item.imageUrl}
             alt={item.title}
             className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
         </div>
         <div className="p-5 space-y-4 flex-1 flex flex-col">

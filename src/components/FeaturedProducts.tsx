@@ -8,12 +8,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { Grid3x3, List } from "lucide-react";
+import { Grid3x3, List, Search } from "lucide-react";
+
+const ITEMS_PER_PAGE = 12; // Initial load for mobile optimization
 
 export function FeaturedProducts() {
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [displayedItems, setDisplayedItems] = useState(ITEMS_PER_PAGE);
 
   // First try to get all active items, then filter client-side if needed
   const { data: allItems, loading, error } = useFirestoreCollection<LibraryItem>("items");
@@ -48,11 +52,28 @@ export function FeaturedProducts() {
     return Array.from(cats).sort();
   }, [items]);
 
-  // Filter items by category
+  // Filter items by category and search
   const filteredItems = useMemo(() => {
-    if (selectedCategory === "all") return items;
-    return items.filter((item) => item.category === selectedCategory);
-  }, [items, selectedCategory]);
+    let filtered = items;
+    
+    // Filter by category
+    if (selectedCategory !== "all") {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter((item) => {
+        const titleMatch = item.title.toLowerCase().includes(query);
+        const descMatch = item.description?.toLowerCase().includes(query);
+        const categoryMatch = item.category.toLowerCase().includes(query);
+        return titleMatch || descMatch || categoryMatch;
+      });
+    }
+    
+    return filtered;
+  }, [items, selectedCategory, searchQuery]);
 
   // Sort items: featured first, then by votes, then by creation date
   const sortedItems = useMemo(() => {
@@ -68,6 +89,28 @@ export function FeaturedProducts() {
       return 0;
     });
   }, [filteredItems]);
+
+  // Paginated items
+  const paginatedItems = useMemo(() => {
+    return sortedItems.slice(0, displayedItems);
+  }, [sortedItems, displayedItems]);
+
+  const hasMore = displayedItems < sortedItems.length;
+
+  const handleLoadMore = () => {
+    setDisplayedItems((prev) => Math.min(prev + ITEMS_PER_PAGE, sortedItems.length));
+  };
+
+  // Reset displayed items when filters change
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setDisplayedItems(ITEMS_PER_PAGE);
+  };
+
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    setDisplayedItems(ITEMS_PER_PAGE);
+  };
 
   const ProductSection = ({
     title,
@@ -214,13 +257,27 @@ export function FeaturedProducts() {
               </DialogTitle>
             </DialogHeader>
 
+            {/* Search Bar */}
+            <div className="px-4 sm:px-6 py-3 border-b border-white/10 bg-black/20">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 rounded-full bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00FFE5] transition-colors text-sm sm:text-base"
+                />
+              </div>
+            </div>
+
             {/* Filters and View Mode */}
             <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-white/10 flex flex-col gap-3 sm:gap-4 bg-black/20">
               {/* Category Filter - Scrollable on mobile */}
               <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
                 <div className="flex gap-2 min-w-max sm:min-w-0 sm:flex-wrap">
                   <button
-                    onClick={() => setSelectedCategory("all")}
+                    onClick={() => handleCategoryChange("all")}
                     className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
                       selectedCategory === "all"
                         ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
@@ -232,7 +289,7 @@ export function FeaturedProducts() {
                   {categories.map((category) => (
                     <button
                       key={category}
-                      onClick={() => setSelectedCategory(category)}
+                      onClick={() => handleCategoryChange(category)}
                       className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
                         selectedCategory === category
                           ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
@@ -245,30 +302,35 @@ export function FeaturedProducts() {
                 </div>
               </div>
 
-              {/* View Mode Toggle */}
-              <div className="flex items-center justify-end sm:justify-start gap-2 bg-white/5 border border-white/10 rounded-full p-1 w-fit">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-1.5 sm:p-2 rounded-full transition-all ${
-                    viewMode === "grid"
-                      ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
-                      : "text-gray-400 hover:text-white"
-                  }`}
-                  aria-label="Grid view"
-                >
-                  <Grid3x3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-1.5 sm:p-2 rounded-full transition-all ${
-                    viewMode === "list"
-                      ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
-                      : "text-gray-400 hover:text-white"
-                  }`}
-                  aria-label="List view"
-                >
-                  <List className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
+              {/* View Mode Toggle and Results Count */}
+              <div className="flex items-center justify-between">
+                <p className="text-xs sm:text-sm text-gray-400">
+                  Showing {paginatedItems.length} of {sortedItems.length} items
+                </p>
+                <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full p-1">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`p-1.5 sm:p-2 rounded-full transition-all ${
+                      viewMode === "grid"
+                        ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                    aria-label="Grid view"
+                  >
+                    <Grid3x3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`p-1.5 sm:p-2 rounded-full transition-all ${
+                      viewMode === "list"
+                        ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                        : "text-gray-400 hover:text-white"
+                    }`}
+                    aria-label="List view"
+                  >
+                    <List className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -282,23 +344,41 @@ export function FeaturedProducts() {
                 <div className="text-center py-12 sm:py-20">
                   <p className="text-gray-400 text-base sm:text-lg">No products found</p>
                   <p className="text-gray-500 text-xs sm:text-sm mt-2">
-                    {selectedCategory !== "all"
+                    {searchQuery.trim()
+                      ? "Try a different search term"
+                      : selectedCategory !== "all"
                       ? `Try selecting a different category`
                       : "Check back soon for new drops"}
                   </p>
                 </div>
-              ) : viewMode === "grid" ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                  {sortedItems.map((item) => (
-                    <VoteItemCard key={item.id} item={item} />
-                  ))}
-                </div>
               ) : (
-                <div className="space-y-3 sm:space-y-4">
-                  {sortedItems.map((item) => (
-                    <VoteItemCard key={item.id} item={item} />
-                  ))}
-                </div>
+                <>
+                  {viewMode === "grid" ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                      {paginatedItems.map((item) => (
+                        <VoteItemCard key={item.id} item={item} />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="space-y-3 sm:space-y-4">
+                      {paginatedItems.map((item) => (
+                        <VoteItemCard key={item.id} item={item} />
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Load More Button */}
+                  {hasMore && (
+                    <div className="text-center mt-6 sm:mt-8">
+                      <button
+                        onClick={handleLoadMore}
+                        className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold hover:bg-[#00FFE5] hover:text-[#1D1D2C] transition-all duration-300 text-sm sm:text-base"
+                      >
+                        Load More ({sortedItems.length - displayedItems} remaining)
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </DialogContent>
