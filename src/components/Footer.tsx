@@ -69,7 +69,7 @@ export function Footer() {
               <span className="text-white ml-2">®</span>
             </h3>
             <p className="text-gray-400 mb-6 max-w-sm text-sm sm:text-base">
-              Premium streetwear for the bold and creative. Express yourself, set trends, define culture.
+              Lead the wave / Define the culture.
             </p>
             
             {/* Social links */}
