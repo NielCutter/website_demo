@@ -67,16 +67,29 @@ export function useFirestoreCollection<T extends { id?: string }>(
     return () => unsubscribe();
   }, [path, options.orderByField, options.orderDirection, options.limit, JSON.stringify(options.whereClause)]);
 
+  // Helper function to remove undefined values from objects
+  const removeUndefined = (obj: Record<string, unknown>): Record<string, unknown> => {
+    const cleaned: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(obj)) {
+      if (value !== undefined) {
+        cleaned[key] = value;
+      }
+    }
+    return cleaned;
+  };
+
   const addDocument = async (payload: Omit<T, 'id'>) => {
+    const cleanedPayload = removeUndefined(payload as Record<string, unknown>);
     await addDoc(collection(db, path), {
-      ...payload,
+      ...cleanedPayload,
       createdAt: serverTimestamp(),
     });
   };
 
   const updateDocument = async (id: string, payload: Partial<T>) => {
+    const cleanedPayload = removeUndefined(payload as Record<string, unknown>);
     await updateDoc(doc(db, path, id), {
-      ...payload,
+      ...cleanedPayload,
       updatedAt: serverTimestamp(),
     });
   };
