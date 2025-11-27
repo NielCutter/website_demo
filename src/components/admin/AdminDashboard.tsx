@@ -12,7 +12,7 @@ export function AdminDashboard() {
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 px-4 py-6">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-gray-400">
-              New Culture Trends
+              New Culture Trends®
             </p>
             <h1 className="text-3xl font-bold">Admin Control Center</h1>
             {user && (

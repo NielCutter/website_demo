@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "./ui/dialog";
+import { Heart } from "lucide-react";
 
 interface VoteItemCardProps {
   item: LibraryItem;
@@ -161,25 +162,28 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
           )}
           <div className="mt-auto space-y-3">
             <p className="text-sm text-gray-400">
-              Votes: <span className="text-white font-semibold">{localVotes}</span>
+              Hearts: <span className="text-white font-semibold">{localVotes}</span>
             </p>
             <div className="flex gap-2">
               <button
                 onClick={handleVote}
                 disabled={submitting || item.status === "archived"}
-                className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                className={`flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition ${
                   hasVoted
                     ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
                     : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] hover:opacity-90"
                 } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
               >
+                <Heart
+                  className={`w-4 h-4 ${hasVoted ? "fill-current" : ""}`}
+                />
                 {submitting
                   ? hasVoted
-                    ? "Unvoting..."
-                    : "Voting..."
+                    ? "Unhearting..."
+                    : "Hearts..."
                   : hasVoted
-                  ? "Unvote"
-                  : "Vote"}
+                  ? "Unheart"
+                  : "Heart"}
               </button>
               <button
                 onClick={() => setDetailOpen(true)}
@@ -213,7 +217,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
               {item.price !== undefined && (
                 <span>Price: ${item.price.toFixed(2)}</span>
               )}
-              <span>Votes: {localVotes}</span>
+              <span>Hearts: {localVotes}</span>
             </div>
           </div>
         </DialogContent>

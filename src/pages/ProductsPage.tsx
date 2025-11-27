@@ -113,6 +113,7 @@ export function ProductsPage() {
               <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
                 New Culture Trends
               </span>
+              <span className="text-white ml-1">®</span>
             </Link>
             <nav className="hidden md:flex items-center gap-6">
               <Link to="/" className="text-gray-400 hover:text-white transition-colors">
