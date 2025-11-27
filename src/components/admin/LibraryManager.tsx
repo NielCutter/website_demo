@@ -799,46 +799,118 @@ export function LibraryManager() {
           <div className="border-t border-white/10 pt-4 mt-4">
             <h4 className="text-sm font-semibold text-gray-300 mb-4">Product Variants</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Sizes Available - Multi-select with drag and drop */}
+              {/* Sizes Available - Volume Rocker Style Slider */}
               <div className="md:col-span-2">
-                <label className="block text-sm text-gray-400 mb-2">Sizes Available</label>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Sizes Available
+                  {(formState.variants.sizes || []).length > 0 && (
+                    <span className="ml-2 text-xs text-gray-500">
+                      (Drag to reorder - first is primary)
+                    </span>
+                  )}
+                </label>
                 <div className="space-y-3">
-                  {/* Size selector */}
-                  <select
-                    className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
-                    value=""
-                    onChange={(e) => {
-                      const selectedSize = e.target.value;
-                      if (selectedSize) {
-                        const currentSizes = formState.variants.sizes || [];
-                        if (!currentSizes.includes(selectedSize)) {
-                          setFormState((prev) => ({
-                            ...prev,
-                            variants: {
-                              ...prev.variants,
-                              sizes: [...currentSizes, selectedSize],
-                            },
-                          }));
-                        }
-                        e.target.value = "";
-                      }
-                    }}
-                  >
-                    <option value="">Add a size...</option>
-                    {sizes
-                      .filter((size) => !(formState.variants.sizes || []).includes(size))
-                      .map((size) => (
-                        <option key={size} value={size}>
-                          {size}
-                        </option>
-                      ))}
-                  </select>
+                  {/* Volume Rocker Style Size Selector */}
+                  <div className="relative">
+                    <div className="flex items-center gap-2 p-3 rounded-xl bg-black/40 border border-white/10">
+                      {/* Size toggles arranged horizontally */}
+                      <div className="flex-1 flex items-center justify-between gap-1">
+                        {sizes.map((size) => {
+                          const isSelected = (formState.variants.sizes || []).includes(size);
+                          const selectedIndex = (formState.variants.sizes || []).indexOf(size);
+                          const isPrimary = selectedIndex === 0;
+                          
+                          return (
+                            <button
+                              key={size}
+                              type="button"
+                              onClick={() => {
+                                const currentSizes = formState.variants.sizes || [];
+                                if (isSelected) {
+                                  // Remove if clicking selected
+                                  setFormState((prev) => ({
+                                    ...prev,
+                                    variants: {
+                                      ...prev.variants,
+                                      sizes: currentSizes.filter((s) => s !== size),
+                                    },
+                                  }));
+                                } else {
+                                  // Add to end
+                                  setFormState((prev) => ({
+                                    ...prev,
+                                    variants: {
+                                      ...prev.variants,
+                                      sizes: [...currentSizes, size],
+                                    },
+                                  }));
+                                }
+                              }}
+                              onMouseDown={(e) => {
+                                // Enable drag selection
+                                if (e.button === 0) {
+                                  const currentSizes = formState.variants.sizes || [];
+                                  const startSize = size;
+                                  const startIndex = sizes.indexOf(startSize);
+                                  
+                                  const handleMouseMove = (moveEvent: MouseEvent) => {
+                                    const target = document.elementFromPoint(moveEvent.clientX, moveEvent.clientY);
+                                    if (target && target.closest('[data-size]')) {
+                                      const endSize = (target.closest('[data-size]') as HTMLElement)?.dataset.size;
+                                      if (endSize) {
+                                        const endIndex = sizes.indexOf(endSize);
+                                        const minIndex = Math.min(startIndex, endIndex);
+                                        const maxIndex = Math.max(startIndex, endIndex);
+                                        const rangeSizes = sizes.slice(minIndex, maxIndex + 1);
+                                        
+                                        setFormState((prev) => ({
+                                          ...prev,
+                                          variants: {
+                                            ...prev.variants,
+                                            sizes: Array.from(new Set([...currentSizes, ...rangeSizes])),
+                                          },
+                                        }));
+                                      }
+                                    }
+                                  };
+                                  
+                                  const handleMouseUp = () => {
+                                    document.removeEventListener('mousemove', handleMouseMove);
+                                    document.removeEventListener('mouseup', handleMouseUp);
+                                  };
+                                  
+                                  document.addEventListener('mousemove', handleMouseMove);
+                                  document.addEventListener('mouseup', handleMouseUp);
+                                }
+                              }}
+                              data-size={size}
+                              className={`relative flex-1 min-w-[40px] h-12 rounded-lg border-2 transition-all duration-200 ${
+                                isSelected
+                                  ? isPrimary
+                                    ? 'bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] border-[#00FFE5] text-[#050506] font-bold shadow-lg'
+                                    : 'bg-white/20 border-white/40 text-white font-semibold'
+                                  : 'bg-black/20 border-white/10 text-gray-400 hover:border-white/30 hover:bg-black/30'
+                              }`}
+                            >
+                              <span className="text-xs font-medium">{size}</span>
+                              {isPrimary && (
+                                <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-[#050506] border-2 border-[#00FFE5]"></span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2">
+                      Click to toggle • Drag across to select range • First selected is primary
+                    </p>
+                  </div>
                   
-                  {/* Draggable size list */}
+                  {/* Selected sizes list (for reordering) */}
                   {(formState.variants.sizes || []).length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-xs text-gray-500">Drag to reorder (first is primary)</p>
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                      <p className="text-xs text-gray-400 font-medium">Selected Sizes (drag to reorder):</p>
+                      <div className="flex flex-wrap gap-2">
                         {(formState.variants.sizes || []).map((size, index) => (
                           <div
                             key={`${size}-${index}`}
@@ -867,24 +939,25 @@ export function LibraryManager() {
                               setDraggedSizeIndex(null);
                               setDragOverSizeIndex(null);
                             }}
-                            className={`flex items-center gap-2 p-2 rounded-lg border transition-all cursor-move ${
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all cursor-move ${
                               draggedSizeIndex === index
                                 ? 'opacity-50 bg-white/10 border-[#00FFE5]'
                                 : dragOverSizeIndex === index
                                 ? 'bg-white/10 border-[#00FFE5] scale-105'
-                                : 'bg-black/20 border-white/10 hover:bg-black/30'
+                                : index === 0
+                                ? 'bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] border-[#00FFE5] text-[#050506]'
+                                : 'bg-white/10 border-white/20 text-white'
                             }`}
                           >
-                            <GripVertical className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                            <GripVertical className="w-3 h-3 flex-shrink-0" />
+                            <span className="text-sm font-medium">{size}</span>
                             {index === 0 && (
-                              <span className="text-xs px-2 py-0.5 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
-                                Primary
-                              </span>
+                              <span className="text-xs font-semibold">(Primary)</span>
                             )}
-                            <span className="flex-1 text-sm text-white font-medium">{size}</span>
                             <button
                               type="button"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 const currentSizes = formState.variants.sizes || [];
                                 setFormState((prev) => ({
                                   ...prev,
@@ -894,9 +967,9 @@ export function LibraryManager() {
                                   },
                                 }));
                               }}
-                              className="p-1 rounded hover:bg-red-500/20 text-red-400 transition-colors"
+                              className="ml-1 p-0.5 rounded hover:bg-red-500/20 text-red-400 transition-colors"
                             >
-                              <X className="w-4 h-4" />
+                              <X className="w-3 h-3" />
                             </button>
                           </div>
                         ))}
