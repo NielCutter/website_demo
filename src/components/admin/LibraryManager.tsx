@@ -273,17 +273,20 @@ export function LibraryManager() {
         
         // Remove shopee links from description before saving
         if (formState.shopeeLink && formState.shopeeLink.trim()) {
-          const shopeeLinkEscaped = formState.shopeeLink.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          cleanDescription = cleanDescription.replace(new RegExp(shopeeLinkEscaped, 'gi'), '').trim();
+          const escaped = formState.shopeeLink.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          cleanDescription = cleanDescription.replace(new RegExp(escaped, 'gi'), '');
         }
         
-        // Remove any shopee.ph URLs
-        cleanDescription = cleanDescription.replace(/https?:\/\/shopee\.ph[^\s]*/gi, '').trim();
-        cleanDescription = cleanDescription.replace(/shopee\.ph[^\s]*/gi, '').trim();
-        cleanDescription = cleanDescription.replace(/https?:\/\/[^\s]*shopee[^\s]*/gi, '').trim();
+        // Remove shopee.ph URLs in various formats
+        cleanDescription = cleanDescription.replace(/https?:\/\/shopee\.ph[^\s\)\]\}]*/gi, '');
+        cleanDescription = cleanDescription.replace(/shopee\.ph[^\s\)\]\}]*/gi, '');
+        cleanDescription = cleanDescription.replace(/https?:\/\/[^\s\)\]\}]*shopee[^\s\)\]\}]*/gi, '');
+        cleanDescription = cleanDescription.replace(/www\.shopee\.ph[^\s\)\]\}]*/gi, '');
+        cleanDescription = cleanDescription.replace(/https?:\/\/[^\s\)\]\}]*%2Fshopee[^\s\)\]\}]*/gi, '');
         
-        // Clean up multiple spaces
+        // Clean up: remove multiple spaces, trim
         cleanDescription = cleanDescription.replace(/\s+/g, ' ').trim();
+        cleanDescription = cleanDescription.replace(/^[,\s\-\.]+|[,\s\-\.]+$/g, '').trim();
         
         if (cleanDescription) {
           payload.description = cleanDescription;

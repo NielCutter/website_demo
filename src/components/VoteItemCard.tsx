@@ -23,6 +23,39 @@ interface VoteItemCardProps {
   item: LibraryItem;
 }
 
+// Helper function to remove Shopee links from text
+const removeShopeeLinks = (text: string, shopeeLink?: string): string => {
+  if (!text) return text;
+  
+  let cleaned = text;
+  
+  // Remove exact shopeeLink if it exists (with proper escaping)
+  if (shopeeLink && shopeeLink.trim()) {
+    const escaped = shopeeLink.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    cleaned = cleaned.replace(new RegExp(escaped, 'gi'), '');
+  }
+  
+  // Remove shopee.ph URLs in various formats
+  // Match: https://shopee.ph/... or http://shopee.ph/...
+  cleaned = cleaned.replace(/https?:\/\/shopee\.ph[^\s\)\]\}]*/gi, '');
+  // Match: shopee.ph/... (without protocol)
+  cleaned = cleaned.replace(/shopee\.ph[^\s\)\]\}]*/gi, '');
+  // Match: any URL containing "shopee"
+  cleaned = cleaned.replace(/https?:\/\/[^\s\)\]\}]*shopee[^\s\)\]\}]*/gi, '');
+  // Match: www.shopee.ph or shopee.ph with www
+  cleaned = cleaned.replace(/www\.shopee\.ph[^\s\)\]\}]*/gi, '');
+  // Match: URLs with encoded characters
+  cleaned = cleaned.replace(/https?:\/\/[^\s\)\]\}]*%2Fshopee[^\s\)\]\}]*/gi, '');
+  
+  // Clean up: remove multiple spaces, trim
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  
+  // Remove trailing punctuation that might be left behind
+  cleaned = cleaned.replace(/^[,\s\-\.]+|[,\s\-\.]+$/g, '').trim();
+  
+  return cleaned;
+};
+
 export function VoteItemCard({ item }: VoteItemCardProps) {
   const [detailOpen, setDetailOpen] = useState(false);
   const [localVotes, setLocalVotes] = useState(item.votes ?? 0);
@@ -308,24 +341,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
               <div className="p-6 sm:p-8 space-y-8">
                 {/* Description */}
                 {item.description && (() => {
-                  // Filter out shopee links from description
-                  let cleanDescription = item.description;
-                  
-                  // Remove exact shopeeLink if it exists
-                  if (item.shopeeLink) {
-                    const shopeeLinkEscaped = item.shopeeLink.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                    cleanDescription = cleanDescription.replace(new RegExp(shopeeLinkEscaped, 'gi'), '').trim();
-                  }
-                  
-                  // Remove any shopee.ph URLs (with or without protocol)
-                  cleanDescription = cleanDescription.replace(/https?:\/\/shopee\.ph[^\s]*/gi, '').trim();
-                  cleanDescription = cleanDescription.replace(/shopee\.ph[^\s]*/gi, '').trim();
-                  
-                  // Remove any URLs that contain shopee
-                  cleanDescription = cleanDescription.replace(/https?:\/\/[^\s]*shopee[^\s]*/gi, '').trim();
-                  
-                  // Remove any trailing/leading whitespace and clean up multiple spaces
-                  cleanDescription = cleanDescription.replace(/\s+/g, ' ').trim();
+                  const cleanDescription = removeShopeeLinks(item.description, item.shopeeLink);
                   
                   return cleanDescription ? (
                     <div>
