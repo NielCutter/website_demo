@@ -1,9 +1,20 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { VoteItemCard } from "./VoteItemCard";
 import { useFirestoreCollection } from "../hooks/useFirestoreCollection";
 import type { LibraryItem } from "./admin/LibraryManager";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "./ui/dialog";
+import { X, Grid3x3, List } from "lucide-react";
 
 export function FeaturedProducts() {
+  const [showAllProducts, setShowAllProducts] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+
   // First try to get all active items, then filter client-side if needed
   const { data: allItems, loading, error } = useFirestoreCollection<LibraryItem>("items");
   
@@ -31,18 +42,32 @@ export function FeaturedProducts() {
     return { hotItems, newItems, featuredItems, otherItems };
   }, [items]);
 
-  const handleViewAll = () => {
-    const section = document.getElementById("all-products");
-    if (section) {
-      const offset = 80;
-      const elementPosition = section.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - offset;
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth",
-      });
-    }
-  };
+  // Get unique categories for filtering
+  const categories = useMemo(() => {
+    const cats = new Set(items.map((item) => item.category));
+    return Array.from(cats).sort();
+  }, [items]);
+
+  // Filter items by category
+  const filteredItems = useMemo(() => {
+    if (selectedCategory === "all") return items;
+    return items.filter((item) => item.category === selectedCategory);
+  }, [items, selectedCategory]);
+
+  // Sort items: featured first, then by votes, then by creation date
+  const sortedItems = useMemo(() => {
+    return [...filteredItems].sort((a, b) => {
+      // Featured items first
+      if (a.displayOption && !b.displayOption) return -1;
+      if (!a.displayOption && b.displayOption) return 1;
+      // Then by votes (descending)
+      if ((b.votes ?? 0) !== (a.votes ?? 0)) {
+        return (b.votes ?? 0) - (a.votes ?? 0);
+      }
+      // Finally by creation (newest first) - if createdAt exists
+      return 0;
+    });
+  }, [filteredItems]);
 
   const ProductSection = ({
     title,
@@ -167,13 +192,124 @@ export function FeaturedProducts() {
 
         <div className="text-center">
           <button
-            onClick={handleViewAll}
+            onClick={() => setShowAllProducts(true)}
             className="group relative px-10 py-4 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold overflow-hidden transition-all duration-300 hover:text-[#1D1D2C] cursor-pointer"
           >
             <span className="relative z-10">View All Products</span>
             <div className="absolute inset-0 bg-[#00FFE5] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
           </button>
         </div>
+
+        {/* All Products Dialog */}
+        <Dialog open={showAllProducts} onOpenChange={setShowAllProducts}>
+          <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-7xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+            <DialogHeader className="p-6 border-b border-white/10">
+              <div className="flex items-center justify-between">
+                <DialogTitle className="text-3xl font-bold">
+                  <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
+                    All Products
+                  </span>
+                  <span className="text-white ml-2">
+                    ({sortedItems.length} {sortedItems.length === 1 ? "item" : "items"})
+                  </span>
+                </DialogTitle>
+                <button
+                  onClick={() => setShowAllProducts(false)}
+                  className="rounded-full p-2 hover:bg-white/10 transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </DialogHeader>
+
+            {/* Filters and View Mode */}
+            <div className="px-6 py-4 border-b border-white/10 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between bg-black/20">
+              {/* Category Filter */}
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedCategory("all")}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    selectedCategory === "all"
+                      ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                      : "bg-white/5 border border-white/10 hover:bg-white/10"
+                  }`}
+                >
+                  All
+                </button>
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      selectedCategory === category
+                        ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                        : "bg-white/5 border border-white/10 hover:bg-white/10"
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+
+              {/* View Mode Toggle */}
+              <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full p-1">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-2 rounded-full transition-all ${
+                    viewMode === "grid"
+                      ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                  aria-label="Grid view"
+                >
+                  <Grid3x3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-2 rounded-full transition-all ${
+                    viewMode === "list"
+                      ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                  aria-label="List view"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Products Grid/List */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {loading ? (
+                <div className="text-center py-20">
+                  <p className="text-gray-400">Loading products...</p>
+                </div>
+              ) : sortedItems.length === 0 ? (
+                <div className="text-center py-20">
+                  <p className="text-gray-400 text-lg">No products found</p>
+                  <p className="text-gray-500 text-sm mt-2">
+                    {selectedCategory !== "all"
+                      ? `Try selecting a different category`
+                      : "Check back soon for new drops"}
+                  </p>
+                </div>
+              ) : viewMode === "grid" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {sortedItems.map((item) => (
+                    <VoteItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {sortedItems.map((item) => (
+                    <VoteItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
