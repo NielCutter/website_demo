@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
-import { Search, Filter, X, Grid3x3, List, ChevronDown, Plus } from "lucide-react";
+import { Search, Filter, X, Grid3x3, List, ChevronDown, Plus, GripVertical } from "lucide-react";
 import { ImageCarousel } from "../ImageCarousel";
 
 type ItemStatus = "active" | "archived";
@@ -102,6 +102,8 @@ export function LibraryManager() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -117,36 +119,74 @@ export function LibraryManager() {
     setFiles([]);
   };
 
+  // Create combined image list for reordering (URLs first, then files)
+  const allImages = useMemo(() => {
+    const imageList: Array<{ type: 'url' | 'file'; url?: string; file?: File; index: number }> = [];
+    
+    // Add URLs with their original index
+    formState.imageUrls.forEach((url, index) => {
+      imageList.push({ type: 'url', url, index });
+    });
+    
+    // Add files with their original index
+    files.forEach((file, index) => {
+      imageList.push({ type: 'file', file, index });
+    });
+    
+    return imageList;
+  }, [formState.imageUrls, files]);
+
+  // Reorder images
+  const reorderImages = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    
+    const imageList = [...allImages];
+    const [moved] = imageList.splice(fromIndex, 1);
+    imageList.splice(toIndex, 0, moved);
+    
+    // Separate back into URLs and files while preserving order
+    const newUrls: string[] = [];
+    const newFiles: File[] = [];
+    
+    imageList.forEach((item) => {
+      if (item.type === 'url' && item.url) {
+        newUrls.push(item.url);
+      } else if (item.type === 'file' && item.file) {
+        newFiles.push(item.file);
+      }
+    });
+    
+    setFormState((prev) => ({ ...prev, imageUrls: newUrls }));
+    setFiles(newFiles);
+  };
+
   // Convert multiple files to base64
   const uploadImagesIfNeeded = async (): Promise<string[]> => {
     const imageUrls: string[] = [];
     
-    // Process uploaded files
-    for (const file of files) {
-      // Check file size (max 2MB before compression)
-      if (file.size > 2 * 1024 * 1024) {
-        throw new Error(`Image "${file.name}" is too large. Please use images smaller than 2MB.`);
-      }
+    // Process in the order they appear in allImages (preserving drag order)
+    for (const item of allImages) {
+      if (item.type === 'url' && item.url) {
+        // Add URL directly
+        imageUrls.push(item.url);
+      } else if (item.type === 'file' && item.file) {
+        // Check file size (max 2MB before compression)
+        if (item.file.size > 2 * 1024 * 1024) {
+          throw new Error(`Image "${item.file.name}" is too large. Please use images smaller than 2MB.`);
+        }
 
-      // Convert to base64
-      const base64 = await fileToBase64(file);
-      
-      // Check if base64 is too large (Firestore limit is 1MB per document)
-      // Base64 is ~33% larger than binary, so ~750KB base64 = ~1MB binary
-      if (base64.length > 750 * 1024) {
-        throw new Error(`Image "${file.name}" is too large after compression. Please use a smaller image.`);
+        // Convert to base64
+        const base64 = await fileToBase64(item.file);
+        
+        // Check if base64 is too large (Firestore limit is 1MB per document)
+        // Base64 is ~33% larger than binary, so ~750KB base64 = ~1MB binary
+        if (base64.length > 750 * 1024) {
+          throw new Error(`Image "${item.file.name}" is too large after compression. Please use a smaller image.`);
+        }
+        
+        imageUrls.push(base64);
       }
-      
-      imageUrls.push(base64);
     }
-    
-    // Add external URLs
-    if (formState.imageUrl.trim()) {
-      imageUrls.push(formState.imageUrl.trim());
-    }
-    
-    // Add existing imageUrls from form state
-    imageUrls.push(...formState.imageUrls.filter(url => url.trim()));
     
     return imageUrls;
   };
@@ -585,46 +625,93 @@ export function LibraryManager() {
             </div>
           </div>
           
-          {/* Display existing images */}
-          {(formState.imageUrls.length > 0 || files.length > 0) && (
+          {/* Display existing images with drag and drop */}
+          {allImages.length > 0 && (
             <div>
-              <label className="block text-sm text-gray-400 mb-2">Images Preview</label>
+              <label className="block text-sm text-gray-400 mb-2">
+                Images Preview <span className="text-gray-500 text-xs">(drag to reorder - first image will be the main image)</span>
+              </label>
               <div className="space-y-2 max-h-60 overflow-y-auto">
-                {formState.imageUrls.map((url, index) => (
-                  <div key={index} className="flex items-center gap-2 p-2 rounded-lg bg-black/20 border border-white/10">
-                    <img src={url} alt={`Preview ${index + 1}`} className="w-16 h-16 object-cover rounded" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-400 truncate">{url.substring(0, 50)}...</p>
-                    </div>
+                {allImages.map((item, index) => (
+                  <div
+                    key={item.type === 'url' ? `url-${index}` : `file-${index}`}
+                    draggable
+                    onDragStart={(e) => {
+                      setDraggedIndex(index);
+                      e.dataTransfer.effectAllowed = 'move';
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                      setDragOverIndex(index);
+                    }}
+                    onDragLeave={() => {
+                      setDragOverIndex(null);
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (draggedIndex !== null && draggedIndex !== index) {
+                        reorderImages(draggedIndex, index);
+                      }
+                      setDraggedIndex(null);
+                      setDragOverIndex(null);
+                    }}
+                    onDragEnd={() => {
+                      setDraggedIndex(null);
+                      setDragOverIndex(null);
+                    }}
+                    className={`flex items-center gap-2 p-2 rounded-lg border transition-all cursor-move ${
+                      draggedIndex === index
+                        ? 'opacity-50 bg-white/10 border-[#00FFE5]'
+                        : dragOverIndex === index
+                        ? 'bg-white/10 border-[#00FFE5] scale-105'
+                        : 'bg-black/20 border-white/10 hover:bg-black/30'
+                    }`}
+                  >
+                    <GripVertical className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                    {index === 0 && (
+                      <span className="text-xs px-2 py-0.5 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
+                        Main
+                      </span>
+                    )}
+                    {item.type === 'url' ? (
+                      <>
+                        <img src={item.url} alt={`Preview ${index + 1}`} className="w-16 h-16 object-cover rounded flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-gray-400 truncate">{item.url?.substring(0, 50)}...</p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-16 h-16 rounded bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <span className="text-xs text-gray-400">File</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-gray-400 truncate">{item.file?.name}</p>
+                          <p className="text-xs text-gray-500">{item.file ? (item.file.size / 1024).toFixed(1) : 0} KB</p>
+                        </div>
+                      </>
+                    )}
                     <button
                       type="button"
                       onClick={() => {
-                        setFormState((prev) => ({
-                          ...prev,
-                          imageUrls: prev.imageUrls.filter((_, i) => i !== index),
-                        }));
+                        // Remove from the combined list and update both arrays
+                        const newImages = allImages.filter((_, i) => i !== index);
+                        const newUrls: string[] = [];
+                        const newFiles: File[] = [];
+                        
+                        newImages.forEach((img) => {
+                          if (img.type === 'url' && img.url) {
+                            newUrls.push(img.url);
+                          } else if (img.type === 'file' && img.file) {
+                            newFiles.push(img.file);
+                          }
+                        });
+                        
+                        setFormState((prev) => ({ ...prev, imageUrls: newUrls }));
+                        setFiles(newFiles);
                       }}
-                      className="p-1 rounded hover:bg-red-500/20 text-red-400 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-                {files.map((file, index) => (
-                  <div key={`file-${index}`} className="flex items-center gap-2 p-2 rounded-lg bg-black/20 border border-white/10">
-                    <div className="w-16 h-16 rounded bg-white/5 flex items-center justify-center">
-                      <span className="text-xs text-gray-400">File</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-400 truncate">{file.name}</p>
-                      <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFiles((prev) => prev.filter((_, i) => i !== index));
-                      }}
-                      className="p-1 rounded hover:bg-red-500/20 text-red-400 transition-colors"
+                      className="p-1 rounded hover:bg-red-500/20 text-red-400 transition-colors flex-shrink-0"
                     >
                       <X className="w-4 h-4" />
                     </button>
