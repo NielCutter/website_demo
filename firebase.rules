@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'admin@newculturetrends.com'
+        ];
+    }
+
+    match /items/{itemId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() ||
+        (
+          request.auth != null &&
+          request.resource.data.keys().hasOnly(['votes', 'updatedAt']) &&
+          request.resource.data.votes == resource.data.votes + 1
+        );
+    }
+
+    match /itemVotes/{voteId} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == resource.data.userId);
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && !exists(/databases/{database}/documents/itemVotes/{voteId});
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
+
+    match /polls/{pollId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /pollVotes/{voteId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && !exists(/databases/{database}/documents/pollVotes/{voteId});
+      allow delete: if isAdmin();
+      allow update: if false;
+    }
+
+    match /newsletter/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
+

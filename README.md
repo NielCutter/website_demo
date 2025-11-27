@@ -2,6 +2,14 @@
 
 A modern React website built with Vite, TypeScript, and Tailwind CSS.
 
+## Tech Stack
+
+- React 18 + Vite
+- TypeScript
+- TailwindCSS
+- Firebase (Auth, Firestore, Storage, Hosting)
+- React Router
+
 ## Setup
 
 1. Install dependencies:
@@ -18,6 +26,18 @@ npm run dev
 ```bash
 npm run build
 ```
+
+4. Copy `.env.example` to `.env` and fill in Firebase credentials (optional if you use the default project baked into `src/firebase/config.ts`).
+
+## Application Structure
+
+- `/` – marketing site with hero, Firestore-powered voting grid, poll widget, and newsletter form
+- `/admin` – protected dashboard (email/password Firebase Auth) featuring:
+  - **Library Manager** – upload images to Storage, create/edit/delete `items`
+  - **Poll Manager** – configure “What should we release next?” poll
+  - **Newsletter Manager** – view & export subscribers
+
+Use the `VITE_ADMIN_EMAILS` env variable to list allowed admin addresses (comma separated).
 
 ## GitHub Pages Deployment with Custom Domain
 
@@ -80,4 +100,26 @@ The GitHub Actions workflow (`.github/workflows/deploy.yml`) will automatically:
 - Verify the CNAME file is in the `public` folder (it will be copied to `dist` during build)
 - Check GitHub Actions logs if deployment fails
 - Ensure GitHub Pages is set to use "GitHub Actions" as the source, not a branch
+
+## Firebase Hosting Deployment
+
+1. Install the Firebase CLI and log in:
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   ```
+2. Initialize hosting (only first time):
+   ```bash
+   firebase init hosting
+   ```
+   - Choose your Firebase project (`nctr-34dd5` or your own)
+   - Set `dist` as the public directory
+   - Configure as a single-page app (`y`)
+3. Build and deploy:
+   ```bash
+   npm run build
+   firebase deploy
+   ```
+
+The Firebase Security Rules used in this repo live in `firebase.rules`. Update and deploy them with `firebase deploy --only firestore:rules`.
 

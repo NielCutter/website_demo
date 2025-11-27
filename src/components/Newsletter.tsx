@@ -1,19 +1,30 @@
 import { motion } from "motion/react";
 import { Mail } from "lucide-react";
 import { useState } from "react";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 export function Newsletter() {
   const [email, setEmail] = useState("");
-  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle"
+  );
 
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setIsSubscribed(true);
-      setTimeout(() => {
-        setEmail("");
-        setIsSubscribed(false);
-      }, 3000);
+  const handleSubscribe = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!email) return;
+    setStatus("loading");
+    try {
+      await addDoc(collection(db, "newsletter"), {
+        email: email.trim(),
+        createdAt: serverTimestamp(),
+      });
+      setStatus("success");
+      setEmail("");
+      setTimeout(() => setStatus("idle"), 3000);
+    } catch (error) {
+      console.error("Newsletter signup failed:", error);
+      setStatus("error");
     }
   };
 
@@ -70,14 +81,19 @@ export function Newsletter() {
               />
               <button
                 type="submit"
-                className="group relative px-8 py-4 rounded-full overflow-hidden font-semibold transition-all duration-300"
+                disabled={status === "loading"}
+                className="group relative px-8 py-4 rounded-full overflow-hidden font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   background: 'linear-gradient(135deg, #00FFE5, #FF00B3)',
                   boxShadow: '0 0 20px rgba(0, 255, 229, 0.3)'
                 }}
               >
                 <span className="relative z-10 text-[#1D1D2C]">
-                  {isSubscribed ? "Subscribed! ✓" : "Subscribe"}
+                  {status === "success"
+                    ? "Subscribed! ✓"
+                    : status === "loading"
+                    ? "Joining..."
+                    : "Subscribe"}
                 </span>
                 <div 
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -104,6 +120,11 @@ export function Newsletter() {
               <span>Exclusive perks</span>
             </div>
           </div>
+          {status === "error" && (
+            <p className="mt-4 text-sm text-red-400">
+              Something went wrong. Please try again later.
+            </p>
+          )}
         </motion.div>
       </div>
     </section>
