@@ -6,7 +6,7 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, loading, error, login, allowedEmails } = useAdminAuth();
+  const { user, loading, error, login } = useAdminAuth();
   const [formState, setFormState] = useState({ email: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -38,10 +38,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         <div className="w-full max-w-md bg-black/60 border border-white/10 rounded-2xl p-8 shadow-2xl">
           <h1 className="text-2xl font-semibold text-white mb-2">Admin Login</h1>
           <p className="text-sm text-gray-400 mb-6">
-            Only approved team members can access the dashboard. Allowed emails:
-            <span className="block text-white font-medium">
-              {allowedEmails.join(", ")}
-            </span>
+            Only approved team members can access the dashboard.
           </p>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
