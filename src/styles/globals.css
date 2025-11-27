@@ -224,17 +224,56 @@ html {
   }
 }
 
-@keyframes electric-border {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(0, 255, 229, 0.5), 0 0 10px rgba(255, 0, 179, 0.5), inset 0 0 5px rgba(0, 255, 229, 0.2);
+/* Electric border animation for HOT items */
+@keyframes electric-border-rotate {
+  0% {
+    background-position: 0% 0%;
   }
   25% {
-    box-shadow: 0 0 10px rgba(255, 0, 179, 0.7), 0 0 15px rgba(0, 255, 229, 0.3), inset 0 0 10px rgba(255, 0, 179, 0.2);
+    background-position: 100% 0%;
   }
   50% {
-    box-shadow: 0 0 8px rgba(0, 255, 229, 0.6), 0 0 12px rgba(255, 0, 179, 0.6), inset 0 0 8px rgba(0, 255, 229, 0.3);
+    background-position: 100% 100%;
   }
   75% {
-    box-shadow: 0 0 10px rgba(255, 0, 179, 0.7), 0 0 15px rgba(0, 255, 229, 0.3), inset 0 0 10px rgba(255, 0, 179, 0.2);
+    background-position: 0% 100%;
   }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes electric-glow {
+  0%, 100% {
+    box-shadow: 
+      0 0 10px rgba(255, 0, 179, 0.6),
+      0 0 20px rgba(255, 0, 179, 0.4),
+      0 0 30px rgba(255, 0, 179, 0.2),
+      inset 0 0 10px rgba(255, 0, 179, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 15px rgba(0, 255, 229, 0.8),
+      0 0 25px rgba(0, 255, 229, 0.6),
+      0 0 35px rgba(0, 255, 229, 0.4),
+      inset 0 0 15px rgba(0, 255, 229, 0.15);
+  }
+}
+
+.electric-border {
+  position: relative;
+  border: 2px solid transparent;
+  background: 
+    linear-gradient(var(--deep-indigo), var(--deep-indigo)) padding-box,
+    linear-gradient(
+      90deg,
+      #FF00B3 0%,
+      #00FFE5 25%,
+      #FF00B3 50%,
+      #00FFE5 75%,
+      #FF00B3 100%
+    ) border-box;
+  background-size: 200% 200%;
+  animation: electric-border-rotate 3s linear infinite, electric-glow 2s ease-in-out infinite;
+  border-radius: 1.5rem;
 }
