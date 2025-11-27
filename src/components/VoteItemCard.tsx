@@ -258,71 +258,81 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
       </article>
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0">
-          <DialogHeader className="p-4 sm:p-6 border-b border-white/10">
+        <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-7xl max-h-[95vh] overflow-hidden flex flex-col p-0">
+          <DialogHeader className="p-6 sm:p-8 border-b border-white/10">
             <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <DialogTitle className="text-xl sm:text-2xl md:text-3xl font-bold mb-2">{item.title}</DialogTitle>
-                <DialogDescription className="text-gray-400 text-sm sm:text-base">
-                  {item.category}
+              <div className="flex-1 min-w-0">
+                <DialogTitle className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 leading-tight">{item.title}</DialogTitle>
+                <div className="flex flex-wrap items-center gap-3">
+                  <DialogDescription className="text-gray-400 text-base sm:text-lg">
+                    {item.category}
+                  </DialogDescription>
                   {item.displayOption && (
-                    <span className="ml-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold text-xs">
+                    <span className="px-3 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold text-sm">
                       {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
                     </span>
                   )}
-                </DialogDescription>
+                </div>
               </div>
             </div>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-              {/* Image Section */}
-              <div className="space-y-4">
-                <ImageCarousel images={images} alt={item.title} className="rounded-2xl" />
-                
-                {/* Hearts and Price */}
-                <div className="flex items-center justify-between p-4 rounded-xl bg-black/30 border border-white/10">
-                  <div className="flex items-center gap-2">
-                    <Heart className={`w-5 h-5 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-gray-400"}`} />
-                    <div>
-                      <p className="text-xs text-gray-400">Hearts</p>
-                      <p className="text-lg font-bold text-white">{localVotes}</p>
-                    </div>
+          <div className="flex-1 overflow-y-auto">
+            <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-0">
+              {/* Image Section - Larger */}
+              <div className="p-6 sm:p-8 bg-black/10 border-r border-white/5">
+                <div className="sticky top-0 space-y-6">
+                  <div className="w-full">
+                    <ImageCarousel images={images} alt={item.title} className="rounded-3xl shadow-2xl" />
                   </div>
-                  {item.price !== undefined && (
-                    <div className="text-right">
-                      <p className="text-xs text-gray-400">Price</p>
-                      <p className="text-xl font-bold text-white">${item.price.toFixed(2)}</p>
+                  
+                  {/* Hearts and Price - Better Layout */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-5 rounded-2xl bg-black/40 border border-white/10">
+                      <div className="flex items-center gap-3">
+                        <Heart className={`w-6 h-6 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-gray-400"}`} />
+                        <div>
+                          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Hearts</p>
+                          <p className="text-2xl font-bold text-white">{localVotes}</p>
+                        </div>
+                      </div>
                     </div>
-                  )}
+                    {item.price !== undefined && (
+                      <div className="p-5 rounded-2xl bg-black/40 border border-white/10">
+                        <div>
+                          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Price</p>
+                          <p className="text-2xl font-bold text-white">${item.price.toFixed(2)}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               
               {/* Details Section */}
-              <div className="space-y-6">
+              <div className="p-6 sm:p-8 space-y-8">
                 {/* Description */}
                 {item.description && (
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider">Description</h4>
-                    <p className="text-sm sm:text-base text-gray-300 leading-relaxed">{item.description}</p>
+                    <h4 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">Description</h4>
+                    <p className="text-base text-gray-300 leading-relaxed">{item.description}</p>
                   </div>
                 )}
                 
                 {/* Variants */}
                 {item.variants && (
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Product Details</h4>
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {/* Sizes */}
                       {item.variants.sizes && item.variants.sizes.length > 0 && (
                         <div>
-                          <p className="text-xs text-gray-400 mb-2">Sizes Available</p>
+                          <p className="text-xs text-gray-400 mb-3 uppercase tracking-wider">Sizes Available</p>
                           <div className="flex flex-wrap gap-2">
                             {item.variants.sizes.map((size, idx) => (
                               <span
                                 key={size}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
+                                className={`px-4 py-2 rounded-lg text-sm font-medium ${
                                   idx === 0
                                     ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold"
                                     : "bg-white/10 text-gray-300 border border-white/20"
@@ -338,48 +348,48 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                       {/* Other Variants Grid */}
                       <div className="grid grid-cols-2 gap-3">
                         {item.variants.color && (
-                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
-                            <p className="text-xs text-gray-400 mb-1">Color</p>
-                            <p className="text-sm font-medium text-white">{item.variants.color}</p>
+                          <div className="p-4 rounded-xl bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">Color</p>
+                            <p className="text-sm font-semibold text-white">{item.variants.color}</p>
                           </div>
                         )}
                         {item.variants.shirtType && (
-                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
-                            <p className="text-xs text-gray-400 mb-1">Type</p>
-                            <p className="text-sm font-medium text-white">{item.variants.shirtType}</p>
+                          <div className="p-4 rounded-xl bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">Type</p>
+                            <p className="text-sm font-semibold text-white">{item.variants.shirtType}</p>
                           </div>
                         )}
                         {item.variants.neckType && (
-                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
-                            <p className="text-xs text-gray-400 mb-1">Neck</p>
-                            <p className="text-sm font-medium text-white">{item.variants.neckType}</p>
+                          <div className="p-4 rounded-xl bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">Neck</p>
+                            <p className="text-sm font-semibold text-white">{item.variants.neckType}</p>
                           </div>
                         )}
                         {item.variants.fit && (
-                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
-                            <p className="text-xs text-gray-400 mb-1">Fit</p>
-                            <p className="text-sm font-medium text-white">{item.variants.fit}</p>
+                          <div className="p-4 rounded-xl bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">Fit</p>
+                            <p className="text-sm font-semibold text-white">{item.variants.fit}</p>
                           </div>
                         )}
                         {item.variants.material && (
-                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
-                            <p className="text-xs text-gray-400 mb-1">Material</p>
-                            <p className="text-sm font-medium text-white">{item.variants.material}</p>
+                          <div className="p-4 rounded-xl bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">Material</p>
+                            <p className="text-sm font-semibold text-white">{item.variants.material}</p>
                           </div>
                         )}
                         {item.variants.printType && (
-                          <div className="p-3 rounded-lg bg-black/30 border border-white/10">
-                            <p className="text-xs text-gray-400 mb-1">Print Type</p>
-                            <p className="text-sm font-medium text-white">{item.variants.printType}</p>
+                          <div className="p-4 rounded-xl bg-black/30 border border-white/10">
+                            <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">Print Type</p>
+                            <p className="text-sm font-semibold text-white">{item.variants.printType}</p>
                           </div>
                         )}
                       </div>
                       
                       {/* Design Theme */}
                       {item.variants.designTheme && (
-                        <div className="p-4 rounded-lg bg-gradient-to-r from-[#00FFE5]/10 to-[#FF00B3]/10 border border-[#00FFE5]/20">
-                          <p className="text-xs text-gray-400 mb-2">Collection</p>
-                          <span className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold text-sm">
+                        <div className="p-5 rounded-xl bg-gradient-to-r from-[#00FFE5]/10 to-[#FF00B3]/10 border border-[#00FFE5]/20">
+                          <p className="text-xs text-gray-400 mb-3 uppercase tracking-wider">Collection</p>
+                          <span className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold text-sm">
                             {item.variants.designTheme}
                           </span>
                         </div>
@@ -387,21 +397,25 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                     </div>
                   </div>
                 )}
-                
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-white/10">
-                  <button
-                    onClick={handleVote}
-                    disabled={submitting || item.status === "archived"}
-                    className={`flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold transition-all ${
-                      hasVoted
-                        ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
-                        : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] hover:opacity-90 hover:scale-105"
-                    } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
-                  >
-                    <Heart
-                      className={`w-5 h-5 ${hasVoted ? "fill-current" : ""}`}
-                    />
+              </div>
+            </div>
+            
+            {/* Action Buttons - Fixed at bottom, less crowded */}
+            <div className="sticky bottom-0 p-6 sm:p-8 bg-[#0b0b0f] border-t border-white/10 backdrop-blur-sm">
+              <div className="flex flex-col sm:flex-row gap-4 max-w-4xl mx-auto">
+                <button
+                  onClick={handleVote}
+                  disabled={submitting || item.status === "archived"}
+                  className={`flex-1 flex items-center justify-center gap-3 rounded-xl px-8 py-4 text-base font-semibold transition-all ${
+                    hasVoted
+                      ? "bg-white/10 border-2 border-white/20 text-white hover:bg-white/20"
+                      : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] hover:opacity-90 hover:scale-[1.02]"
+                  } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
+                >
+                  <Heart
+                    className={`w-6 h-6 ${hasVoted ? "fill-current" : ""}`}
+                  />
+                  <span>
                     {submitting
                       ? hasVoted
                         ? "Unhearting..."
@@ -409,31 +423,31 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                       : hasVoted
                       ? "Unheart"
                       : "Heart"}
-                  </button>
-                  {item.shopeeLink && item.shopeeLink.trim() && (
-                    <a
-                      href={item.shopeeLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg shadow-[#EE4D2D]/20"
+                  </span>
+                </button>
+                {item.shopeeLink && item.shopeeLink.trim() && (
+                  <a
+                    href={item.shopeeLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-3 rounded-xl px-8 py-4 text-base font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-[1.02] transition-all shadow-lg shadow-[#EE4D2D]/20"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        className="w-5 h-5"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                      </svg>
-                      Shop on Shopee
-                    </a>
-                  )}
-                  {item.status === "archived" && (
-                    <div className="px-4 py-3 rounded-full bg-gray-500/20 border border-gray-500/40 text-gray-400 text-center text-sm">
-                      This item is archived
-                    </div>
-                  )}
-                </div>
+                      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
+                    <span>Shop on Shopee</span>
+                  </a>
+                )}
+                {item.status === "archived" && (
+                  <div className="flex-1 px-8 py-4 rounded-xl bg-gray-500/20 border-2 border-gray-500/40 text-gray-400 text-center text-base">
+                    This item is archived
+                  </div>
+                )}
               </div>
             </div>
           </div>
