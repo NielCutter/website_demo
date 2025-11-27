@@ -25,7 +25,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
+      const isAllowed =
+        firebaseUser &&
+        !firebaseUser.isAnonymous &&
+        !!firebaseUser.email &&
+        ADMIN_EMAILS.includes(firebaseUser.email);
+
+      setUser(isAllowed ? firebaseUser : null);
       setLoading(false);
     });
 
