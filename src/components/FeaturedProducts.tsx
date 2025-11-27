@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { VoteItemCard } from "./VoteItemCard";
 import { useFirestoreCollection } from "../hooks/useFirestoreCollection";
 import type { LibraryItem } from "./admin/LibraryManager";
@@ -234,13 +235,13 @@ export function FeaturedProducts() {
         )}
 
         <div className="text-center">
-          <button
-            onClick={() => setShowAllProducts(true)}
-            className="group relative px-10 py-4 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold overflow-hidden transition-all duration-300 hover:text-[#1D1D2C] cursor-pointer"
+          <Link
+            to="/products"
+            className="group relative inline-block px-10 py-4 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold overflow-hidden transition-all duration-300 hover:text-[#1D1D2C] cursor-pointer"
           >
             <span className="relative z-10">View All Products</span>
             <div className="absolute inset-0 bg-[#00FFE5] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-          </button>
+          </Link>
         </div>
 
         {/* All Products Dialog */}
