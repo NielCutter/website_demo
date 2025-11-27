@@ -238,6 +238,16 @@ html {
   position: relative;
   border-radius: 1.5rem;
   padding: 3px;
+  background: #050506;
+  overflow: hidden;
+}
+
+.electric-border::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 1.5rem;
+  padding: 3px;
   background: conic-gradient(
     from 0deg,
     #FF00B3,
@@ -251,7 +261,15 @@ html {
     #FF00B3
   );
   animation: rotate 3s linear infinite;
-  overflow: hidden;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  z-index: 0;
 }
 
 .electric-border > * {
