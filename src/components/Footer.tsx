@@ -1,13 +1,9 @@
 import { useState } from "react";
-import { Instagram, Facebook, Twitter } from "lucide-react";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { Instagram, Facebook, Twitter, ChevronDown } from "lucide-react";
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
-  const [email, setEmail] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   const socialLinks = [
     { icon: Instagram, href: "#", label: "Instagram" },
@@ -19,11 +15,29 @@ export function Footer() {
     {
       title: "Utility Pages",
       links: [
-        { label: "FAQ", href: "#" },
         { label: "Shipping Info", href: "#" },
         { label: "Returns", href: "#" },
         { label: "Terms & Privacy", href: "#" }
       ]
+    }
+  ];
+
+  const faqItems = [
+    {
+      question: "Sizes",
+      answer: "Our products are available in a range of sizes. Please refer to our size guide for detailed measurements. All items are designed with a modern fit that's true to size."
+    },
+    {
+      question: "Shipping",
+      answer: "We ship worldwide! Standard shipping typically takes 5-7 business days. Express shipping options are available at checkout. Free shipping on orders over $100."
+    },
+    {
+      question: "Wash care",
+      answer: "To maintain the quality of your pieces, we recommend washing in cold water on a gentle cycle and air drying. Avoid bleach and ironing directly on prints. Check the care label on each item for specific instructions."
+    },
+    {
+      question: "Preorders",
+      answer: "Preorder items are limited edition pieces that are made to order. Preorder items typically ship within 4-6 weeks. You'll receive email updates on your order status."
     }
   ];
 
@@ -72,57 +86,34 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Newsletter Signup */}
+          {/* FAQ Section */}
           <div className="md:col-span-2 lg:col-span-1">
-            <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">Newsletter Signup</h4>
-            <p className="text-gray-400 text-sm mb-3">
-              Stay updated with our latest drops and exclusive offers.
-            </p>
-            {submitted ? (
-              <div className="px-4 py-2 rounded-lg bg-[#00FFE5]/10 border border-[#00FFE5]/20 text-[#00FFE5] text-sm">
-                Thanks for subscribing!
-              </div>
-            ) : (
-              <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  if (!email.trim() || submitting) return;
-
-                  setSubmitting(true);
-                  try {
-                    await addDoc(collection(db, "newsletter"), {
-                      email: email.trim().toLowerCase(),
-                      createdAt: serverTimestamp(),
-                    });
-                    setSubmitted(true);
-                    setEmail("");
-                    setTimeout(() => setSubmitted(false), 3000);
-                  } catch (error) {
-                    console.error("Error subscribing:", error);
-                    alert("Failed to subscribe. Please try again.");
-                  } finally {
-                    setSubmitting(false);
-                  }
-                }}
-                className="flex flex-col sm:flex-row gap-2"
-              >
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                  className="flex-1 px-4 py-2 rounded-lg bg-black/40 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00FFE5] transition-colors text-sm"
-                />
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="px-6 py-2 rounded-lg bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold hover:opacity-90 transition-opacity text-sm disabled:opacity-50 whitespace-nowrap"
+            <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">People always ask</h4>
+            <div className="space-y-2">
+              {faqItems.map((faq) => (
+                <div
+                  key={faq.question}
+                  className="border border-white/10 rounded-lg bg-black/20 overflow-hidden"
                 >
-                  {submitting ? "..." : "Subscribe"}
-                </button>
-              </form>
-            )}
+                  <button
+                    onClick={() => setOpenFaq(openFaq === faq.question ? null : faq.question)}
+                    className="w-full px-4 py-3 flex items-center justify-between text-left hover:bg-white/5 transition-colors"
+                  >
+                    <span className="text-white font-medium text-sm">{faq.question}</span>
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${
+                        openFaq === faq.question ? "transform rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                  {openFaq === faq.question && (
+                    <div className="px-4 pb-3">
+                      <p className="text-gray-400 text-sm leading-relaxed">{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Links sections */}
