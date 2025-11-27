@@ -87,72 +87,80 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
 
   const isHot = item.displayOption === "hot";
 
+  const content = (
+    <>
+      {item.displayOption && (
+        <div className="absolute top-3 right-3 z-10">
+          <span className="text-xs uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-bold shadow-lg">
+            {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
+          </span>
+        </div>
+      )}
+      <div className="aspect-[4/3] bg-black/20">
+        <img
+          src={item.imageUrl}
+          alt={item.title}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div className="p-5 space-y-4 flex-1 flex flex-col">
+        <div>
+          <p className="text-xs uppercase tracking-[0.4em] text-gray-500">
+            {item.category}
+          </p>
+          <h3 className="text-2xl font-semibold">{item.title}</h3>
+        </div>
+        {item.description && (
+          <p className="text-sm text-gray-400 line-clamp-3">
+            {item.description}
+          </p>
+        )}
+        {item.price !== undefined && (
+          <p className="text-sm text-gray-400">
+            ${item.price.toFixed(2)}
+          </p>
+        )}
+        <div className="mt-auto space-y-3">
+          <p className="text-sm text-gray-400">
+            Votes: <span className="text-white font-semibold">{localVotes}</span>
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={handleVote}
+              disabled={hasVoted || submitting || item.status === "archived"}
+              className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                hasVoted
+                  ? "bg-white/5 border border-white/10 text-gray-500 cursor-not-allowed"
+                  : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
+              }`}
+            >
+              {hasVoted ? "Voted" : submitting ? "Voting..." : "Vote"}
+            </button>
+            <button
+              onClick={() => setDetailOpen(true)}
+              className="flex-1 rounded-full border border-white/20 text-sm"
+            >
+              View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <>
-      <article 
-        className={`rounded-3xl overflow-hidden flex flex-col relative ${
-          isHot 
-            ? "electric-border bg-black/30" 
-            : "border border-white/10 bg-black/30"
-        }`}
-      >
-        {item.displayOption && (
-          <div className="absolute top-3 right-3 z-10">
-            <span className="text-xs uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-bold shadow-lg">
-              {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
-            </span>
-          </div>
-        )}
-        <div className="aspect-[4/3] bg-black/20">
-          <img
-            src={item.imageUrl}
-            alt={item.title}
-            className="w-full h-full object-cover"
-          />
+      {isHot ? (
+        <div className="electric-border">
+          <article className="rounded-3xl overflow-hidden flex flex-col relative bg-black/30 h-full">
+            {content}
+          </article>
         </div>
-        <div className="p-5 space-y-4 flex-1 flex flex-col">
-          <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-gray-500">
-              {item.category}
-            </p>
-            <h3 className="text-2xl font-semibold">{item.title}</h3>
-          </div>
-          {item.description && (
-            <p className="text-sm text-gray-400 line-clamp-3">
-              {item.description}
-            </p>
-          )}
-          {item.price !== undefined && (
-            <p className="text-sm text-gray-400">
-              ${item.price.toFixed(2)}
-            </p>
-          )}
-          <div className="mt-auto space-y-3">
-            <p className="text-sm text-gray-400">
-              Votes: <span className="text-white font-semibold">{localVotes}</span>
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={handleVote}
-                disabled={hasVoted || submitting || item.status === "archived"}
-                className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  hasVoted
-                    ? "bg-white/5 border border-white/10 text-gray-500 cursor-not-allowed"
-                    : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
-                }`}
-              >
-                {hasVoted ? "Voted" : submitting ? "Voting..." : "Vote"}
-              </button>
-              <button
-                onClick={() => setDetailOpen(true)}
-                className="flex-1 rounded-full border border-white/20 text-sm"
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        </div>
-      </article>
+      ) : (
+        <article className="rounded-3xl overflow-hidden flex flex-col relative border border-white/10 bg-black/30">
+          {content}
+        </article>
+      )}
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
         <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-xl">

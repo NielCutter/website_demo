@@ -224,67 +224,41 @@ html {
   }
 }
 
-/* Electric border animation for HOT items - Rotating conic gradient */
-@keyframes rotate-border {
-  0% {
+/* Electric border animation for HOT items - ReactBits style */
+@keyframes rotate {
+  from {
     transform: rotate(0deg);
   }
-  100% {
+  to {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes electric-glow {
-  0%, 100% {
-    box-shadow: 
-      0 0 15px rgba(255, 0, 179, 0.9),
-      0 0 25px rgba(255, 0, 179, 0.7),
-      0 0 35px rgba(255, 0, 179, 0.5),
-      0 0 45px rgba(255, 0, 179, 0.3);
-  }
-  50% {
-    box-shadow: 
-      0 0 20px rgba(0, 255, 229, 1),
-      0 0 30px rgba(0, 255, 229, 0.8),
-      0 0 40px rgba(0, 255, 229, 0.6),
-      0 0 50px rgba(0, 255, 229, 0.4);
   }
 }
 
 .electric-border {
   position: relative;
   border-radius: 1.5rem;
-  background: #050506;
-  animation: electric-glow 2s ease-in-out infinite;
-  overflow: visible !important;
+  padding: 4px;
+  background: conic-gradient(
+    from 0deg,
+    #FF00B3,
+    #00FFE5,
+    #FF00B3,
+    #00FFE5,
+    #FF00B3,
+    #00FFE5,
+    #FF00B3,
+    #00FFE5,
+    #FF00B3
+  );
+  animation: rotate 3s linear infinite;
+  overflow: hidden;
 }
 
-.electric-border::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 1.5rem;
-  background: conic-gradient(
-    from 0deg at 50% 50%,
-    #FF00B3 0%,
-    #00FFE5 12.5%,
-    #FF00B3 25%,
-    #00FFE5 37.5%,
-    #FF00B3 50%,
-    #00FFE5 62.5%,
-    #FF00B3 75%,
-    #00FFE5 87.5%,
-    #FF00B3 100%
-  );
-  animation: rotate-border 2.5s linear infinite;
-  z-index: -1;
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: 
-    linear-gradient(#fff 0 0) content-box, 
-    linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  padding: 4px;
+.electric-border > * {
+  position: relative;
+  z-index: 1;
+  background: #050506;
+  border-radius: calc(1.5rem - 4px);
+  width: 100%;
+  height: 100%;
 }
