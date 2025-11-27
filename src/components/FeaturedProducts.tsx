@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { VoteItemCard } from "./VoteItemCard";
 import { useFirestoreCollection } from "../hooks/useFirestoreCollection";
 import type { LibraryItem } from "./admin/LibraryManager";
@@ -9,9 +10,60 @@ export function FeaturedProducts() {
     orderDirection: "desc",
   });
 
+  // Organize items by display tags
+  const organizedItems = useMemo(() => {
+    const hotItems = items.filter((item) => item.displayOption === "hot");
+    const newItems = items.filter((item) => item.displayOption === "new");
+    const featuredItems = items.filter((item) => item.displayOption === "featured");
+    const otherItems = items.filter(
+      (item) => !item.displayOption || !["hot", "new", "featured"].includes(item.displayOption)
+    );
+
+    return { hotItems, newItems, featuredItems, otherItems };
+  }, [items]);
+
   const handleViewAll = () => {
-    const section = document.getElementById("featured-products");
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const section = document.getElementById("all-products");
+    if (section) {
+      const offset = 80;
+      const elementPosition = section.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const ProductSection = ({
+    title,
+    items,
+    id,
+    gradient,
+  }: {
+    title: string;
+    items: LibraryItem[];
+    id?: string;
+    gradient: string;
+  }) => {
+    if (items.length === 0) return null;
+
+    return (
+      <div id={id} className="space-y-6">
+        <div className="text-center">
+          <h3 className="text-3xl md:text-4xl font-bold">
+            <span className={`bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+              {title}
+            </span>
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {items.map((item) => (
+            <VoteItemCard key={item.id} item={item} />
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -23,7 +75,7 @@ export function FeaturedProducts() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto relative z-10 space-y-10">
+      <div className="max-w-7xl mx-auto relative z-10 space-y-16">
         <div className="text-center">
           <h2 className="text-5xl md:text-6xl font-bold mb-4">
             <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
@@ -37,19 +89,56 @@ export function FeaturedProducts() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {loading && (
-            <p className="text-gray-400 col-span-full">Loading drops...</p>
-          )}
-          {!loading && items.length === 0 && (
-            <p className="text-gray-400 col-span-full">
-              No drops yet. Check back soon.
-            </p>
-          )}
-          {items.map((item) => (
-            <VoteItemCard key={item.id} item={item} />
-          ))}
-        </div>
+        {loading && (
+          <p className="text-gray-400 text-center">Loading drops...</p>
+        )}
+
+        {!loading && items.length === 0 && (
+          <p className="text-gray-400 text-center">
+            No drops yet. Check back soon.
+          </p>
+        )}
+
+        {!loading && items.length > 0 && (
+          <>
+            {/* HOT Items */}
+            <ProductSection
+              title="🔥 HOT"
+              items={organizedItems.hotItems}
+              gradient="from-[#FF00B3] to-[#FF6B6B]"
+            />
+
+            {/* NEW Items */}
+            <ProductSection
+              title="✨ NEW"
+              items={organizedItems.newItems}
+              gradient="from-[#00FFE5] to-[#00D4FF]"
+            />
+
+            {/* Featured Items */}
+            <ProductSection
+              title="⭐ Featured"
+              items={organizedItems.featuredItems}
+              gradient="from-[#00FFE5] to-[#FF00B3]"
+            />
+
+            {/* All Other Items */}
+            {organizedItems.otherItems.length > 0 && (
+              <div id="all-products" className="space-y-6">
+                <div className="text-center">
+                  <h3 className="text-3xl md:text-4xl font-bold text-white">
+                    All Products
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {organizedItems.otherItems.map((item) => (
+                    <VoteItemCard key={item.id} item={item} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        )}
 
         <div className="text-center">
           <button
