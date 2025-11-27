@@ -521,21 +521,25 @@ export function LibraryManager() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-gray-400 mb-2">
-              Upload Images <span className="text-gray-500 text-xs">(multiple allowed)</span>
+              Upload Images <span className="text-gray-500 text-xs">(hold Ctrl/Cmd to select multiple)</span>
             </label>
             <input
               type="file"
               accept="image/*"
               multiple
-              className="w-full rounded-xl bg-black/20 border border-dashed border-white/20 px-4 py-3"
+              className="w-full rounded-xl bg-black/20 border border-dashed border-white/20 px-4 py-3 cursor-pointer"
               onChange={(event) => {
                 const selectedFiles = Array.from(event.target.files || []);
-                setFiles(selectedFiles);
+                if (selectedFiles.length > 0) {
+                  setFiles((prev) => [...prev, ...selectedFiles]);
+                }
+                // Reset input to allow selecting the same files again
+                event.target.value = '';
               }}
             />
             {files.length > 0 && (
               <div className="mt-2 text-xs text-gray-400">
-                {files.length} file{files.length > 1 ? "s" : ""} selected
+                {files.length} file{files.length > 1 ? "s" : ""} selected. You can add more by selecting again.
               </div>
             )}
           </div>
