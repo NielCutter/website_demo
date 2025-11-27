@@ -312,12 +312,24 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
               {/* Details Section */}
               <div className="p-6 sm:p-8 space-y-8">
                 {/* Description */}
-                {item.description && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">Description</h4>
-                    <p className="text-base text-gray-300 leading-relaxed">{item.description}</p>
-                  </div>
-                )}
+                {item.description && (() => {
+                  // Filter out shopee links from description
+                  let cleanDescription = item.description;
+                  if (item.shopeeLink) {
+                    cleanDescription = cleanDescription.replace(item.shopeeLink, '').trim();
+                  }
+                  // Remove any remaining shopee.ph URLs
+                  cleanDescription = cleanDescription.replace(/https?:\/\/shopee\.ph[^\s]*/gi, '').trim();
+                  
+                  return cleanDescription ? (
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-300 mb-3 uppercase tracking-wider">Description</h4>
+                      <div className="max-h-48 overflow-y-auto pr-2">
+                        <p className="text-base text-gray-300 leading-relaxed">{cleanDescription}</p>
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
                 
                 {/* Variants */}
                 {item.variants && (
@@ -400,22 +412,23 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
               </div>
             </div>
             
-            {/* Action Buttons - Fixed at bottom, less crowded */}
-            <div className="sticky bottom-0 p-6 sm:p-8 bg-[#0b0b0f] border-t border-white/10 backdrop-blur-sm">
-              <div className="flex flex-col sm:flex-row gap-4 max-w-4xl mx-auto">
+            {/* Action Buttons - Fixed at bottom, always 3 buttons */}
+            <div className="sticky bottom-0 p-4 sm:p-6 bg-[#0b0b0f] border-t border-white/10 backdrop-blur-sm">
+              <div className="grid grid-cols-3 gap-3 max-w-5xl mx-auto">
+                {/* Heart Button */}
                 <button
                   onClick={handleVote}
                   disabled={submitting || item.status === "archived"}
-                  className={`flex-1 flex items-center justify-center gap-3 rounded-xl px-8 py-4 text-base font-semibold transition-all ${
+                  className={`flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
                     hasVoted
-                      ? "bg-white/10 border-2 border-white/20 text-white hover:bg-white/20"
+                      ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
                       : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] hover:opacity-90 hover:scale-[1.02]"
                   } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   <Heart
-                    className={`w-6 h-6 ${hasVoted ? "fill-current" : ""}`}
+                    className={`w-5 h-5 ${hasVoted ? "fill-current" : ""}`}
                   />
-                  <span>
+                  <span className="hidden sm:inline">
                     {submitting
                       ? hasVoted
                         ? "Unhearting..."
@@ -424,30 +437,45 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                       ? "Unheart"
                       : "Heart"}
                   </span>
+                  <span className="sm:hidden">
+                    {submitting ? "..." : hasVoted ? "❤️" : "🤍"}
+                  </span>
                 </button>
-                {item.shopeeLink && item.shopeeLink.trim() && (
+                
+                {/* Shopee Button - Always reserve space */}
+                {item.shopeeLink && item.shopeeLink.trim() ? (
                   <a
                     href={item.shopeeLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-3 rounded-xl px-8 py-4 text-base font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-[1.02] transition-all shadow-lg shadow-[#EE4D2D]/20"
+                    className="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-[1.02] transition-all shadow-lg shadow-[#EE4D2D]/20"
                   >
                     <svg
-                      className="w-6 h-6"
+                      className="w-5 h-5"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                     </svg>
-                    <span>Shop on Shopee</span>
+                    <span className="hidden sm:inline">Shopee</span>
+                    <span className="sm:hidden">Shop</span>
                   </a>
-                )}
-                {item.status === "archived" && (
-                  <div className="flex-1 px-8 py-4 rounded-xl bg-gray-500/20 border-2 border-gray-500/40 text-gray-400 text-center text-base">
-                    This item is archived
+                ) : (
+                  <div className="flex items-center justify-center rounded-xl px-4 py-3 bg-black/20 border border-white/5 opacity-50">
+                    <span className="text-xs text-gray-500 hidden sm:inline">No Shopee Link</span>
+                    <span className="text-xs text-gray-500 sm:hidden">-</span>
                   </div>
                 )}
+                
+                {/* Details/Close Button */}
+                <button
+                  onClick={() => setDetailOpen(false)}
+                  className="flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold bg-white/10 border border-white/20 text-white hover:bg-white/20 transition-all"
+                >
+                  <span className="hidden sm:inline">Close</span>
+                  <span className="sm:hidden">✕</span>
+                </button>
               </div>
             </div>
           </div>
