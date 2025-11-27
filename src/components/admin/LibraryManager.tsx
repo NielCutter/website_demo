@@ -7,7 +7,7 @@ type ItemStatus = "active" | "archived";
 type DisplayOption = "hot" | "new" | "featured" | null;
 
 export interface ProductVariant {
-  size?: string;
+  sizes?: string[]; // Array of available sizes
   color?: string;
   shirtType?: string;
   neckType?: string;
@@ -105,7 +105,7 @@ const initialForm = {
   status: "active" as ItemStatus,
   displayOption: null as DisplayOption,
   variants: {
-    size: "",
+    sizes: [] as string[],
     color: "",
     shirtType: "",
     neckType: "",
@@ -146,6 +146,21 @@ export function LibraryManager() {
   const [showFilters, setShowFilters] = useState(false);
   const [designThemes, setDesignThemes] = useState<string[]>(defaultDesignThemes);
   const [newDesignTheme, setNewDesignTheme] = useState("");
+  const [draggedSizeIndex, setDraggedSizeIndex] = useState<number | null>(null);
+  const [dragOverSizeIndex, setDragOverSizeIndex] = useState<number | null>(null);
+  
+  // Reorder sizes
+  const reorderSizes = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    const currentSizes = formState.variants.sizes || [];
+    const newSizes = [...currentSizes];
+    const [moved] = newSizes.splice(fromIndex, 1);
+    newSizes.splice(toIndex, 0, moved);
+    setFormState((prev) => ({
+      ...prev,
+      variants: { ...prev.variants, sizes: newSizes },
+    }));
+  };
 
   const resetForm = () => {
     setFormState(initialForm);
@@ -306,7 +321,7 @@ export function LibraryManager() {
       status: item.status ?? "active",
       displayOption: item.displayOption ?? null,
       variants: item.variants || {
-        size: "",
+        sizes: [],
         color: "",
         shirtType: "",
         neckType: "",
@@ -784,26 +799,111 @@ export function LibraryManager() {
           <div className="border-t border-white/10 pt-4 mt-4">
             <h4 className="text-sm font-semibold text-gray-300 mb-4">Product Variants</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Size */}
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Size</label>
-                <select
-                  className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
-                  value={formState.variants.size || ""}
-                  onChange={(e) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      variants: { ...prev.variants, size: e.target.value },
-                    }))
-                  }
-                >
-                  <option value="">Select size</option>
-                  {sizes.map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
+              {/* Sizes Available - Multi-select with drag and drop */}
+              <div className="md:col-span-2">
+                <label className="block text-sm text-gray-400 mb-2">Sizes Available</label>
+                <div className="space-y-3">
+                  {/* Size selector */}
+                  <select
+                    className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                    value=""
+                    onChange={(e) => {
+                      const selectedSize = e.target.value;
+                      if (selectedSize) {
+                        const currentSizes = formState.variants.sizes || [];
+                        if (!currentSizes.includes(selectedSize)) {
+                          setFormState((prev) => ({
+                            ...prev,
+                            variants: {
+                              ...prev.variants,
+                              sizes: [...currentSizes, selectedSize],
+                            },
+                          }));
+                        }
+                        e.target.value = "";
+                      }
+                    }}
+                  >
+                    <option value="">Add a size...</option>
+                    {sizes
+                      .filter((size) => !(formState.variants.sizes || []).includes(size))
+                      .map((size) => (
+                        <option key={size} value={size}>
+                          {size}
+                        </option>
+                      ))}
+                  </select>
+                  
+                  {/* Draggable size list */}
+                  {(formState.variants.sizes || []).length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-gray-500">Drag to reorder (first is primary)</p>
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {(formState.variants.sizes || []).map((size, index) => (
+                          <div
+                            key={`${size}-${index}`}
+                            draggable
+                            onDragStart={(e) => {
+                              setDraggedSizeIndex(index);
+                              e.dataTransfer.effectAllowed = 'move';
+                            }}
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              e.dataTransfer.dropEffect = 'move';
+                              setDragOverSizeIndex(index);
+                            }}
+                            onDragLeave={() => {
+                              setDragOverSizeIndex(null);
+                            }}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              if (draggedSizeIndex !== null && draggedSizeIndex !== index) {
+                                reorderSizes(draggedSizeIndex, index);
+                              }
+                              setDraggedSizeIndex(null);
+                              setDragOverSizeIndex(null);
+                            }}
+                            onDragEnd={() => {
+                              setDraggedSizeIndex(null);
+                              setDragOverSizeIndex(null);
+                            }}
+                            className={`flex items-center gap-2 p-2 rounded-lg border transition-all cursor-move ${
+                              draggedSizeIndex === index
+                                ? 'opacity-50 bg-white/10 border-[#00FFE5]'
+                                : dragOverSizeIndex === index
+                                ? 'bg-white/10 border-[#00FFE5] scale-105'
+                                : 'bg-black/20 border-white/10 hover:bg-black/30'
+                            }`}
+                          >
+                            <GripVertical className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                            {index === 0 && (
+                              <span className="text-xs px-2 py-0.5 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
+                                Primary
+                              </span>
+                            )}
+                            <span className="flex-1 text-sm text-white font-medium">{size}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const currentSizes = formState.variants.sizes || [];
+                                setFormState((prev) => ({
+                                  ...prev,
+                                  variants: {
+                                    ...prev.variants,
+                                    sizes: currentSizes.filter((_, i) => i !== index),
+                                  },
+                                }));
+                              }}
+                              className="p-1 rounded hover:bg-red-500/20 text-red-400 transition-colors"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Color */}

@@ -155,9 +155,11 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
           {/* Variants Display */}
           {item.variants && (
             <div className="flex flex-wrap gap-2 text-xs">
-              {item.variants.size && (
+              {item.variants.sizes && item.variants.sizes.length > 0 && (
                 <span className="px-2 py-1 rounded bg-white/10 text-gray-300">
-                  {item.variants.size}
+                  {item.variants.sizes.length === 1 
+                    ? item.variants.sizes[0]
+                    : `${item.variants.sizes[0]} +${item.variants.sizes.length - 1}`}
                 </span>
               )}
               {item.variants.color && (
@@ -238,9 +240,23 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
               <div className="space-y-2">
                 <h5 className="text-sm font-semibold text-gray-300">Variants</h5>
                 <div className="grid grid-cols-2 gap-2 text-sm">
-                  {item.variants.size && (
-                    <div>
-                      <span className="text-gray-400">Size:</span> <span className="text-white">{item.variants.size}</span>
+                  {item.variants.sizes && item.variants.sizes.length > 0 && (
+                    <div className="col-span-2">
+                      <span className="text-gray-400">Sizes Available:</span>{" "}
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {item.variants.sizes.map((size, idx) => (
+                          <span
+                            key={size}
+                            className={`px-2 py-1 rounded text-xs ${
+                              idx === 0
+                                ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold"
+                                : "bg-white/10 text-gray-300"
+                            }`}
+                          >
+                            {size}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   )}
                   {item.variants.color && (
