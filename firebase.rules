@@ -19,9 +19,14 @@ service cloud.firestore {
           request.resource.data.votes is int &&
           request.resource.data.votes >= 0 &&
           (
+            // Allow if votes field doesn't exist in current document (new item)
             !('votes' in resource.data) ||
+            // Allow increment by 1
             (request.resource.data.votes == resource.data.votes + 1) ||
-            (request.resource.data.votes == resource.data.votes - 1)
+            // Allow decrement by 1 (including going from 1 to 0)
+            (request.resource.data.votes == resource.data.votes - 1) ||
+            // Allow if current votes is null/undefined and new is 0 or 1
+            (resource.data.votes == null && request.resource.data.votes <= 1)
           )
         );
     }
