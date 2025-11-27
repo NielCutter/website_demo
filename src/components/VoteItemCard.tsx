@@ -122,161 +122,134 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
   return (
     <>
       <article 
-        className={`group rounded-2xl sm:rounded-3xl border bg-black/30 backdrop-blur-sm overflow-hidden flex flex-col relative transition-all duration-300 h-full ${
+        className={`group rounded-2xl sm:rounded-3xl overflow-hidden relative transition-all duration-300 h-full ${
           isHot 
-            ? "border-[#FF00B3]/60 animate-hot-glow hover:border-[#FF00B3] shadow-lg shadow-[#FF00B3]/20"
-            : "border-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(0,255,229,0.2)]"
+            ? "border-2 border-[#FF00B3]/60 animate-hot-glow shadow-lg shadow-[#FF00B3]/20"
+            : "border border-white/10 hover:border-white/30 hover:shadow-[0_0_30px_rgba(0,255,229,0.15)]"
         }`}
         style={isHot ? {
           animation: 'hot-glow 2s ease-in-out infinite'
         } : {}}
       >
+        {/* Display Badge */}
         {item.displayOption && (
-          <div className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10">
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-bold shadow-lg">
+          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-bold shadow-lg backdrop-blur-sm">
               {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
             </span>
           </div>
         )}
-        <div className="relative overflow-hidden">
+
+        {/* Large Image Container */}
+        <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden bg-black/20">
           <ImageCarousel images={images} alt={item.title} />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-        </div>
-        <div className="p-4 sm:p-5 space-y-3 sm:space-y-4 flex-1 flex flex-col">
-          <div>
-            <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-gray-500 mb-1 sm:mb-2">
-              {item.category}
-            </p>
-            <h3 className="text-lg sm:text-xl md:text-2xl font-semibold leading-tight">{item.title}</h3>
-          </div>
-          {item.description && (() => {
-            // Filter out shopee links from description
-            let cleanDescription = item.description;
-            if (item.shopeeLink) {
-              cleanDescription = cleanDescription.replace(item.shopeeLink, '').trim();
-            }
-            // Remove any shopee.ph URLs (with or without protocol)
-            cleanDescription = cleanDescription.replace(/https?:\/\/shopee\.ph[^\s]*/gi, '').trim();
-            cleanDescription = cleanDescription.replace(/shopee\.ph[^\s]*/gi, '').trim();
-            // Remove any URLs that contain shopee
-            cleanDescription = cleanDescription.replace(/https?:\/\/[^\s]*shopee[^\s]*/gi, '').trim();
-            
-            return cleanDescription ? (
-              <p className="text-xs sm:text-sm text-gray-400 line-clamp-2 sm:line-clamp-3 leading-relaxed">
-                {cleanDescription}
-              </p>
-            ) : null;
-          })()}
           
-          {/* Variants Display */}
-          {item.variants && (
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              {item.variants.sizes && item.variants.sizes.length > 0 && (
-                <span className="text-[10px] sm:text-xs px-2 py-0.5 sm:py-1 rounded bg-white/10 text-gray-300 font-medium">
-                  {item.variants.sizes.length === 1 
-                    ? item.variants.sizes[0]
-                    : `${item.variants.sizes[0]} +${item.variants.sizes.length - 1}`}
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          {/* Content Overlay - Bottom */}
+          <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 z-10">
+            {/* Title and Category */}
+            <div className="mb-3 sm:mb-4">
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/70 mb-1 sm:mb-2 font-medium">
+                {item.category}
+              </p>
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-lg">
+                {item.title}
+              </h3>
+            </div>
+
+            {/* Heart Count and View Details - Overlay on Image */}
+            <div className="flex items-center gap-3 sm:gap-4">
+              {/* Heart Count */}
+              <div className="flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20">
+                <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-white/80"}`} />
+                <span className="text-sm sm:text-base font-bold text-white">
+                  {localVotes}
                 </span>
+              </div>
+
+              {/* View Details Button */}
+              <button
+                onClick={() => setDetailOpen(true)}
+                className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full bg-white/90 backdrop-blur-md text-black font-semibold text-sm sm:text-base hover:bg-white hover:scale-105 transition-all shadow-lg"
+              >
+                <span>View Details</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Hover Overlay - Heart Button */}
+          <div className="absolute top-4 sm:top-5 left-4 sm:left-5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button
+              onClick={handleVote}
+              disabled={submitting || item.status === "archived"}
+              className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-full backdrop-blur-md border transition-all ${
+                hasVoted
+                  ? "bg-white/20 border-white/30 text-white"
+                  : "bg-black/60 border-white/20 text-white hover:bg-black/80"
+              } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              <Heart
+                className={`w-4 h-4 sm:w-5 sm:h-5 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-white"}`}
+              />
+              <span className="text-xs sm:text-sm font-semibold">
+                {submitting
+                  ? hasVoted
+                    ? "Unhearting..."
+                    : "Hearts..."
+                  : hasVoted
+                  ? "Unheart"
+                  : "Heart"}
+              </span>
+            </button>
+          </div>
+
+          {/* Shopee Link - Top Right on Hover */}
+          {item.shopeeLink && item.shopeeLink.trim() && (
+            <div className="absolute top-4 sm:top-5 right-4 sm:right-5 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <a
+                href={item.shopeeLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-full bg-[#EE4D2D] text-white font-semibold text-xs sm:text-sm hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg backdrop-blur-sm"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <svg
+                  className="w-4 h-4 sm:w-5 sm:h-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                <span className="hidden sm:inline">Shopee</span>
+                <span className="sm:hidden">Shop</span>
+              </a>
+            </div>
+          )}
+        </div>
+
+        {/* Optional Info Bar - Minimal */}
+        {(item.price !== undefined || (item.variants && (item.variants.sizes?.length || item.variants.designTheme))) && (
+          <div className="p-3 sm:p-4 bg-black/40 backdrop-blur-sm border-t border-white/10">
+            <div className="flex items-center justify-between gap-3">
+              {item.price !== undefined && (
+                <div className="text-sm sm:text-base font-bold text-white">
+                  ${item.price.toFixed(2)}
+                </div>
               )}
-              {item.variants.color && (
-                <span className="text-[10px] sm:text-xs px-2 py-0.5 sm:py-1 rounded bg-white/10 text-gray-300 font-medium">
-                  {item.variants.color}
-                </span>
-              )}
-              {item.variants.fit && (
-                <span className="text-[10px] sm:text-xs px-2 py-0.5 sm:py-1 rounded bg-white/10 text-gray-300 font-medium">
-                  {item.variants.fit}
-                </span>
-              )}
-              {item.variants.designTheme && (
-                <span className="text-[10px] sm:text-xs px-2 py-0.5 sm:py-1 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
+              {item.variants?.designTheme && (
+                <span className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
                   {item.variants.designTheme}
                 </span>
               )}
             </div>
-          )}
-          
-          {item.price !== undefined && (
-            <div className="flex items-baseline gap-1">
-              <span className="text-xs sm:text-sm text-gray-500">Price:</span>
-              <span className="text-base sm:text-lg font-bold text-white">
-                ${item.price.toFixed(2)}
-              </span>
-            </div>
-          )}
-          <div className="mt-auto space-y-2 sm:space-y-3 pt-2 border-t border-white/5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-gray-400"}`} />
-                <span className="text-xs sm:text-sm text-gray-400">
-                  <span className="text-white font-semibold">{localVotes}</span> hearts
-                </span>
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              {/* Heart Button */}
-              <button
-                onClick={handleVote}
-                disabled={submitting || item.status === "archived"}
-                className={`flex items-center justify-center gap-1 rounded-full px-2 sm:px-3 py-2 text-xs font-semibold transition-all ${
-                  hasVoted
-                    ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
-                    : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] hover:opacity-90 hover:scale-105"
-                } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                <Heart
-                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${hasVoted ? "fill-current" : ""}`}
-                />
-                <span className="hidden sm:inline text-[10px]">
-                  {submitting
-                    ? hasVoted
-                      ? "..."
-                      : "..."
-                    : hasVoted
-                    ? "❤️"
-                    : "🤍"}
-                </span>
-                <span className="sm:hidden">
-                  {submitting ? "..." : hasVoted ? "❤️" : "🤍"}
-                </span>
-              </button>
-              
-              {/* Shopee Button - Always reserve space */}
-              {item.shopeeLink && item.shopeeLink.trim() ? (
-                <a
-                  href={item.shopeeLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1 rounded-full px-2 sm:px-3 py-2 text-xs font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg shadow-[#EE4D2D]/20"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <svg
-                    className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-                  </svg>
-                  <span className="hidden sm:inline text-[10px]">Shop</span>
-                </a>
-              ) : (
-                <div className="flex items-center justify-center rounded-full px-2 sm:px-3 py-2 bg-black/20 border border-white/5 opacity-30">
-                  <span className="text-[8px] sm:text-[10px] text-gray-500">-</span>
-                </div>
-              )}
-              
-              {/* Details Button */}
-              <button
-                onClick={() => setDetailOpen(true)}
-                className="flex items-center justify-center rounded-full px-2 sm:px-3 py-2 text-xs border border-white/20 hover:bg-white/10 transition-all hover:border-white/30"
-              >
-                <span className="hidden sm:inline text-[10px]">View</span>
-                <span className="sm:hidden text-[10px]">👁</span>
-              </button>
-            </div>
           </div>
-        </div>
+        )}
       </article>
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
