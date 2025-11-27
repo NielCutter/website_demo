@@ -226,7 +226,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                   {submitting ? "..." : hasVoted ? "❤️" : "🤍"}
                 </span>
               </button>
-              {item.shopeeLink && (
+              {item.shopeeLink && item.shopeeLink.trim() && (
                 <a
                   href={item.shopeeLink}
                   target="_blank"
@@ -410,7 +410,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                       ? "Unheart"
                       : "Heart"}
                   </button>
-                  {item.shopeeLink && (
+                  {item.shopeeLink && item.shopeeLink.trim() && (
                     <a
                       href={item.shopeeLink}
                       target="_blank"
