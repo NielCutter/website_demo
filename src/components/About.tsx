@@ -1,22 +1,22 @@
 import { motion } from "motion/react";
-import { Sparkles, Zap, TrendingUp } from "lucide-react";
+import { Award, Palette, Users } from "lucide-react";
 
 export function About() {
   const features = [
     {
-      icon: Sparkles,
-      title: "Premium Quality",
-      description: "Crafted with the finest materials for ultimate comfort and durability"
+      icon: Award,
+      title: "Premium Craftsmanship",
+      description: "Made in small batches with attention to detail — quality printing, durable materials, and designs built to last."
     },
     {
-      icon: Zap,
-      title: "Bold Designs",
-      description: "Cutting-edge graphics that make a statement and turn heads"
+      icon: Palette,
+      title: "Original Designs",
+      description: "Every artwork is created in-house. No templates, no shortcuts — just pure creativity inspired by culture and daily life."
     },
     {
-      icon: TrendingUp,
-      title: "Culture Forward",
-      description: "Setting trends, not following them. Be part of the new wave"
+      icon: Users,
+      title: "Community Driven",
+      description: "We listen to our supporters. Every release, poll, and drop is shaped by the people who wear our pieces."
     }
   ];
 
@@ -92,16 +92,16 @@ export function About() {
           className="grid grid-cols-2 md:grid-cols-4 gap-8 p-8 rounded-2xl bg-gradient-to-r from-[#2A2A3E]/80 to-[#1D1D2C]/80 backdrop-blur-sm border border-white/10"
         >
           {[
-            { value: "10K+", label: "Happy Customers" },
-            { value: "250+", label: "Unique Designs" },
-            { value: "50+", label: "Countries" },
-            { value: "100%", label: "Satisfaction" }
+            { value: "1K+", label: "Supporters and Customers Reached" },
+            { value: "100+", label: "Original Designs Created" },
+            { value: "Local Brand", label: "Proudly Designed & Printed in the Philippines" },
+            { value: "5-Star Feedback", label: "From real customers who love our quality" }
           ].map((stat, index) => (
             <div key={index} className="text-center">
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent mb-2">
+              <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent mb-2">
                 {stat.value}
               </div>
-              <div className="text-gray-400 text-sm">{stat.label}</div>
+              <div className="text-gray-400 text-xs md:text-sm leading-relaxed">{stat.label}</div>
             </div>
           ))}
         </motion.div>
