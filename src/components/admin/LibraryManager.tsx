@@ -6,6 +6,17 @@ import { ImageCarousel } from "../ImageCarousel";
 type ItemStatus = "active" | "archived";
 type DisplayOption = "hot" | "new" | "featured" | null;
 
+export interface ProductVariant {
+  size?: string;
+  color?: string;
+  shirtType?: string;
+  neckType?: string;
+  fit?: string;
+  material?: string;
+  printType?: string;
+  designTheme?: string;
+}
+
 export interface LibraryItem {
   id: string;
   title: string;
@@ -17,6 +28,7 @@ export interface LibraryItem {
   votes: number;
   status?: ItemStatus;
   displayOption?: DisplayOption;
+  variants?: ProductVariant; // Product variants
 }
 
 // Convert image file to base64 with compression
@@ -72,6 +84,16 @@ const displayOptions: { value: DisplayOption; label: string }[] = [
   { value: "featured", label: "Featured" },
 ];
 
+// Variant options
+const sizes = ["XS", "S", "M", "L", "XL", "2XL", "3XL"];
+const colors = ["Black", "White", "Off-White / Cream", "Gray", "Navy", "Brown", "Sand / Beige", "Olive", "Maroon"];
+const shirtTypes = ["Regular Tee", "Oversized Tee", "Heavyweight Tee", "Long Sleeve Tee", "Hoodie", "Sweatshirt", "Tank Top", "Headwear (Cap / Beanie)", "Jacket", "Pants / Shorts"];
+const neckTypes = ["Crew Neck", "Round Neck", "V-Neck", "High Neck"];
+const fits = ["Oversized", "Regular Fit", "Boxy Fit", "Slim Fit"];
+const materials = ["Cotton", "Heavy Cotton", "Poly-Cotton Blend", "Fleece"];
+const printTypes = ["DTF", "Silkscreen", "Embroidery", "Vinyl"];
+const defaultDesignThemes = ["Street Culture", "Abstract", "Minimalist", "Graphic", "Monkirabu", "Limited Edition"];
+
 const initialForm = {
   title: "",
   category: categories[0] ?? "Headwear",
@@ -82,6 +104,16 @@ const initialForm = {
   votes: 0,
   status: "active" as ItemStatus,
   displayOption: null as DisplayOption,
+  variants: {
+    size: "",
+    color: "",
+    shirtType: "",
+    neckType: "",
+    fit: "",
+    material: "",
+    printType: "",
+    designTheme: "",
+  } as ProductVariant,
 };
 
 const ITEMS_PER_PAGE = 20;
@@ -112,6 +144,8 @@ export function LibraryManager() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+  const [designThemes, setDesignThemes] = useState<string[]>(defaultDesignThemes);
+  const [newDesignTheme, setNewDesignTheme] = useState("");
 
   const resetForm = () => {
     setFormState(initialForm);
@@ -226,6 +260,21 @@ export function LibraryManager() {
       if (formState.displayOption) {
         payload.displayOption = formState.displayOption;
       }
+      
+      // Include variants if any are set
+      const hasVariants = formState.variants && Object.values(formState.variants).some(v => v && v.trim());
+      if (hasVariants) {
+        // Remove empty variant fields
+        const cleanedVariants: ProductVariant = {};
+        Object.entries(formState.variants).forEach(([key, value]) => {
+          if (value && value.trim()) {
+            cleanedVariants[key as keyof ProductVariant] = value;
+          }
+        });
+        if (Object.keys(cleanedVariants).length > 0) {
+          payload.variants = cleanedVariants;
+        }
+      }
 
       if (editingId) {
         await updateDocument(editingId, payload);
@@ -256,6 +305,16 @@ export function LibraryManager() {
       votes: item.votes ?? 0,
       status: item.status ?? "active",
       displayOption: item.displayOption ?? null,
+      variants: item.variants || {
+        size: "",
+        color: "",
+        shirtType: "",
+        neckType: "",
+        fit: "",
+        material: "",
+        printType: "",
+        designTheme: "",
+      },
     });
     setFiles([]);
   };
@@ -720,6 +779,221 @@ export function LibraryManager() {
               </div>
             </div>
           )}
+          
+          {/* Product Variants Section */}
+          <div className="border-t border-white/10 pt-4 mt-4">
+            <h4 className="text-sm font-semibold text-gray-300 mb-4">Product Variants</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Size */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Size</label>
+                <select
+                  className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                  value={formState.variants.size || ""}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      variants: { ...prev.variants, size: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select size</option>
+                  {sizes.map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Color */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Color</label>
+                <select
+                  className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                  value={formState.variants.color || ""}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      variants: { ...prev.variants, color: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select color</option>
+                  {colors.map((color) => (
+                    <option key={color} value={color}>
+                      {color}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Shirt Type */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Shirt Type</label>
+                <select
+                  className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                  value={formState.variants.shirtType || ""}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      variants: { ...prev.variants, shirtType: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select type</option>
+                  {shirtTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Neck Type */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Neck Type</label>
+                <select
+                  className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                  value={formState.variants.neckType || ""}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      variants: { ...prev.variants, neckType: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select neck type</option>
+                  {neckTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Fit */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Fit</label>
+                <select
+                  className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                  value={formState.variants.fit || ""}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      variants: { ...prev.variants, fit: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select fit</option>
+                  {fits.map((fit) => (
+                    <option key={fit} value={fit}>
+                      {fit}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Material */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Material (optional)</label>
+                <select
+                  className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                  value={formState.variants.material || ""}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      variants: { ...prev.variants, material: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select material</option>
+                  {materials.map((material) => (
+                    <option key={material} value={material}>
+                      {material}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Print Type (Admin only) */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Print Type (admin only)</label>
+                <select
+                  className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                  value={formState.variants.printType || ""}
+                  onChange={(e) =>
+                    setFormState((prev) => ({
+                      ...prev,
+                      variants: { ...prev.variants, printType: e.target.value },
+                    }))
+                  }
+                >
+                  <option value="">Select print type</option>
+                  {printTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Design Theme (Collections) */}
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Design Theme / Collection</label>
+                <div className="space-y-2">
+                  <select
+                    className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
+                    value={formState.variants.designTheme || ""}
+                    onChange={(e) =>
+                      setFormState((prev) => ({
+                        ...prev,
+                        variants: { ...prev.variants, designTheme: e.target.value },
+                      }))
+                    }
+                  >
+                    <option value="">Select theme</option>
+                    {designThemes.map((theme) => (
+                      <option key={theme} value={theme}>
+                        {theme}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Add new theme..."
+                      value={newDesignTheme}
+                      onChange={(e) => setNewDesignTheme(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && newDesignTheme.trim()) {
+                          e.preventDefault();
+                          if (!designThemes.includes(newDesignTheme.trim())) {
+                            setDesignThemes([...designThemes, newDesignTheme.trim()]);
+                          }
+                          setNewDesignTheme("");
+                        }
+                      }}
+                      className="flex-1 rounded-xl bg-black/40 border border-white/10 px-3 py-2 text-white text-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (newDesignTheme.trim() && !designThemes.includes(newDesignTheme.trim())) {
+                          setDesignThemes([...designThemes, newDesignTheme.trim()]);
+                          setNewDesignTheme("");
+                        }
+                      }}
+                      className="px-3 py-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 transition-colors text-sm"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm text-gray-400 mb-2">Display Badge</label>
             <select

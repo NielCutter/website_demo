@@ -151,6 +151,33 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
               {item.description}
             </p>
           )}
+          
+          {/* Variants Display */}
+          {item.variants && (
+            <div className="flex flex-wrap gap-2 text-xs">
+              {item.variants.size && (
+                <span className="px-2 py-1 rounded bg-white/10 text-gray-300">
+                  {item.variants.size}
+                </span>
+              )}
+              {item.variants.color && (
+                <span className="px-2 py-1 rounded bg-white/10 text-gray-300">
+                  {item.variants.color}
+                </span>
+              )}
+              {item.variants.fit && (
+                <span className="px-2 py-1 rounded bg-white/10 text-gray-300">
+                  {item.variants.fit}
+                </span>
+              )}
+              {item.variants.designTheme && (
+                <span className="px-2 py-1 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
+                  {item.variants.designTheme}
+                </span>
+              )}
+            </div>
+          )}
+          
           {item.price !== undefined && (
             <p className="text-sm text-gray-400">
               ${item.price.toFixed(2)}
@@ -205,6 +232,54 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
             {item.description && (
               <p className="text-gray-300 leading-relaxed">{item.description}</p>
             )}
+            
+            {/* Variants in Detail View */}
+            {item.variants && (
+              <div className="space-y-2">
+                <h5 className="text-sm font-semibold text-gray-300">Variants</h5>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {item.variants.size && (
+                    <div>
+                      <span className="text-gray-400">Size:</span> <span className="text-white">{item.variants.size}</span>
+                    </div>
+                  )}
+                  {item.variants.color && (
+                    <div>
+                      <span className="text-gray-400">Color:</span> <span className="text-white">{item.variants.color}</span>
+                    </div>
+                  )}
+                  {item.variants.shirtType && (
+                    <div>
+                      <span className="text-gray-400">Type:</span> <span className="text-white">{item.variants.shirtType}</span>
+                    </div>
+                  )}
+                  {item.variants.neckType && (
+                    <div>
+                      <span className="text-gray-400">Neck:</span> <span className="text-white">{item.variants.neckType}</span>
+                    </div>
+                  )}
+                  {item.variants.fit && (
+                    <div>
+                      <span className="text-gray-400">Fit:</span> <span className="text-white">{item.variants.fit}</span>
+                    </div>
+                  )}
+                  {item.variants.material && (
+                    <div>
+                      <span className="text-gray-400">Material:</span> <span className="text-white">{item.variants.material}</span>
+                    </div>
+                  )}
+                  {item.variants.designTheme && (
+                    <div className="col-span-2">
+                      <span className="text-gray-400">Collection:</span>{" "}
+                      <span className="px-2 py-1 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold text-xs">
+                        {item.variants.designTheme}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
             <div className="flex items-center justify-between text-sm text-gray-400">
               {item.price !== undefined && (
                 <span>Price: ${item.price.toFixed(2)}</span>
