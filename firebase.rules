@@ -11,10 +11,11 @@ service cloud.firestore {
     match /items/{itemId} {
       allow read: if true;
       allow create, delete: if isAdmin();
+      // Allow anonymous vote updates (increment votes by 1, handles null/undefined)
       allow update: if isAdmin() ||
         (
           request.resource.data.keys().hasOnly(['votes', 'updatedAt']) &&
-          request.resource.data.votes == resource.data.votes + 1
+          request.resource.data.votes == ((resource.data.votes != null ? resource.data.votes : 0) + 1)
         );
     }
 
