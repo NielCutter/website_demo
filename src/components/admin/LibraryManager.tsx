@@ -269,7 +269,25 @@ export function LibraryManager() {
       
       // Only include optional fields if they have values
       if (formState.description?.trim()) {
-        payload.description = formState.description.trim();
+        let cleanDescription = formState.description.trim();
+        
+        // Remove shopee links from description before saving
+        if (formState.shopeeLink && formState.shopeeLink.trim()) {
+          const shopeeLinkEscaped = formState.shopeeLink.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          cleanDescription = cleanDescription.replace(new RegExp(shopeeLinkEscaped, 'gi'), '').trim();
+        }
+        
+        // Remove any shopee.ph URLs
+        cleanDescription = cleanDescription.replace(/https?:\/\/shopee\.ph[^\s]*/gi, '').trim();
+        cleanDescription = cleanDescription.replace(/shopee\.ph[^\s]*/gi, '').trim();
+        cleanDescription = cleanDescription.replace(/https?:\/\/[^\s]*shopee[^\s]*/gi, '').trim();
+        
+        // Clean up multiple spaces
+        cleanDescription = cleanDescription.replace(/\s+/g, ' ').trim();
+        
+        if (cleanDescription) {
+          payload.description = cleanDescription;
+        }
       }
       if (formState.price && formState.price.trim()) {
         payload.price = Number(formState.price);
