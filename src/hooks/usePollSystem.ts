@@ -13,7 +13,8 @@ import {
   deleteDoc,
   getDoc,
 } from 'firebase/firestore';
-import { auth, db, ensureAnonymousUser } from '../firebase/config';
+import { db } from '../firebase/config';
+import { getUserIP } from '../utils/getUserIP';
 
 export interface PollOption {
   id: string;
@@ -60,12 +61,14 @@ export function usePollSystem() {
 
   useEffect(() => {
     const checkUserVote = async () => {
-      await ensureAnonymousUser();
-      const user = auth.currentUser;
-      if (!user) return;
-      const voteDocRef = doc(db, 'pollVotes', `${POLL_DOC_ID}_${user.uid}`);
-      const voteSnap = await getDoc(voteDocRef);
-      setUserVote(voteSnap.exists() ? (voteSnap.data()?.option as string) : null);
+      try {
+        const ip = await getUserIP();
+        const voteDocRef = doc(db, 'pollVotes', `${POLL_DOC_ID}_${ip}`);
+        const voteSnap = await getDoc(voteDocRef);
+        setUserVote(voteSnap.exists() ? (voteSnap.data()?.option as string) : null);
+      } catch (error) {
+        console.error("Error checking poll vote:", error);
+      }
     };
 
     checkUserVote();
@@ -100,11 +103,8 @@ export function usePollSystem() {
       throw new Error('Poll is not active');
     }
 
-    await ensureAnonymousUser();
-    const user = auth.currentUser;
-    if (!user) throw new Error('Unable to determine user');
-
-    const voteRef = doc(db, 'pollVotes', `${POLL_DOC_ID}_${user.uid}`);
+    const ip = await getUserIP();
+    const voteRef = doc(db, 'pollVotes', `${POLL_DOC_ID}_${ip}`);
 
     await runTransaction(db, async (transaction) => {
       const voteSnap = await transaction.get(voteRef);
@@ -115,7 +115,7 @@ export function usePollSystem() {
       transaction.set(voteRef, {
         option: optionId,
         pollId: POLL_DOC_ID,
-        userId: user.uid,
+        ipAddress: ip,
         votedAt: serverTimestamp(),
       });
     });

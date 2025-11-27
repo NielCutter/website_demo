@@ -5,7 +5,8 @@ import {
   runTransaction,
   serverTimestamp,
 } from "firebase/firestore";
-import { db, auth, ensureAnonymousUser } from "../firebase/config";
+import { db } from "../firebase/config";
+import { getUserIP } from "../utils/getUserIP";
 import type { LibraryItem } from "./admin/LibraryManager";
 import {
   Dialog,
@@ -31,13 +32,14 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
 
   useEffect(() => {
     const checkVote = async () => {
-      await ensureAnonymousUser();
-      const user = auth.currentUser;
-      if (!user) return;
-      const voteSnap = await getDoc(
-        doc(db, "itemVotes", `${item.id}_${user.uid}`)
-      );
-      setHasVoted(voteSnap.exists());
+      try {
+        const ip = await getUserIP();
+        const voteId = `${item.id}_${ip}`;
+        const voteSnap = await getDoc(doc(db, "itemVotes", voteId));
+        setHasVoted(voteSnap.exists());
+      } catch (error) {
+        console.error("Error checking vote:", error);
+      }
     };
     checkVote();
   }, [item.id]);
@@ -47,12 +49,10 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
 
     setSubmitting(true);
     try {
-      await ensureAnonymousUser();
-      const user = auth.currentUser;
-      if (!user) throw new Error("Unable to determine user");
-
+      const ip = await getUserIP();
       const itemRef = doc(db, "items", item.id);
-      const voteRef = doc(db, "itemVotes", `${item.id}_${user.uid}`);
+      const voteId = `${item.id}_${ip}`;
+      const voteRef = doc(db, "itemVotes", voteId);
 
       await runTransaction(db, async (transaction) => {
         const itemSnap = await transaction.get(itemRef);
@@ -71,7 +71,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
 
         transaction.set(voteRef, {
           itemId: item.id,
-          userId: user.uid,
+          ipAddress: ip,
           votedAt: serverTimestamp(),
         });
       });
