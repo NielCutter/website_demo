@@ -226,11 +226,31 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                   {submitting ? "..." : hasVoted ? "❤️" : "🤍"}
                 </span>
               </button>
+              {item.shopeeLink && (
+                <a
+                  href={item.shopeeLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg shadow-[#EE4D2D]/20"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <svg
+                    className="w-3.5 h-3.5 sm:w-4 sm:h-4"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                  </svg>
+                  <span className="hidden sm:inline">Shopee</span>
+                  <span className="sm:hidden">Shop</span>
+                </a>
+              )}
               <button
                 onClick={() => setDetailOpen(true)}
-                className="flex-1 rounded-full border border-white/20 text-xs sm:text-sm py-2 hover:bg-white/10 transition-all hover:border-white/30"
+                className={`${item.shopeeLink ? "flex-1" : "flex-1"} rounded-full border border-white/20 text-xs sm:text-sm py-2 hover:bg-white/10 transition-all hover:border-white/30`}
               >
-                View Details
+                {item.shopeeLink ? "Details" : "View Details"}
               </button>
             </div>
           </div>
@@ -395,7 +415,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                       href={item.shopeeLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all"
+                      className="flex items-center justify-center gap-2 rounded-full px-6 py-3 font-semibold bg-[#EE4D2D] text-white hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg shadow-[#EE4D2D]/20"
                     >
                       <svg
                         className="w-5 h-5"
