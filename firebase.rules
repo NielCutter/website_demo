@@ -24,12 +24,12 @@ service cloud.firestore {
     }
 
     match /itemVotes/{voteId} {
-      // Allow anyone to read and create votes (IP-based, no auth required)
+      // Allow anyone to read and create/update votes (IP-based, no auth required)
       // Note: Duplicate prevention is handled by transaction logic in the app
+      // Transactions may use 'set' which can be treated as update
       allow read: if true;
-      allow create: if true;
+      allow create, update: if true;
       allow delete: if isAdmin();
-      allow update: if false;
     }
 
     match /polls/{pollId} {
@@ -38,12 +38,12 @@ service cloud.firestore {
     }
 
     match /pollVotes/{voteId} {
-      // Allow anyone to read and create poll votes (IP-based, no auth required)
+      // Allow anyone to read and create/update poll votes (IP-based, no auth required)
       // Note: Duplicate prevention is handled by transaction logic in the app
+      // Transactions may use 'set' which can be treated as update
       allow read: if true;
-      allow create: if true;
+      allow create, update: if true;
       allow delete: if isAdmin();
-      allow update: if false;
     }
 
     match /newsletter/{docId} {
