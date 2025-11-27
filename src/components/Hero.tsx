@@ -25,13 +25,30 @@ export function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated gradient background */}
+      {/* Animated gradient background with glow */}
       <div 
         className="absolute inset-0 opacity-60"
         style={{
           background: 'linear-gradient(135deg, #1D1D2C 0%, #2A2A3E 20%, #FF00B3 40%, #00FFE5 60%, #2A2A3E 80%, #1D1D2C 100%)',
           backgroundSize: '400% 400%',
-          animation: 'gradient-shift 15s ease infinite'
+          animation: 'gradient-shift 15s ease infinite',
+          boxShadow: 'inset 0 0 100px rgba(0, 255, 229, 0.1), inset 0 0 200px rgba(255, 0, 179, 0.1)'
+        }}
+      />
+      
+      {/* Glowing orbs */}
+      <div 
+        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-30 blur-3xl"
+        style={{
+          background: 'radial-gradient(circle, #00FFE5 0%, transparent 70%)',
+          animation: 'pulse 4s ease-in-out infinite'
+        }}
+      />
+      <div 
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full opacity-30 blur-3xl"
+        style={{
+          background: 'radial-gradient(circle, #FF00B3 0%, transparent 70%)',
+          animation: 'pulse 4s ease-in-out infinite 2s'
         }}
       />
       
