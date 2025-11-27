@@ -277,38 +277,42 @@ export function LibraryManager() {
       }
       
       // Include variants if any are set (all fields are optional)
-      if (formState.variants) {
-        const cleanedVariants: ProductVariant = {};
-        
-        try {
-          Object.entries(formState.variants).forEach(([key, value]) => {
+      // Completely skip variants if there's any issue to prevent errors
+      try {
+        if (formState.variants && typeof formState.variants === 'object') {
+          const cleanedVariants: ProductVariant = {};
+          
+          // Safely iterate over variant entries
+          const variantEntries = Object.entries(formState.variants || {});
+          
+          for (const [key, value] of variantEntries) {
             // Skip null, undefined, or empty values
-            if (value === null || value === undefined) return;
+            if (value === null || value === undefined) continue;
             
             if (key === 'sizes') {
-              // Handle sizes array
+              // Handle sizes array - must be an array
               if (Array.isArray(value) && value.length > 0) {
                 cleanedVariants.sizes = value;
               }
             } else {
-              // Handle string values - safely check and trim
-              if (typeof value === 'string') {
-                const trimmed = value.trim();
+              // Handle string values - must be a string before trimming
+              if (typeof value === 'string' && value.length > 0) {
+                const trimmed = String(value).trim();
                 if (trimmed.length > 0) {
                   cleanedVariants[key as keyof ProductVariant] = trimmed;
                 }
               }
             }
-          });
+          }
           
           // Only include variants if there's at least one non-empty field
           if (Object.keys(cleanedVariants).length > 0) {
             payload.variants = cleanedVariants;
           }
-        } catch (variantError) {
-          console.error("Error processing variants:", variantError);
-          // Continue without variants if there's an error
         }
+      } catch (variantError) {
+        console.error("Error processing variants:", variantError);
+        // Silently skip variants if there's any error - don't break the save
       }
 
       if (editingId) {
@@ -341,17 +345,35 @@ export function LibraryManager() {
       status: item.status ?? "active",
       displayOption: item.displayOption ?? null,
       variants: (() => {
-        // Handle backward compatibility: convert old 'size' to 'sizes' array
-        const existingVariants = item.variants || {};
-        if (existingVariants && 'size' in existingVariants && !('sizes' in existingVariants)) {
-          // Convert old single size to array
-          return {
-            ...existingVariants,
-            sizes: existingVariants.size ? [existingVariants.size] : [],
-            size: undefined,
-          };
+        try {
+          // Handle backward compatibility: convert old 'size' to 'sizes' array
+          const existingVariants = item.variants || {};
+          
+          // Safely check if variants is an object
+          if (existingVariants && typeof existingVariants === 'object') {
+            // Convert old single size to array if needed
+            if ('size' in existingVariants && !('sizes' in existingVariants)) {
+              const oldSize = existingVariants.size;
+              return {
+                ...existingVariants,
+                sizes: (typeof oldSize === 'string' && oldSize) ? [oldSize] : [],
+              };
+            }
+            
+            // Ensure sizes is an array
+            const safeVariants = { ...existingVariants };
+            if (safeVariants.sizes && !Array.isArray(safeVariants.sizes)) {
+              safeVariants.sizes = [];
+            }
+            
+            return safeVariants;
+          }
+        } catch (e) {
+          console.error("Error processing existing variants:", e);
         }
-        return existingVariants || {
+        
+        // Return default empty variants
+        return {
           sizes: [],
           color: "",
           shirtType: "",
