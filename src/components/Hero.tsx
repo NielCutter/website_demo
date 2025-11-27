@@ -92,11 +92,14 @@ export function Hero() {
             onClick={() => {
               const productsSection = document.getElementById('featured-products');
               if (productsSection) {
-                // Use scrollIntoView for reliable scrolling
-                const yOffset = -80; // Offset for fixed headers
-                const y = productsSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                // Calculate position accounting for any fixed headers
+                const headerOffset = 80;
+                const elementPosition = productsSection.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                // Scroll to the position
                 window.scrollTo({
-                  top: y,
+                  top: Math.max(0, offsetPosition), // Ensure we don't scroll to negative position
                   behavior: 'smooth'
                 });
               }
