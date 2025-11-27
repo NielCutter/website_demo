@@ -75,7 +75,13 @@ export function Hero() {
             onClick={() => {
               const productsSection = document.getElementById('featured-products');
               if (productsSection) {
-                productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                const offset = 80; // Offset for fixed headers if any
+                const elementPosition = productsSection.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                window.scrollTo({
+                  top: offsetPosition,
+                  behavior: 'smooth'
+                });
               }
             }}
             className="group relative px-12 py-4 rounded-full overflow-hidden transition-all duration-300 cursor-pointer"

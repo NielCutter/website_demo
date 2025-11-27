@@ -87,7 +87,14 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
 
   return (
     <>
-      <article className="rounded-3xl border border-white/10 bg-black/30 overflow-hidden flex flex-col">
+      <article className="rounded-3xl border border-white/10 bg-black/30 overflow-hidden flex flex-col relative">
+        {item.displayOption && (
+          <div className="absolute top-3 right-3 z-10">
+            <span className="text-xs uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-bold shadow-lg">
+              {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
+            </span>
+          </div>
+        )}
         <div className="aspect-[4/3] bg-black/20">
           <img
             src={item.imageUrl}

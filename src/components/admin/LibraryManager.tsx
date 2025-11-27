@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useFirestoreCollection } from "../../hooks/useFirestoreCollection";
 
 type ItemStatus = "active" | "archived";
+type DisplayOption = "hot" | "new" | "featured" | null;
 
 export interface LibraryItem {
   id: string;
@@ -12,6 +13,7 @@ export interface LibraryItem {
   imageUrl: string; // Can be base64 data URI or external URL
   votes: number;
   status?: ItemStatus;
+  displayOption?: DisplayOption;
 }
 
 // Convert image file to base64 with compression
@@ -58,17 +60,25 @@ const fileToBase64 = (file: File): Promise<string> => {
   });
 };
 
-const categories = ["Headwear", "Pants", "Jacket", "Hoodie", "Accessories"];
+const categories = ["Headwear", "Pants", "Jacket", "Hoodie", "Tshirt", "Oversized", "Accessories"];
 
-  const initialForm = {
-    title: "",
-    category: categories[0] ?? "Headwear",
-    description: "",
-    price: "",
-    imageUrl: "",
-    votes: 0,
-    status: "active" as ItemStatus,
-  };
+const displayOptions: { value: DisplayOption; label: string }[] = [
+  { value: null, label: "None" },
+  { value: "hot", label: "HOT" },
+  { value: "new", label: "NEW" },
+  { value: "featured", label: "Featured" },
+];
+
+const initialForm = {
+  title: "",
+  category: categories[0] ?? "Headwear",
+  description: "",
+  price: "",
+  imageUrl: "",
+  votes: 0,
+  status: "active" as ItemStatus,
+  displayOption: null as DisplayOption,
+};
 
 export function LibraryManager() {
   const {
@@ -94,11 +104,13 @@ export function LibraryManager() {
   };
 
   const uploadImageIfNeeded = async (): Promise<string> => {
+    // Image is required - either file upload or external URL
+    if (!file && !formState.imageUrl.trim()) {
+      throw new Error("Please select an image file or provide an external image URL.");
+    }
+    
     if (!file) {
-      if (!formState.imageUrl) {
-        throw new Error("Please select an image or provide an external URL.");
-      }
-      return formState.imageUrl;
+      return formState.imageUrl.trim();
     }
 
     // Check file size (max 2MB before compression)
@@ -120,18 +132,26 @@ export function LibraryManager() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    
+    // Validate required fields
+    if (!formState.title.trim()) {
+      alert("Please enter a title.");
+      return;
+    }
+    
     setUploading(true);
 
     try {
       const imageUrl = await uploadImageIfNeeded();
       const payload = {
-        title: formState.title,
+        title: formState.title.trim(),
         category: formState.category,
-        description: formState.description || undefined,
-        price: formState.price ? Number(formState.price) : undefined,
+        description: formState.description?.trim() || undefined,
+        price: formState.price && formState.price.trim() ? Number(formState.price) : undefined,
         imageUrl,
         votes: editingId ? formState.votes : 0,
         status: formState.status,
+        displayOption: formState.displayOption || undefined,
       };
 
       if (editingId) {
@@ -159,6 +179,7 @@ export function LibraryManager() {
       imageUrl: item.imageUrl,
       votes: item.votes ?? 0,
       status: item.status ?? "active",
+      displayOption: item.displayOption ?? null,
     });
     setFile(null);
   };
@@ -236,13 +257,29 @@ export function LibraryManager() {
           />
           <input
             type="url"
-            placeholder="External image URL"
+            placeholder="External image URL (required if no file)"
             className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
             value={formState.imageUrl}
             onChange={(event) =>
               setFormState((prev) => ({ ...prev, imageUrl: event.target.value }))
             }
           />
+          <select
+            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+            value={formState.displayOption ?? ""}
+            onChange={(event) =>
+              setFormState((prev) => ({
+                ...prev,
+                displayOption: event.target.value ? (event.target.value as DisplayOption) : null,
+              }))
+            }
+          >
+            {displayOptions.map((option) => (
+              <option key={option.value ?? "none"} value={option.value ?? ""}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           <select
             className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
             value={formState.status}
@@ -317,9 +354,16 @@ export function LibraryManager() {
                 <p className="text-sm text-gray-400">
                   Votes: {item.votes ?? 0}
                 </p>
-                <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                  {item.status === "archived" ? "Archived" : "Live"}
-                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {item.displayOption && (
+                    <span className="text-xs uppercase tracking-[0.2em] px-2 py-1 rounded bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
+                      {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
+                    </span>
+                  )}
+                  <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+                    {item.status === "archived" ? "Archived" : "Live"}
+                  </p>
+                </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(item)}
