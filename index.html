@@ -4,6 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Culture Trends</title>
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var redirect = params.get("redirect");
+        if (redirect) {
+          var decoded = decodeURIComponent(redirect);
+          if (decoded && decoded !== window.location.pathname + window.location.search) {
+            window.history.replaceState(null, null, "/" + decoded.replace(/^\//, ""));
+          }
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
