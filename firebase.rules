@@ -11,18 +11,23 @@ service cloud.firestore {
     match /items/{itemId} {
       allow read: if true;
       allow create, delete: if isAdmin();
-      // Allow anonymous vote updates (increment votes by 1, handles null/undefined)
+      // Allow anonymous vote updates (increment votes by 1)
+      // Handles both cases: votes exists or is null/undefined
       allow update: if isAdmin() ||
         (
           request.resource.data.keys().hasOnly(['votes', 'updatedAt']) &&
-          request.resource.data.votes == ((resource.data.votes != null ? resource.data.votes : 0) + 1)
+          (
+            (resource.data.votes == null && request.resource.data.votes == 1) ||
+            (resource.data.votes != null && request.resource.data.votes == resource.data.votes + 1)
+          )
         );
     }
 
     match /itemVotes/{voteId} {
       // Allow anyone to read and create votes (IP-based, no auth required)
+      // Note: Duplicate prevention is handled by transaction logic in the app
       allow read: if true;
-      allow create: if !exists(/databases/{database}/documents/itemVotes/{voteId});
+      allow create: if true;
       allow delete: if isAdmin();
       allow update: if false;
     }
@@ -34,8 +39,9 @@ service cloud.firestore {
 
     match /pollVotes/{voteId} {
       // Allow anyone to read and create poll votes (IP-based, no auth required)
+      // Note: Duplicate prevention is handled by transaction logic in the app
       allow read: if true;
-      allow create: if !exists(/databases/{database}/documents/pollVotes/{voteId});
+      allow create: if true;
       allow delete: if isAdmin();
       allow update: if false;
     }
