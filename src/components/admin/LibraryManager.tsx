@@ -278,24 +278,31 @@ export function LibraryManager() {
       
       // Include variants if any are set
       const hasVariants = formState.variants && Object.entries(formState.variants).some(([key, value]) => {
+        if (!value) return false;
         if (key === 'sizes') {
           return Array.isArray(value) && value.length > 0;
         }
-        return value && typeof value === 'string' && value.trim();
+        if (typeof value === 'string') {
+          return value.trim().length > 0;
+        }
+        return false;
       });
       if (hasVariants) {
         // Remove empty variant fields
         const cleanedVariants: ProductVariant = {};
         Object.entries(formState.variants).forEach(([key, value]) => {
+          if (!value) return;
+          
           if (key === 'sizes') {
             // Handle sizes array
             if (Array.isArray(value) && value.length > 0) {
               cleanedVariants.sizes = value;
             }
-          } else {
-            // Handle string values
-            if (value && typeof value === 'string' && value.trim()) {
-              cleanedVariants[key as keyof ProductVariant] = value;
+          } else if (typeof value === 'string') {
+            // Handle string values - safely check and trim
+            const trimmed = value.trim();
+            if (trimmed.length > 0) {
+              cleanedVariants[key as keyof ProductVariant] = trimmed;
             }
           }
         });
@@ -333,16 +340,28 @@ export function LibraryManager() {
       votes: item.votes ?? 0,
       status: item.status ?? "active",
       displayOption: item.displayOption ?? null,
-      variants: item.variants || {
-        sizes: [],
-        color: "",
-        shirtType: "",
-        neckType: "",
-        fit: "",
-        material: "",
-        printType: "",
-        designTheme: "",
-      },
+      variants: (() => {
+        // Handle backward compatibility: convert old 'size' to 'sizes' array
+        const existingVariants = item.variants || {};
+        if (existingVariants && 'size' in existingVariants && !('sizes' in existingVariants)) {
+          // Convert old single size to array
+          return {
+            ...existingVariants,
+            sizes: existingVariants.size ? [existingVariants.size] : [],
+            size: undefined,
+          };
+        }
+        return existingVariants || {
+          sizes: [],
+          color: "",
+          shirtType: "",
+          neckType: "",
+          fit: "",
+          material: "",
+          printType: "",
+          designTheme: "",
+        };
+      })(),
     });
     setFiles([]);
   };
