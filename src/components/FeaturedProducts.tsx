@@ -127,15 +127,18 @@ export function FeaturedProducts() {
     if (items.length === 0) return null;
 
     return (
-      <div id={id} className="space-y-6">
+      <div id={id} className="space-y-6 sm:space-y-8">
         <div className="text-center">
-          <h3 className="text-3xl md:text-4xl font-bold">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
             <span className={`bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
               {title}
             </span>
           </h3>
+          <p className="text-gray-400 text-sm sm:text-base">
+            {items.length} {items.length === 1 ? "item" : "items"} available
+          </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {items.map((item) => (
             <VoteItemCard key={item.id} item={item} />
           ))}
@@ -145,23 +148,23 @@ export function FeaturedProducts() {
   };
 
   return (
-    <section id="featured-products" className="py-20 px-4 relative">
+    <section id="featured-products" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative">
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-20 blur-3xl"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-64 sm:h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
         style={{
           background: "radial-gradient(circle, #00FFE5 0%, transparent 70%)",
         }}
       />
 
-      <div className="max-w-7xl mx-auto relative z-10 space-y-16">
-        <div className="text-center">
-          <h2 className="text-5xl md:text-6xl font-bold mb-4">
+      <div className="max-w-7xl mx-auto relative z-10 space-y-12 sm:space-y-16 lg:space-y-20">
+        <div className="text-center space-y-3 sm:space-y-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold">
             <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
               Featured
             </span>
             <span className="text-white"> Collection</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-400 text-sm sm:text-base lg:text-lg max-w-2xl mx-auto px-4">
             Discover our latest designs that blend premium quality with
             cutting-edge street style
           </p>
@@ -218,13 +221,16 @@ export function FeaturedProducts() {
 
             {/* All Other Items */}
             {organizedItems.otherItems.length > 0 && (
-              <div id="all-products" className="space-y-6">
+              <div id="all-products" className="space-y-6 sm:space-y-8">
                 <div className="text-center">
-                  <h3 className="text-3xl md:text-4xl font-bold text-white">
+                  <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
                     All Products
                   </h3>
+                  <p className="text-gray-400 text-sm sm:text-base">
+                    {organizedItems.otherItems.length} {organizedItems.otherItems.length === 1 ? "item" : "items"} available
+                  </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                   {organizedItems.otherItems.map((item) => (
                     <VoteItemCard key={item.id} item={item} />
                   ))}
@@ -234,15 +240,17 @@ export function FeaturedProducts() {
           </>
         )}
 
-        <div className="text-center">
-          <Link
-            to="/products"
-            className="group relative inline-block px-10 py-4 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold overflow-hidden transition-all duration-300 hover:text-[#1D1D2C] cursor-pointer"
-          >
-            <span className="relative z-10">View All Products</span>
-            <div className="absolute inset-0 bg-[#00FFE5] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-          </Link>
-        </div>
+        {items.length > 0 && (
+          <div className="text-center pt-4 sm:pt-6">
+            <Link
+              to="/products"
+              className="group relative inline-flex items-center justify-center px-6 sm:px-10 py-3 sm:py-4 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold overflow-hidden transition-all duration-300 hover:text-[#1D1D2C] cursor-pointer text-sm sm:text-base"
+            >
+              <span className="relative z-10">View All Products</span>
+              <div className="absolute inset-0 bg-[#00FFE5] scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+            </Link>
+          </div>
+        )}
 
         {/* All Products Dialog */}
         <Dialog open={showAllProducts} onOpenChange={setShowAllProducts}>
