@@ -277,6 +277,9 @@ export function LibraryManager() {
       if (formState.displayOption) {
         payload.displayOption = formState.displayOption;
       }
+      if (formState.shopeeLink?.trim()) {
+        payload.shopeeLink = formState.shopeeLink.trim();
+      }
       
       // Include variants if any are set (all fields are optional)
       // Completely skip variants if there's any issue to prevent errors
