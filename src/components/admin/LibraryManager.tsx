@@ -276,38 +276,38 @@ export function LibraryManager() {
         payload.displayOption = formState.displayOption;
       }
       
-      // Include variants if any are set
-      const hasVariants = formState.variants && Object.entries(formState.variants).some(([key, value]) => {
-        if (!value) return false;
-        if (key === 'sizes') {
-          return Array.isArray(value) && value.length > 0;
-        }
-        if (typeof value === 'string') {
-          return value.trim().length > 0;
-        }
-        return false;
-      });
-      if (hasVariants) {
-        // Remove empty variant fields
+      // Include variants if any are set (all fields are optional)
+      if (formState.variants) {
         const cleanedVariants: ProductVariant = {};
-        Object.entries(formState.variants).forEach(([key, value]) => {
-          if (!value) return;
+        
+        try {
+          Object.entries(formState.variants).forEach(([key, value]) => {
+            // Skip null, undefined, or empty values
+            if (value === null || value === undefined) return;
+            
+            if (key === 'sizes') {
+              // Handle sizes array
+              if (Array.isArray(value) && value.length > 0) {
+                cleanedVariants.sizes = value;
+              }
+            } else {
+              // Handle string values - safely check and trim
+              if (typeof value === 'string') {
+                const trimmed = value.trim();
+                if (trimmed.length > 0) {
+                  cleanedVariants[key as keyof ProductVariant] = trimmed;
+                }
+              }
+            }
+          });
           
-          if (key === 'sizes') {
-            // Handle sizes array
-            if (Array.isArray(value) && value.length > 0) {
-              cleanedVariants.sizes = value;
-            }
-          } else if (typeof value === 'string') {
-            // Handle string values - safely check and trim
-            const trimmed = value.trim();
-            if (trimmed.length > 0) {
-              cleanedVariants[key as keyof ProductVariant] = trimmed;
-            }
+          // Only include variants if there's at least one non-empty field
+          if (Object.keys(cleanedVariants).length > 0) {
+            payload.variants = cleanedVariants;
           }
-        });
-        if (Object.keys(cleanedVariants).length > 0) {
-          payload.variants = cleanedVariants;
+        } catch (variantError) {
+          console.error("Error processing variants:", variantError);
+          // Continue without variants if there's an error
         }
       }
 
@@ -834,7 +834,7 @@ export function LibraryManager() {
               {/* Sizes Available - Volume Rocker Style Slider */}
               <div className="md:col-span-2">
                 <label className="block text-sm text-gray-400 mb-2">
-                  Sizes Available
+                  Sizes Available (optional)
                   {(formState.variants.sizes || []).length > 0 && (
                     <span className="ml-2 text-xs text-gray-500">
                       (Drag to reorder - first is primary)
@@ -1013,7 +1013,7 @@ export function LibraryManager() {
 
               {/* Color */}
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Color</label>
+                <label className="block text-sm text-gray-400 mb-2">Color (optional)</label>
                 <select
                   className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
                   value={formState.variants.color || ""}
@@ -1035,7 +1035,7 @@ export function LibraryManager() {
 
               {/* Shirt Type */}
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Shirt Type</label>
+                <label className="block text-sm text-gray-400 mb-2">Shirt Type (optional)</label>
                 <select
                   className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
                   value={formState.variants.shirtType || ""}
@@ -1057,7 +1057,7 @@ export function LibraryManager() {
 
               {/* Neck Type */}
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Neck Type</label>
+                <label className="block text-sm text-gray-400 mb-2">Neck Type (optional)</label>
                 <select
                   className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
                   value={formState.variants.neckType || ""}
@@ -1079,7 +1079,7 @@ export function LibraryManager() {
 
               {/* Fit */}
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Fit</label>
+                <label className="block text-sm text-gray-400 mb-2">Fit (optional)</label>
                 <select
                   className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
                   value={formState.variants.fit || ""}
@@ -1145,7 +1145,7 @@ export function LibraryManager() {
 
               {/* Design Theme (Collections) */}
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Design Theme / Collection</label>
+                <label className="block text-sm text-gray-400 mb-2">Design Theme / Collection (optional)</label>
                 <div className="space-y-2">
                   <select
                     className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 text-white"
