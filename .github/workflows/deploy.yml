@@ -43,11 +43,37 @@ jobs:
           VITE_ADMIN_EMAILS: ${{ secrets.SS_NCTR_VITE_ADMIN_EMAILS }}
         run: |
           echo "Checking environment variables..."
-          if [ -z "$VITE_FIREBASE_API_KEY" ]; then echo "ERROR: VITE_FIREBASE_API_KEY is not set"; exit 1; fi
-          if [ -z "$VITE_FIREBASE_AUTH_DOMAIN" ]; then echo "ERROR: VITE_FIREBASE_AUTH_DOMAIN is not set"; exit 1; fi
-          if [ -z "$VITE_FIREBASE_PROJECT_ID" ]; then echo "ERROR: VITE_FIREBASE_PROJECT_ID is not set"; exit 1; fi
-          if [ -z "$VITE_FIREBASE_STORAGE_BUCKET" ]; then echo "ERROR: VITE_FIREBASE_STORAGE_BUCKET is not set"; exit 1; fi
-          if [ -z "$VITE_FIREBASE_APP_ID" ]; then echo "ERROR: VITE_FIREBASE_APP_ID is not set"; exit 1; fi
+          echo "Expected secret names (case-sensitive):"
+          echo "  - SS_NCTR_VITE_FIREBASE_API_KEY"
+          echo "  - SS_NCTR_VITE_FIREBASE_AUTH_DOMAIN"
+          echo "  - SS_NCTR_VITE_FIREBASE_PROJECT_ID"
+          echo "  - SS_NCTR_VITE_FIREBASE_STORAGE_BUCKET"
+          echo "  - SS_NCTR_VITE_FIREBASE_MESSAGING_SENDER_ID"
+          echo "  - SS_NCTR_VITE_FIREBASE_APP_ID"
+          echo "  - SS_NCTR_VITE_FIREBASE_MEASUREMENT_ID"
+          echo "  - SS_NCTR_VITE_ADMIN_EMAILS"
+          echo ""
+          if [ -z "$VITE_FIREBASE_API_KEY" ]; then 
+            echo "❌ ERROR: VITE_FIREBASE_API_KEY is not set"
+            echo "   Make sure you have a secret named: SS_NCTR_VITE_FIREBASE_API_KEY"
+            exit 1
+          fi
+          if [ -z "$VITE_FIREBASE_AUTH_DOMAIN" ]; then 
+            echo "❌ ERROR: VITE_FIREBASE_AUTH_DOMAIN is not set"
+            exit 1
+          fi
+          if [ -z "$VITE_FIREBASE_PROJECT_ID" ]; then 
+            echo "❌ ERROR: VITE_FIREBASE_PROJECT_ID is not set"
+            exit 1
+          fi
+          if [ -z "$VITE_FIREBASE_STORAGE_BUCKET" ]; then 
+            echo "❌ ERROR: VITE_FIREBASE_STORAGE_BUCKET is not set"
+            exit 1
+          fi
+          if [ -z "$VITE_FIREBASE_APP_ID" ]; then 
+            echo "❌ ERROR: VITE_FIREBASE_APP_ID is not set"
+            exit 1
+          fi
           echo "✓ All required environment variables are set"
       
       - name: Build
