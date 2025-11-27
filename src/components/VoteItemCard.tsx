@@ -85,9 +85,20 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
     }
   };
 
+  const isHot = item.displayOption === "hot";
+
   return (
     <>
-      <article className="rounded-3xl border border-white/10 bg-black/30 overflow-hidden flex flex-col relative">
+      <article 
+        className={`rounded-3xl border bg-black/30 overflow-hidden flex flex-col relative transition-all duration-300 ${
+          isHot 
+            ? "border-[#FF00B3]/60 animate-hot-glow hover:border-[#FF00B3]"
+            : "border-white/10 hover:border-white/20 hover:shadow-[0_0_20px_rgba(0,255,229,0.2)]"
+        }`}
+        style={isHot ? {
+          animation: 'hot-glow 2s ease-in-out infinite'
+        } : {}}
+      >
         {item.displayOption && (
           <div className="absolute top-3 right-3 z-10">
             <span className="text-xs uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-bold shadow-lg">
