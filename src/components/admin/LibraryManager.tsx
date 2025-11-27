@@ -277,9 +277,13 @@ export function LibraryManager() {
       if (formState.displayOption) {
         payload.displayOption = formState.displayOption;
       }
-      if (formState.shopeeLink?.trim()) {
+      if (formState.shopeeLink && formState.shopeeLink.trim()) {
         payload.shopeeLink = formState.shopeeLink.trim();
       }
+      
+      // Debug: Log the payload to verify shopeeLink is included
+      console.log("Saving item with payload:", payload);
+      console.log("Shopee link from formState:", formState.shopeeLink);
       
       // Include variants if any are set (all fields are optional)
       // Completely skip variants if there's any issue to prevent errors
@@ -695,12 +699,15 @@ export function LibraryManager() {
             <label className="block text-sm text-gray-400 mb-2">Shopee Link (optional)</label>
             <input
               type="url"
+              name="shopeeLink"
               placeholder="https://shopee.ph/product/..."
               className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
-              value={formState.shopeeLink}
-              onChange={(event) =>
-                setFormState((prev) => ({ ...prev, shopeeLink: event.target.value }))
-              }
+              value={formState.shopeeLink || ""}
+              onChange={(event) => {
+                const value = event.target.value;
+                console.log("Shopee link input changed:", value);
+                setFormState((prev) => ({ ...prev, shopeeLink: value }));
+              }}
             />
           </div>
         </div>
