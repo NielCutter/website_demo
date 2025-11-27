@@ -48,7 +48,7 @@ export function PollWidget() {
         <h3 className="text-2xl font-semibold mt-2">{poll.question}</h3>
         <p className="text-sm text-gray-400 mt-1">
           {poll.isActive
-            ? "Vote on what we should release next."
+            ? "Vote on what we should release next. You can change your vote anytime."
             : "Poll is paused. Results below."}
         </p>
       </div>
@@ -63,13 +63,13 @@ export function PollWidget() {
           return (
             <button
               key={option.id}
-              disabled={!!userVote || !poll.isActive}
+              disabled={!poll.isActive || submitting !== null}
               onClick={() => handleVote(option.id)}
               className={`w-full rounded-2xl border px-4 py-3 text-left transition-all ${
                 isVotedFor
-                  ? "border-[#00FFE5]"
+                  ? "border-[#00FFE5] bg-[#00FFE5]/10"
                   : "border-white/10 hover:border-[#00FFE5]"
-              } ${!poll.isActive ? "opacity-60 cursor-not-allowed" : ""}`}
+              } ${!poll.isActive ? "opacity-60 cursor-not-allowed" : ""} ${submitting !== null ? "opacity-50 cursor-wait" : ""}`}
             >
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold">{option.label}</span>
@@ -83,13 +83,10 @@ export function PollWidget() {
                   />
                 </div>
               )}
-              {poll.isActive && !userVote && (
+              {poll.isActive && (
                 <p className="text-xs text-gray-500 mt-1">
-                  {submitting === option.id ? "Submitting..." : "Tap to vote"}
+                  {submitting === option.id ? "Submitting..." : isVotedFor ? "Your choice - Tap to change" : "Tap to vote"}
                 </p>
-              )}
-              {userVote === option.id && (
-                <p className="text-xs text-[#00FFE5] mt-1">Your choice</p>
               )}
             </button>
           );

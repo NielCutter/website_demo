@@ -108,10 +108,15 @@ export function usePollSystem() {
 
     await runTransaction(db, async (transaction) => {
       const voteSnap = await transaction.get(voteRef);
-      if (voteSnap.exists()) {
-        throw new Error('You already voted');
+      const previousOption = voteSnap.exists() ? (voteSnap.data()?.option as string) : null;
+      
+      // If user is changing their vote, allow it
+      // If it's the same option, do nothing
+      if (previousOption === optionId) {
+        return; // Already voted for this option
       }
 
+      // Update or create the vote
       transaction.set(voteRef, {
         option: optionId,
         pollId: POLL_DOC_ID,
