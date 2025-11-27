@@ -203,96 +203,124 @@ export function LibraryManager() {
         className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-black/20 rounded-2xl border border-white/5 p-6"
       >
         <div className="space-y-4">
-          <input
-            type="text"
-            required
-            placeholder="Item title"
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 focus:outline-none focus:border-[#00FFE5]"
-            value={formState.title}
-            onChange={(event) =>
-              setFormState((prev) => ({ ...prev, title: event.target.value }))
-            }
-          />
-          <select
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
-            value={formState.category}
-            onChange={(event) =>
-              setFormState((prev) => ({ ...prev, category: event.target.value }))
-            }
-          >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <textarea
-            placeholder="Description"
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 min-h-[120px]"
-            value={formState.description}
-            onChange={(event) =>
-              setFormState((prev) => ({
-                ...prev,
-                description: event.target.value,
-              }))
-            }
-          />
-          <input
-            type="number"
-            step="0.01"
-            placeholder="Price (optional)"
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
-            value={formState.price}
-            onChange={(event) =>
-              setFormState((prev) => ({ ...prev, price: event.target.value }))
-            }
-          />
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">
+              Title <span className="text-red-400">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Item title"
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 focus:outline-none focus:border-[#00FFE5]"
+              value={formState.title}
+              onChange={(event) =>
+                setFormState((prev) => ({ ...prev, title: event.target.value }))
+              }
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Category</label>
+            <select
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+              value={formState.category}
+              onChange={(event) =>
+                setFormState((prev) => ({ ...prev, category: event.target.value }))
+              }
+            >
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Description</label>
+            <textarea
+              placeholder="Description (optional)"
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3 min-h-[120px]"
+              value={formState.description}
+              onChange={(event) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  description: event.target.value,
+                }))
+              }
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Price (optional)</label>
+            <input
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+              value={formState.price}
+              onChange={(event) =>
+                setFormState((prev) => ({ ...prev, price: event.target.value }))
+              }
+            />
+          </div>
         </div>
         <div className="space-y-4">
-          <input
-            type="file"
-            accept="image/*"
-            className="w-full rounded-xl bg-black/20 border border-dashed border-white/20 px-4 py-3"
-            onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-          />
-          <input
-            type="url"
-            placeholder="External image URL (required if no file)"
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
-            value={formState.imageUrl}
-            onChange={(event) =>
-              setFormState((prev) => ({ ...prev, imageUrl: event.target.value }))
-            }
-          />
-          <select
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
-            value={formState.displayOption ?? ""}
-            onChange={(event) =>
-              setFormState((prev) => ({
-                ...prev,
-                displayOption: event.target.value ? (event.target.value as DisplayOption) : null,
-              }))
-            }
-          >
-            {displayOptions.map((option) => (
-              <option key={option.value ?? "none"} value={option.value ?? ""}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <select
-            className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
-            value={formState.status}
-            onChange={(event) =>
-              setFormState((prev) => ({
-                ...prev,
-                status: event.target.value as ItemStatus,
-              }))
-            }
-          >
-            <option value="active">Active</option>
-            <option value="archived">Archived</option>
-          </select>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Image File</label>
+            <input
+              type="file"
+              accept="image/*"
+              className="w-full rounded-xl bg-black/20 border border-dashed border-white/20 px-4 py-3"
+              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">
+              External Image URL <span className="text-red-400">*</span>
+            </label>
+            <input
+              type="url"
+              placeholder="https://example.com/image.jpg (required if no file)"
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+              value={formState.imageUrl}
+              onChange={(event) =>
+                setFormState((prev) => ({ ...prev, imageUrl: event.target.value }))
+              }
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Display Badge</label>
+            <select
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+              value={formState.displayOption ?? ""}
+              onChange={(event) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  displayOption: event.target.value ? (event.target.value as DisplayOption) : null,
+                }))
+              }
+            >
+              {displayOptions.map((option) => (
+                <option key={option.value ?? "none"} value={option.value ?? ""}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Status</label>
+            <select
+              className="w-full rounded-xl bg-black/40 border border-white/10 px-4 py-3"
+              value={formState.status}
+              onChange={(event) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  status: event.target.value as ItemStatus,
+                }))
+              }
+            >
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
           <button
             type="submit"
             className="w-full rounded-xl bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold py-3"
