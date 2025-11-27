@@ -11,27 +11,27 @@ service cloud.firestore {
     match /items/{itemId} {
       allow read: if true;
       allow create, delete: if isAdmin();
-      // Allow anonymous vote updates - simplified rule
+      // Allow anonymous vote updates - allow increment or decrement by 1
       // Only allow updating votes field (updatedAt is a transform, not checked)
       allow update: if isAdmin() ||
         (
           'votes' in request.resource.data &&
           request.resource.data.votes is int &&
-          request.resource.data.votes > 0 &&
+          request.resource.data.votes >= 0 &&
           (
             !('votes' in resource.data) ||
-            (request.resource.data.votes == resource.data.votes + 1)
+            (request.resource.data.votes == resource.data.votes + 1) ||
+            (request.resource.data.votes == resource.data.votes - 1)
           )
         );
     }
 
     match /itemVotes/{voteId} {
-      // Allow anyone to read and create/update votes (IP-based, no auth required)
+      // Allow anyone to read, create, update, and delete their own votes (IP-based, no auth required)
       // Note: Duplicate prevention is handled by transaction logic in the app
       // Transactions may use 'set' which can be treated as update
       allow read: if true;
-      allow create, update: if true;
-      allow delete: if isAdmin();
+      allow create, update, delete: if true;
     }
 
     match /polls/{pollId} {

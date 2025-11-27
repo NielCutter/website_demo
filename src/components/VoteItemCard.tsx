@@ -4,6 +4,7 @@ import {
   getDoc,
   runTransaction,
   serverTimestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { getUserIP } from "../utils/getUserIP";
@@ -45,7 +46,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
   }, [item.id]);
 
   const handleVote = async () => {
-    if (submitting || hasVoted) return;
+    if (submitting || item.status === "archived") return;
 
     setSubmitting(true);
     try {
@@ -54,30 +55,56 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
       const voteId = `${item.id}_${ip}`;
       const voteRef = doc(db, "itemVotes", voteId);
 
-      await runTransaction(db, async (transaction) => {
-        const itemSnap = await transaction.get(itemRef);
-        if (!itemSnap.exists()) throw new Error("Item not found");
+      if (hasVoted) {
+        // Unvote: Remove vote and decrement count
+        await runTransaction(db, async (transaction) => {
+          const itemSnap = await transaction.get(itemRef);
+          if (!itemSnap.exists()) throw new Error("Item not found");
 
-        const voteSnap = await transaction.get(voteRef);
-        if (voteSnap.exists()) {
-          throw new Error("You already voted for this item.");
-        }
+          const voteSnap = await transaction.get(voteRef);
+          if (!voteSnap.exists()) {
+            throw new Error("Vote not found.");
+          }
 
-        const currentVotes = itemSnap.data().votes ?? 0;
-        transaction.update(itemRef, {
-          votes: currentVotes + 1,
-          updatedAt: serverTimestamp(),
+          const currentVotes = itemSnap.data().votes ?? 0;
+          const newVotes = Math.max(0, currentVotes - 1);
+          transaction.update(itemRef, {
+            votes: newVotes,
+            updatedAt: serverTimestamp(),
+          });
+
+          transaction.delete(voteRef);
         });
 
-        transaction.set(voteRef, {
-          itemId: item.id,
-          ipAddress: ip,
-          votedAt: serverTimestamp(),
-        });
-      });
+        setLocalVotes((prev) => Math.max(0, prev - 1));
+        setHasVoted(false);
+      } else {
+        // Vote: Add vote and increment count
+        await runTransaction(db, async (transaction) => {
+          const itemSnap = await transaction.get(itemRef);
+          if (!itemSnap.exists()) throw new Error("Item not found");
 
-      setLocalVotes((prev) => prev + 1);
-      setHasVoted(true);
+          const voteSnap = await transaction.get(voteRef);
+          if (voteSnap.exists()) {
+            throw new Error("You already voted for this item.");
+          }
+
+          const currentVotes = itemSnap.data().votes ?? 0;
+          transaction.update(itemRef, {
+            votes: currentVotes + 1,
+            updatedAt: serverTimestamp(),
+          });
+
+          transaction.set(voteRef, {
+            itemId: item.id,
+            ipAddress: ip,
+            votedAt: serverTimestamp(),
+          });
+        });
+
+        setLocalVotes((prev) => prev + 1);
+        setHasVoted(true);
+      }
     } catch (voteError) {
       alert((voteError as Error).message);
     } finally {
@@ -139,18 +166,24 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
             <div className="flex gap-2">
               <button
                 onClick={handleVote}
-                disabled={hasVoted || submitting || item.status === "archived"}
+                disabled={submitting || item.status === "archived"}
                 className={`flex-1 rounded-full px-4 py-2 text-sm font-semibold transition ${
                   hasVoted
-                    ? "bg-white/5 border border-white/10 text-gray-500 cursor-not-allowed"
-                    : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
-                }`}
+                    ? "bg-white/10 border border-white/20 text-white hover:bg-white/20"
+                    : "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] hover:opacity-90"
+                } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                {hasVoted ? "Voted" : submitting ? "Voting..." : "Vote"}
+                {submitting
+                  ? hasVoted
+                    ? "Unvoting..."
+                    : "Voting..."
+                  : hasVoted
+                  ? "Unvote"
+                  : "Vote"}
               </button>
               <button
                 onClick={() => setDetailOpen(true)}
-                className="flex-1 rounded-full border border-white/20 text-sm"
+                className="flex-1 rounded-full border border-white/20 text-sm hover:bg-white/10 transition-colors"
               >
                 View Details
               </button>
