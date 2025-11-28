@@ -369,17 +369,17 @@ export function ProductsPage() {
           {/* Products Grid */}
           <main className="flex-1">
             {loading ? (
-              <div className="text-center py-20">
-                <p className="text-gray-400">Loading products...</p>
+              <div className="text-center py-12 sm:py-16 lg:py-20">
+                <p className="text-gray-400 text-sm sm:text-base">Loading products...</p>
               </div>
             ) : error ? (
-              <div className="text-center py-20">
-                <p className="text-red-400">Error loading products</p>
+              <div className="text-center py-12 sm:py-16 lg:py-20">
+                <p className="text-red-400 text-sm sm:text-base">Error loading products</p>
               </div>
             ) : sortedItems.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-gray-400 text-lg mb-2">No products found</p>
-                <p className="text-gray-500 text-sm">
+              <div className="text-center py-12 sm:py-16 lg:py-20">
+                <p className="text-gray-400 text-base sm:text-lg mb-2">No products found</p>
+                <p className="text-gray-500 text-sm sm:text-base">
                   {searchQuery || selectedCategories.length > 0
                     ? "Try adjusting your filters"
                     : "Check back soon for new drops"}
@@ -387,7 +387,7 @@ export function ProductsPage() {
                 {(searchQuery || selectedCategories.length > 0) && (
                   <button
                     onClick={clearFilters}
-                    className="mt-4 px-6 py-2 rounded-full border border-[#00FFE5] text-[#00FFE5] hover:bg-[#00FFE5] hover:text-[#1D1D2C] transition-colors"
+                    className="mt-4 sm:mt-6 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border border-[#00FFE5] text-[#00FFE5] hover:bg-[#00FFE5] hover:text-[#1D1D2C] transition-colors text-sm sm:text-base min-h-[44px] touch-manipulation"
                   >
                     Clear Filters
                   </button>
@@ -396,13 +396,16 @@ export function ProductsPage() {
             ) : (
               <>
                 {viewMode === "grid" ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 ${
+                    paginatedItems.length === 1 ? "md:grid-cols-1 md:justify-items-center" : 
+                    paginatedItems.length === 2 ? "md:grid-cols-2 md:justify-items-center" : ""
+                  }`}>
                     {paginatedItems.map((item) => (
                       <VoteItemCard key={item.id} item={item} />
                     ))}
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-4 sm:space-y-6">
                     {paginatedItems.map((item) => (
                       <VoteItemCard key={item.id} item={item} />
                     ))}
