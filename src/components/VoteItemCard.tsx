@@ -306,30 +306,28 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
           </DialogHeader>
           
           <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-0">
-              {/* Image Section - Larger */}
-              <div className="p-6 sm:p-8 bg-black/10 border-r border-white/5">
-                <div className="sticky top-0 space-y-6">
-                  <div className="w-full">
-                    <ImageCarousel images={images} alt={item.title} className="rounded-3xl shadow-2xl" />
-                  </div>
+            <div className="flex flex-col">
+              {/* Image Section - Top */}
+              <div className="p-4 sm:p-6 lg:p-8 bg-black/10 border-b border-white/10">
+                <div className="w-full max-w-2xl mx-auto">
+                  <ImageCarousel images={images} alt={item.title} className="rounded-2xl sm:rounded-3xl shadow-2xl" />
                   
-                  {/* Hearts and Price - Better Layout */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-5 rounded-2xl bg-black/40 border border-white/10">
-                      <div className="flex items-center gap-3">
-                        <Heart className={`w-6 h-6 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-gray-400"}`} />
+                  {/* Hearts and Price - Below Image */}
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-4 sm:mt-6">
+                    <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-black/40 border border-white/10">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <Heart className={`w-5 h-5 sm:w-6 sm:h-6 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-gray-400"}`} />
                         <div>
                           <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Hearts</p>
-                          <p className="text-2xl font-bold text-white">{localVotes}</p>
+                          <p className="text-xl sm:text-2xl font-bold text-white">{localVotes}</p>
                         </div>
                       </div>
                     </div>
                     {item.price !== undefined && (
-                      <div className="p-5 rounded-2xl bg-black/40 border border-white/10">
+                      <div className="p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-black/40 border border-white/10">
                         <div>
                           <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Price</p>
-                          <p className="text-2xl font-bold text-white">${item.price.toFixed(2)}</p>
+                          <p className="text-xl sm:text-2xl font-bold text-white">${item.price.toFixed(2)}</p>
                         </div>
                       </div>
                     )}
@@ -337,8 +335,8 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
                 </div>
               </div>
               
-              {/* Details Section */}
-              <div className="p-6 sm:p-8 space-y-8">
+              {/* Details Section - Below Image */}
+              <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-2xl mx-auto w-full">
                 {/* Description */}
                 {item.description && (() => {
                   const cleanDescription = removeShopeeLinks(item.description, item.shopeeLink);
