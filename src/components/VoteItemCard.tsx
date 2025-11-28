@@ -286,7 +286,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
       </article>
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-7xl max-h-[95vh] overflow-hidden flex flex-col p-0">
+        <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-7xl max-h-[95vh] overflow-hidden !flex !flex-col p-0">
           <DialogHeader className="p-6 sm:p-8 border-b border-white/10">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
