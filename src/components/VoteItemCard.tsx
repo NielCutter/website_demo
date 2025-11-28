@@ -286,7 +286,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
       </article>
 
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
-        <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-7xl max-h-[95vh] overflow-hidden !flex !flex-col p-0">
+        <DialogContent className="bg-[#0b0b0f] border-white/10 text-white max-w-7xl max-h-[95vh] overflow-hidden !flex !flex-col !grid-cols-none p-0">
           <DialogHeader className="p-6 sm:p-8 border-b border-white/10">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 min-w-0">
@@ -305,10 +305,10 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
             </div>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto flex flex-col">
             {/* Image Section - Top */}
-            <div className="p-4 sm:p-6 lg:p-8 bg-black/10 border-b border-white/10">
-              <div className="w-full max-w-2xl mx-auto">
+            <div className="p-4 sm:p-6 lg:p-8 bg-black/10 border-b border-white/10 flex-shrink-0">
+              <div className="w-full max-w-3xl mx-auto">
                 <ImageCarousel images={images} alt={item.title} className="rounded-2xl sm:rounded-3xl shadow-2xl w-full" />
                 
                 {/* Hearts and Price - Below Image */}
@@ -335,7 +335,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
             </div>
             
             {/* Details Section - Below Image */}
-            <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-2xl mx-auto w-full">
+            <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 max-w-3xl mx-auto w-full flex-shrink-0">
                 {/* Description */}
                 {item.description && (() => {
                   const cleanDescription = removeShopeeLinks(item.description, item.shopeeLink);
