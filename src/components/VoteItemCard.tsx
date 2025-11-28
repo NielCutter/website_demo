@@ -155,7 +155,7 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
   return (
     <>
       <article 
-        className={`group rounded-2xl sm:rounded-3xl lg:rounded-[2rem] overflow-hidden relative transition-all duration-300 h-full ${
+        className={`group rounded-2xl sm:rounded-3xl overflow-hidden relative transition-all duration-300 h-full w-full max-w-full ${
           isHot 
             ? "border-2 border-[#FF00B3]/60 animate-hot-glow shadow-lg shadow-[#FF00B3]/20"
             : "border border-white/10 hover:border-white/30 hover:shadow-[0_0_30px_rgba(0,255,229,0.15)]"
@@ -166,8 +166,8 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
       >
         {/* Display Badge */}
         {item.displayOption && (
-          <div className="absolute top-4 sm:top-5 lg:top-6 right-4 sm:right-5 lg:right-6 z-20">
-            <span className="text-xs sm:text-sm lg:text-base uppercase tracking-[0.15em] sm:tracking-[0.2em] px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 lg:py-2.5 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-bold shadow-lg backdrop-blur-sm">
+          <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20">
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-bold shadow-lg backdrop-blur-sm">
               {item.displayOption === "hot" ? "🔥 HOT" : item.displayOption === "new" ? "✨ NEW" : "⭐ FEATURED"}
             </span>
           </div>
@@ -181,23 +181,23 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100 group-hover:opacity-100 transition-opacity duration-300" />
           
           {/* Content Overlay - Bottom */}
-          <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 lg:p-8 z-10">
+          <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 lg:p-6 z-10">
             {/* Title and Category */}
-            <div className="mb-4 sm:mb-5 lg:mb-6">
-              <p className="text-xs sm:text-sm lg:text-base uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/70 mb-2 sm:mb-3 font-medium">
+            <div className="mb-3 sm:mb-4">
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/70 mb-1.5 sm:mb-2 font-medium">
                 {item.category}
               </p>
-              <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight drop-shadow-lg">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-white leading-tight drop-shadow-lg">
                 {item.title}
               </h3>
             </div>
 
             {/* Heart Count and View Details - Overlay on Image */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3">
               {/* Heart Count */}
-              <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full bg-black/60 backdrop-blur-md border border-white/20">
-                <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-white/80"}`} />
-                <span className="text-xs sm:text-sm font-bold text-white">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-black/70 backdrop-blur-md border border-white/30 shadow-lg">
+                <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-white/90"}`} />
+                <span className="text-sm sm:text-base font-bold text-white">
                   {localVotes}
                 </span>
               </div>
@@ -205,10 +205,10 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
               {/* View Details Button */}
               <button
                 onClick={() => setDetailOpen(true)}
-                className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/90 backdrop-blur-md text-black font-semibold text-xs sm:text-sm hover:bg-white hover:scale-105 transition-all shadow-lg"
+                className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/95 backdrop-blur-md text-black font-semibold text-sm sm:text-base hover:bg-white hover:scale-[1.02] transition-all shadow-lg"
               >
                 <span>View Details</span>
-                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -216,20 +216,20 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
           </div>
 
           {/* Hover Overlay - Heart Button */}
-          <div className="absolute top-4 sm:top-5 lg:top-6 left-4 sm:left-5 lg:left-6 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute top-3 sm:top-4 left-3 sm:left-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <button
               onClick={handleVote}
               disabled={submitting || item.status === "archived"}
-              className={`flex items-center justify-center gap-2 px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-3.5 rounded-full backdrop-blur-md border transition-all ${
+              className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full backdrop-blur-md border transition-all shadow-lg ${
                 hasVoted
                   ? "bg-white/20 border-white/30 text-white"
-                  : "bg-black/60 border-white/20 text-white hover:bg-black/80"
+                  : "bg-black/70 border-white/30 text-white hover:bg-black/80"
               } ${submitting ? "opacity-50 cursor-wait" : ""} ${item.status === "archived" ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <Heart
-                className={`w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-white"}`}
+                className={`w-4 h-4 sm:w-5 sm:h-5 ${hasVoted ? "fill-[#FF00B3] text-[#FF00B3]" : "text-white"}`}
               />
-              <span className="text-sm sm:text-base lg:text-lg font-semibold">
+              <span className="text-xs sm:text-sm font-semibold">
                 {submitting
                   ? hasVoted
                     ? "Unhearting..."
@@ -243,16 +243,16 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
 
           {/* Shopee Link - Top Right on Hover */}
           {item.shopeeLink && item.shopeeLink.trim() && (
-            <div className="absolute top-4 sm:top-5 lg:top-6 right-4 sm:right-5 lg:right-6 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute top-3 sm:top-4 right-3 sm:right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <a
                 href={item.shopeeLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 lg:py-3.5 rounded-full bg-[#EE4D2D] text-white font-semibold text-sm sm:text-base lg:text-lg hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg backdrop-blur-sm"
+                className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-[#EE4D2D] text-white font-semibold text-xs sm:text-sm hover:bg-[#EE4D2D]/90 hover:scale-105 transition-all shadow-lg backdrop-blur-sm"
                 onClick={(e) => e.stopPropagation()}
               >
                 <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7"
+                  className="w-4 h-4 sm:w-5 sm:h-5"
                   fill="currentColor"
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
@@ -268,15 +268,15 @@ export function VoteItemCard({ item }: VoteItemCardProps) {
 
         {/* Optional Info Bar - Minimal */}
         {(item.price !== undefined || (item.variants && (item.variants.sizes?.length || item.variants.designTheme))) && (
-          <div className="p-4 sm:p-5 lg:p-6 bg-black/40 backdrop-blur-sm border-t border-white/10">
+          <div className="p-3 sm:p-4 bg-black/40 backdrop-blur-sm border-t border-white/10">
             <div className="flex items-center justify-between gap-3">
               {item.price !== undefined && (
-                <div className="text-base sm:text-lg lg:text-xl font-bold text-white">
+                <div className="text-sm sm:text-base font-bold text-white">
                   ${item.price.toFixed(2)}
                 </div>
               )}
               {item.variants?.designTheme && (
-                <span className="text-xs sm:text-sm lg:text-base px-3 sm:px-4 lg:px-5 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
+                <span className="text-[10px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] font-semibold">
                   {item.variants.designTheme}
                 </span>
               )}

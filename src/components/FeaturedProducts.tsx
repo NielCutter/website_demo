@@ -138,8 +138,8 @@ export function FeaturedProducts() {
           </p>
         </div>
         <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 ${
-          items.length === 1 ? "justify-items-center max-w-md mx-auto" : 
-          items.length === 2 ? "md:justify-items-center md:max-w-4xl md:mx-auto" : ""
+          items.length === 1 ? "md:grid-cols-1 md:justify-items-center" : 
+          items.length === 2 ? "md:grid-cols-2 md:justify-items-center" : ""
         }`}>
           {items.map((item) => (
             <VoteItemCard key={item.id} item={item} />
@@ -233,8 +233,8 @@ export function FeaturedProducts() {
                   </p>
                 </div>
                 <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 ${
-                  organizedItems.otherItems.length === 1 ? "justify-items-center max-w-md mx-auto" : 
-                  organizedItems.otherItems.length === 2 ? "md:justify-items-center md:max-w-4xl md:mx-auto" : ""
+                  organizedItems.otherItems.length === 1 ? "md:grid-cols-1 md:justify-items-center" : 
+                  organizedItems.otherItems.length === 2 ? "md:grid-cols-2 md:justify-items-center" : ""
                 }`}>
                   {organizedItems.otherItems.map((item) => (
                     <VoteItemCard key={item.id} item={item} />
