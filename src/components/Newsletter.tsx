@@ -29,7 +29,7 @@ export function Newsletter() {
   };
 
   return (
-    <section className="py-20 px-4 relative overflow-hidden">
+    <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Animated background shape */}
       <div 
         className="absolute inset-0 opacity-30"
@@ -52,43 +52,43 @@ export function Newsletter() {
           className="text-center"
         >
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-[#00FFE5] to-[#FF00B3] mb-8">
-            <Mail className="w-10 h-10 text-[#1D1D2C]" />
+          <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#00FFE5] to-[#FF00B3] mb-6 sm:mb-8">
+            <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-[#1D1D2C]" />
           </div>
 
           {/* Heading */}
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 px-2">
             <span className="text-white">Join the </span>
             <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
               Movement
             </span>
           </h2>
-          <p className="text-gray-400 text-lg mb-10 max-w-2xl mx-auto">
+          <p className="text-gray-400 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 lg:mb-10 max-w-2xl mx-auto px-4">
             Be the first to know about new drops, exclusive designs, and special offers. 
             Join our community of trendsetters.
           </p>
 
           {/* Form */}
-          <form onSubmit={handleSubscribe} className="max-w-xl mx-auto">
-            <div className="flex flex-col sm:flex-row gap-4">
+          <form onSubmit={handleSubscribe} className="max-w-xl mx-auto px-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 px-6 py-4 rounded-full bg-[#2A2A3E] border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-[#00FFE5] transition-colors duration-300"
+                className="flex-1 px-4 sm:px-6 py-3 sm:py-4 rounded-full bg-[#2A2A3E] border border-white/20 text-white placeholder-gray-500 focus:outline-none focus:border-[#00FFE5] transition-colors duration-300 text-sm sm:text-base min-h-[44px]"
                 required
               />
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="group relative px-8 py-4 rounded-full overflow-hidden font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group relative px-6 sm:px-8 py-3 sm:py-4 rounded-full overflow-hidden font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px] touch-manipulation"
                 style={{
                   background: 'linear-gradient(135deg, #00FFE5, #FF00B3)',
                   boxShadow: '0 0 20px rgba(0, 255, 229, 0.3)'
                 }}
               >
-                <span className="relative z-10 text-[#1D1D2C]">
+                <span className="relative z-10 text-[#1D1D2C] text-sm sm:text-base">
                   {status === "success"
                     ? "Subscribed! ✓"
                     : status === "loading"
@@ -106,7 +106,7 @@ export function Newsletter() {
           </form>
 
           {/* Trust badges */}
-          <div className="flex flex-wrap items-center justify-center gap-6 mt-10 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6 sm:mt-8 lg:mt-10 text-xs sm:text-sm text-gray-500 px-4">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#00FFE5]" />
               <span>No spam, ever</span>

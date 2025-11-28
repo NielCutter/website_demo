@@ -58,24 +58,24 @@ export function Footer() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 mb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12">
           {/* Brand section */}
-          <div className="md:col-span-2 lg:col-span-1">
-            <h3 className="text-2xl font-bold mb-4">
+          <div className="sm:col-span-2 lg:col-span-1">
+            <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
               <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
                 New Culture Trends
               </span>
-              <span className="text-white ml-2">®</span>
+              <span className="text-white ml-1 sm:ml-2">®</span>
             </h3>
-            <p className="text-gray-400 mb-6 max-w-sm text-sm sm:text-base">
+            <p className="text-gray-400 mb-4 sm:mb-6 max-w-sm text-xs sm:text-sm md:text-base">
               Lead the wave / Define the culture.
             </p>
             
             {/* Social links */}
-            <div className="mb-6">
-              <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">Social Media</h4>
-              <div className="flex gap-4">
+            <div className="mb-4 sm:mb-6">
+              <h4 className="text-white font-semibold mb-3 sm:mb-4 text-xs sm:text-sm md:text-base">Social Media</h4>
+              <div className="flex gap-3 sm:gap-4">
                 {socialLinks.map((social) => {
                   const Icon = social.icon;
                   return (
@@ -83,7 +83,7 @@ export function Footer() {
                       key={social.label}
                       href={social.href}
                       aria-label={social.label}
-                      className="group w-10 h-10 rounded-full bg-[#2A2A3E] border border-white/10 flex items-center justify-center hover:border-[#00FFE5] transition-all duration-300"
+                      className="group w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#2A2A3E] border border-white/10 flex items-center justify-center hover:border-[#00FFE5] transition-all duration-300 touch-manipulation min-w-[44px] min-h-[44px]"
                     >
                       <Icon className="w-5 h-5 text-gray-400 group-hover:text-[#00FFE5] transition-colors duration-300" />
                     </a>
@@ -94,11 +94,11 @@ export function Footer() {
           </div>
 
           {/* FAQ Button */}
-          <div className="md:col-span-2 lg:col-span-1">
-            <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">Support</h4>
+          <div className="sm:col-span-2 lg:col-span-1">
+            <h4 className="text-white font-semibold mb-3 sm:mb-4 text-xs sm:text-sm md:text-base">Support</h4>
             <button
               onClick={() => setFaqModalOpen(true)}
-              className="w-full px-6 py-3 rounded-lg border border-white/10 bg-black/20 text-white hover:bg-white/5 hover:border-[#00FFE5] transition-all duration-300 text-left"
+              className="w-full px-4 sm:px-6 py-3 rounded-lg border border-white/10 bg-black/20 text-white hover:bg-white/5 hover:border-[#00FFE5] transition-all duration-300 text-left min-h-[44px] touch-manipulation"
             >
               <span className="font-medium text-sm">FAQ</span>
             </button>

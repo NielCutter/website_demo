@@ -38,14 +38,14 @@ export function Hero() {
       
       {/* Glowing orbs */}
       <div 
-        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-30 blur-3xl"
+        className="absolute top-1/4 left-1/4 w-64 sm:w-80 md:w-96 h-64 sm:h-80 md:h-96 rounded-full opacity-20 sm:opacity-30 blur-3xl"
         style={{
           background: 'radial-gradient(circle, #00FFE5 0%, transparent 70%)',
           animation: 'pulse 4s ease-in-out infinite'
         }}
       />
       <div 
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full opacity-30 blur-3xl"
+        className="absolute bottom-1/4 right-1/4 w-64 sm:w-80 md:w-96 h-64 sm:h-80 md:h-96 rounded-full opacity-20 sm:opacity-30 blur-3xl"
         style={{
           background: 'radial-gradient(circle, #FF00B3 0%, transparent 70%)',
           animation: 'pulse 4s ease-in-out infinite 2s'
@@ -56,20 +56,20 @@ export function Hero() {
       <div className="absolute inset-0 bg-[#1D1D2C]/40" />
       
       {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto py-12 sm:py-16 lg:py-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-6xl md:text-8xl font-extrabold tracking-tight mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight mb-4 sm:mb-6 px-2">
             <span 
               className="bg-gradient-to-r from-[#00FFE5] via-[#FF00B3] to-[#00FFE5] bg-clip-text text-transparent"
               style={{ backgroundSize: '200% auto' }}
             >
               New Culture Trends
             </span>
-            <span className="text-white ml-3">®</span>
+            <span className="text-white ml-1 sm:ml-2 md:ml-3 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">®</span>
           </h1>
         </motion.div>
 
@@ -77,7 +77,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto"
+          className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4 leading-relaxed"
         >
           Where premium design meets street culture. Express yourself with our exclusive collection.
         </motion.p>
@@ -86,7 +86,7 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mb-12"
+          className="mb-8 sm:mb-12"
         >
           <button 
             onClick={() => {
@@ -95,13 +95,13 @@ export function Hero() {
                 productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }
             }}
-            className="group relative px-12 py-4 rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
+            className="group relative px-8 sm:px-10 md:px-12 py-3 sm:py-3.5 md:py-4 rounded-full overflow-hidden transition-all duration-300 cursor-pointer min-h-[44px] touch-manipulation"
             style={{
               background: 'linear-gradient(135deg, #00FFE5, #FF00B3)',
               boxShadow: '0 0 20px rgba(0, 255, 229, 0.3)'
             }}
           >
-            <span className="relative z-10 text-[#1D1D2C] font-bold text-lg">
+            <span className="relative z-10 text-[#1D1D2C] font-bold text-base sm:text-lg">
               Browse
             </span>
             <div 
@@ -117,13 +117,13 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.6 }}
-          className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
+          className="inline-flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20"
         >
           <div className="flex flex-col items-center">
-            <span className="text-4xl font-bold bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
+            <span className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
               {count}+
             </span>
-            <span className="text-sm text-gray-400">Designs Available</span>
+            <span className="text-xs sm:text-sm text-gray-400">Designs Available</span>
           </div>
         </motion.div>
       </div>

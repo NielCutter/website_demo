@@ -108,18 +108,18 @@ export function ProductsPage() {
       {/* Header */}
       <header className="sticky top-0 z-50 bg-[#1D1D2C]/95 backdrop-blur-sm border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link to="/" className="text-xl font-bold">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <Link to="/" className="text-lg sm:text-xl font-bold touch-manipulation">
               <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
                 New Culture Trends
               </span>
               <span className="text-white ml-1">®</span>
             </Link>
             <nav className="hidden md:flex items-center gap-6">
-              <Link to="/" className="text-gray-400 hover:text-white transition-colors">
+              <Link to="/" className="text-gray-400 hover:text-white transition-colors touch-manipulation">
                 Home
               </Link>
-              <Link to="/products" className="text-white font-medium">
+              <Link to="/products" className="text-white font-medium touch-manipulation">
                 Products
               </Link>
             </nav>
@@ -127,15 +127,15 @@ export function ProductsPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2">
             <span className="bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] bg-clip-text text-transparent">
               All Products
             </span>
           </h1>
-          <p className="text-gray-400">
+          <p className="text-sm sm:text-base text-gray-400">
             Discover our complete collection of premium streetwear designs
           </p>
         </div>
@@ -158,13 +158,13 @@ export function ProductsPage() {
           </div>
 
           {/* Mobile Filter Toggle */}
-          <div className="flex items-center justify-between md:hidden">
+          <div className="flex items-center justify-between md:hidden gap-3">
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white min-h-[44px] touch-manipulation"
             >
               <Filter className="w-4 h-4" />
-              Filters
+              <span className="text-sm font-medium">Filters</span>
               {selectedCategories.length > 0 && (
                 <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506] text-xs font-semibold">
                   {selectedCategories.length}
@@ -174,21 +174,23 @@ export function ProductsPage() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-all ${
+                className={`p-2.5 rounded-lg transition-all min-w-[44px] min-h-[44px] touch-manipulation ${
                   viewMode === "grid"
                     ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
                     : "bg-white/5 border border-white/10 text-gray-400"
                 }`}
+                aria-label="Grid view"
               >
                 <Grid3x3 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition-all ${
+                className={`p-2.5 rounded-lg transition-all min-w-[44px] min-h-[44px] touch-manipulation ${
                   viewMode === "list"
                     ? "bg-gradient-to-r from-[#00FFE5] to-[#FF00B3] text-[#050506]"
                     : "bg-white/5 border border-white/10 text-gray-400"
                 }`}
+                aria-label="List view"
               >
                 <List className="w-4 h-4" />
               </button>
@@ -313,13 +315,14 @@ export function ProductsPage() {
                 className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                 onClick={() => setShowFilters(false)}
               />
-              <div className="absolute right-0 top-0 h-full w-80 bg-[#1D1D2C] border-l border-white/10 overflow-y-auto">
-                <div className="p-6 space-y-6">
+              <div className="absolute right-0 top-0 h-full w-full sm:w-80 bg-[#1D1D2C] border-l border-white/10 overflow-y-auto">
+                <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold">Filters</h2>
+                    <h2 className="text-base sm:text-lg font-semibold">Filters</h2>
                     <button
                       onClick={() => setShowFilters(false)}
-                      className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                      className="p-2 rounded-lg hover:bg-white/10 transition-colors min-w-[44px] min-h-[44px] touch-manipulation"
+                      aria-label="Close filters"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -328,7 +331,7 @@ export function ProductsPage() {
                   {(selectedCategories.length > 0 || searchQuery) && (
                     <button
                       onClick={clearFilters}
-                      className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm hover:bg-white/10 transition-colors"
+                      className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white text-sm hover:bg-white/10 transition-colors min-h-[44px] touch-manipulation"
                     >
                       Clear all filters
                     </button>
@@ -408,10 +411,10 @@ export function ProductsPage() {
 
                 {/* Load More */}
                 {hasMore && (
-                  <div className="text-center mt-12">
+                  <div className="text-center mt-8 sm:mt-12">
                     <button
                       onClick={handleLoadMore}
-                      className="px-8 py-3 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold hover:bg-[#00FFE5] hover:text-[#1D1D2C] transition-all duration-300"
+                      className="px-6 sm:px-8 py-3 rounded-full border-2 border-[#00FFE5] text-[#00FFE5] font-semibold hover:bg-[#00FFE5] hover:text-[#1D1D2C] transition-all duration-300 text-sm sm:text-base min-h-[44px] touch-manipulation"
                     >
                       Load More ({sortedItems.length - displayedItems} remaining)
                     </button>

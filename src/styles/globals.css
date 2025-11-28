@@ -201,6 +201,24 @@
 html {
   font-size: var(--font-size);
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile touch optimizations */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text selection on buttons for better mobile UX */
+button, [role="button"] {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* Custom animations */
