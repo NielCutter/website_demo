@@ -29,7 +29,7 @@ export function PortfolioExtraPage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ["home", "web-dev", "illustration", "branding", "merch", "contact"];
+      const sections = ["home", "web-dev", "illustration", "branding", "merch", "pricing", "contact"];
       const scrollPosition = window.scrollY + 200;
 
       for (const section of sections) {
@@ -111,6 +111,7 @@ export function PortfolioExtraPage() {
                 { id: "illustration", label: "Illustration" },
                 { id: "branding", label: "Branding" },
                 { id: "merch", label: "Merch" },
+                { id: "pricing", label: "Pricing" },
                 { id: "contact", label: "Contact" },
               ].map((item) => (
                 <button
@@ -291,6 +292,204 @@ export function PortfolioExtraPage() {
               <div>
                 <h3 className="text-2xl font-semibold text-black mb-6">Shirt Mockups</h3>
                 <ShirtMockups />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section id="pricing" className="min-h-screen bg-zinc-50 py-24 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl sm:text-5xl font-bold text-black mb-4">Pricing & Packages</h2>
+              <p className="text-lg text-zinc-600 max-w-2xl mx-auto">
+                Transparent pricing for illustration and web development services
+              </p>
+            </div>
+
+            {/* Illustration Packages */}
+            <div className="mb-16">
+              <div className="flex items-center gap-3 mb-8">
+                <Palette className="w-8 h-8 text-black" />
+                <h3 className="text-3xl font-bold text-black">Illustration Packages</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="bg-white border border-zinc-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <h4 className="text-xl font-bold text-black mb-2">Starter Portrait</h4>
+                  <p className="text-3xl font-bold text-black mb-4">₱1,500</p>
+                  <ul className="space-y-2 text-sm text-zinc-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Simple hyperrealistic headshot</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>1 revision</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-black text-white border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2 py-1 bg-white/20 rounded text-xs font-semibold">POPULAR</span>
+                  </div>
+                  <h4 className="text-xl font-bold mb-2">Premium Portrait</h4>
+                  <p className="text-3xl font-bold mb-4">₱3,500</p>
+                  <ul className="space-y-2 text-sm text-zinc-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-white mt-1">•</span>
+                      <span>Full hyperrealistic detail</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-white mt-1">•</span>
+                      <span>3 revisions</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-white mt-1">•</span>
+                      <span>High-res PNG + source file</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-white border border-zinc-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <h4 className="text-xl font-bold text-black mb-2">Apparel Graphic</h4>
+                  <p className="text-3xl font-bold text-black mb-4">₱2,000–₱5,000</p>
+                  <ul className="space-y-2 text-sm text-zinc-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Shirt graphics, merch design</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Mockups included</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-white border border-zinc-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <h4 className="text-xl font-bold text-black mb-2">Brand Identity Pack</h4>
+                  <p className="text-3xl font-bold text-black mb-4">₱8,000</p>
+                  <ul className="space-y-2 text-sm text-zinc-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Logo + typography</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Color palette</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Brand guidelines</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Web Development Packages */}
+            <div className="mb-16">
+              <div className="flex items-center gap-3 mb-8">
+                <Code className="w-8 h-8 text-black" />
+                <h3 className="text-3xl font-bold text-black">Web Development Packages</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white border border-zinc-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <h4 className="text-xl font-bold text-black mb-2">Figma → Live Website</h4>
+                  <p className="text-3xl font-bold text-black mb-4">₱5,000</p>
+                  <ul className="space-y-2 text-sm text-zinc-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Up to 3 pages</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Responsive mobile + desktop</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-white border border-zinc-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <h4 className="text-xl font-bold text-black mb-2">Business Website</h4>
+                  <p className="text-3xl font-bold text-black mb-4">₱12,000</p>
+                  <ul className="space-y-2 text-sm text-zinc-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Up to 6 pages</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Firebase hosting</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Contact form + basic admin tools</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-black text-white border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2 py-1 bg-white/20 rounded text-xs font-semibold">BEST VALUE</span>
+                  </div>
+                  <h4 className="text-xl font-bold mb-2">E-commerce / Apparel Site</h4>
+                  <p className="text-3xl font-bold mb-4">₱18,000–₱30,000</p>
+                  <ul className="space-y-2 text-sm text-zinc-300">
+                    <li className="flex items-start gap-2">
+                      <span className="text-white mt-1">•</span>
+                      <span>Product catalog</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-white mt-1">•</span>
+                      <span>Voting system / polls</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-white mt-1">•</span>
+                      <span>Admin dashboard</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-white border border-zinc-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <h4 className="text-xl font-bold text-black mb-2">Custom Web App</h4>
+                  <p className="text-3xl font-bold text-black mb-4">Starting ₱25,000</p>
+                  <ul className="space-y-2 text-sm text-zinc-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Tailored features</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-black mt-1">•</span>
+                      <span>Based on requirements</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Add-Ons */}
+            <div>
+              <div className="flex items-center gap-3 mb-8">
+                <ShoppingBag className="w-8 h-8 text-black" />
+                <h3 className="text-3xl font-bold text-black">Add-Ons</h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white border border-zinc-200 rounded-lg p-5">
+                  <p className="text-sm text-zinc-600 mb-1">Extra page</p>
+                  <p className="text-2xl font-bold text-black">₱800</p>
+                </div>
+                <div className="bg-white border border-zinc-200 rounded-lg p-5">
+                  <p className="text-sm text-zinc-600 mb-1">Admin dashboard module</p>
+                  <p className="text-2xl font-bold text-black">₱3,000+</p>
+                </div>
+                <div className="bg-white border border-zinc-200 rounded-lg p-5">
+                  <p className="text-sm text-zinc-600 mb-1">Newsletter integration</p>
+                  <p className="text-2xl font-bold text-black">₱1,200</p>
+                </div>
+                <div className="bg-white border border-zinc-200 rounded-lg p-5">
+                  <p className="text-sm text-zinc-600 mb-1">Shopee product sync</p>
+                  <p className="text-2xl font-bold text-black">₱3,500</p>
+                </div>
               </div>
             </div>
           </div>
