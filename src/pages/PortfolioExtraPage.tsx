@@ -64,7 +64,7 @@ export function PortfolioExtraPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2">
               <Code className="w-6 h-6 text-black" />
-              <span className="text-lg font-semibold text-black">Niel Cutter</span>
+              <span className="text-lg font-semibold text-black">Niel Miranda</span>
             </div>
             
             {/* Desktop Navigation */}
@@ -135,7 +135,7 @@ export function PortfolioExtraPage() {
         <section id="home" className="min-h-screen flex items-center justify-center pt-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-black mb-6">
-              Niel Cutter
+              Niel Miranda
             </h1>
             <p className="text-xl sm:text-2xl text-zinc-600 mb-4">
               Software Engineer • Hyperrealistic Illustrator • Creative Visual Designer
@@ -325,7 +325,7 @@ export function PortfolioExtraPage() {
             </div>
             
             <div className="pt-12 border-t border-white/20">
-              <p className="text-zinc-400">© 2025 Niel Cutter. All rights reserved.</p>
+              <p className="text-zinc-400">© 2025 Niel Miranda. All rights reserved.</p>
             </div>
           </div>
         </section>

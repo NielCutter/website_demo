@@ -71,7 +71,7 @@ export function PortfolioPage() {
       <section className={`relative min-h-[85vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 py-16 sm:py-24 transition-opacity duration-1000 ${isVisible ? "opacity-100" : "opacity-0"}`}>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 text-white tracking-tight">
-            Niel Cutter
+            Niel Miranda
           </h1>
           <p className="text-xl sm:text-2xl md:text-3xl text-gray-400 mb-4 font-light">
             Visual Assistant Portfolio
