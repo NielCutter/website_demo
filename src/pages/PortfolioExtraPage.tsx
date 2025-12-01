@@ -334,8 +334,8 @@ export function PortfolioExtraPage() {
                   <div className="flex items-center gap-2 mb-3">
                     <span className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-bold tracking-wider">POPULAR</span>
                   </div>
-                  <h4 className="text-xl font-bold mb-2 text-white">Premium Portrait</h4>
-                  <p className="text-3xl font-bold mb-4 text-white">₱3,500</p>
+                  <h4 className="text-xl font-bold mb-2 text-white" style={{ color: 'white' }}>Premium Portrait</h4>
+                  <p className="text-3xl font-bold mb-4 text-white" style={{ color: 'white' }}>₱3,500</p>
                   <ul className="space-y-2 text-sm text-zinc-300">
                     <li className="flex items-start gap-2">
                       <span className="text-white mt-1">•</span>
@@ -433,8 +433,8 @@ export function PortfolioExtraPage() {
                   <div className="flex items-center gap-2 mb-3">
                     <span className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-bold tracking-wider">BEST VALUE</span>
                   </div>
-                  <h4 className="text-xl font-bold mb-2 text-white">E-commerce / Apparel Site</h4>
-                  <p className="text-3xl font-bold mb-4 text-white">₱18,000–₱30,000</p>
+                  <h4 className="text-xl font-bold mb-2 text-white" style={{ color: 'white' }}>E-commerce / Apparel Site</h4>
+                  <p className="text-3xl font-bold mb-4 text-white" style={{ color: 'white' }}>₱18,000–₱30,000</p>
                   <ul className="space-y-2 text-sm text-zinc-300">
                     <li className="flex items-start gap-2">
                       <span className="text-white mt-1">•</span>

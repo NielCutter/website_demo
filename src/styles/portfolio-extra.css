@@ -52,6 +52,17 @@
   color: var(--foreground);
 }
 
+/* Allow Tailwind text color classes to override */
+.portfolio-extra-wrapper h1.text-white,
+.portfolio-extra-wrapper h2.text-white,
+.portfolio-extra-wrapper h3.text-white,
+.portfolio-extra-wrapper h4.text-white,
+.portfolio-extra-wrapper h5.text-white,
+.portfolio-extra-wrapper h6.text-white,
+.portfolio-extra-wrapper p.text-white {
+  color: white !important;
+}
+
 .portfolio-extra-wrapper h1 {
   font-size: 2rem;
 }
@@ -77,6 +88,11 @@
   font-weight: var(--font-weight-normal);
   line-height: 1.5;
   color: var(--foreground);
+}
+
+/* Allow Tailwind text color classes to override paragraph colors */
+.portfolio-extra-wrapper p.text-white {
+  color: white !important;
 }
 
 .portfolio-extra-wrapper button {
