@@ -3,6 +3,7 @@ import "./styles/globals.css";
 import { HomePage } from "./pages/HomePage";
 import { ProductsPage } from "./pages/ProductsPage";
 import { PortfolioPage } from "./pages/PortfolioPage";
+import { PortfolioExtraPage } from "./pages/PortfolioExtraPage";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 
@@ -12,8 +13,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/products" element={<ProductsPage />} />
-        <Route path="/portfolio" element={<PortfolioPage />} />
-        <Route path="/p0rtf0li0" element={<PortfolioPage />} />
+        <Route path="/portfolio" element={<PortfolioExtraPage />} />
+        <Route path="/p0rtf0li0" element={<PortfolioExtraPage />} />
         <Route
           path="/admin"
           element={
