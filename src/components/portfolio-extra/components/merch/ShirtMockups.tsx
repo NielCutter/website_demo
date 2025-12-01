@@ -1,5 +1,3 @@
-import { ImageWithFallback } from '../figma/ImageWithFallback';
-
 export function ShirtMockups() {
   return (
     <div className="space-y-12">
@@ -85,12 +83,7 @@ export function ShirtMockups() {
         <h5 className="text-black mb-6">On Model Mockups</h5>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
-            <div className="aspect-[3/4] bg-zinc-100 relative">
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1691689761290-2641cf0fc59a?w=600"
-                alt="Model wearing shirt"
-                className="w-full h-full object-cover"
-              />
+            <div className="aspect-[3/4] bg-gradient-to-br from-zinc-800 via-zinc-900 to-black relative">
               <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                 <div className="text-white text-center drop-shadow-2xl">
                   <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '1px' }}>NCTR</div>
@@ -105,12 +98,7 @@ export function ShirtMockups() {
           </div>
           
           <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
-            <div className="aspect-[3/4] bg-zinc-100 relative">
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1664891419647-5dfe3d310226?w=600"
-                alt="Model wearing shirt"
-                className="w-full h-full object-cover"
-              />
+            <div className="aspect-[3/4] bg-gradient-to-br from-zinc-700 via-zinc-800 to-black relative">
               <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                 <div className="text-white text-center drop-shadow-2xl">
                   <div style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-1px' }}>MINIMAL</div>
