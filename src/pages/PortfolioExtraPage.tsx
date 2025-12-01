@@ -330,24 +330,24 @@ export function PortfolioExtraPage() {
                   </ul>
                 </div>
 
-                <div className="bg-black text-white border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div className="bg-black border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-bold tracking-wider">POPULAR</span>
                   </div>
-                  <h4 className="text-xl font-bold mb-2 text-white" style={{ color: 'white' }}>Premium Portrait</h4>
-                  <p className="text-3xl font-bold mb-4 text-white" style={{ color: 'white' }}>₱3,500</p>
-                  <ul className="space-y-2 text-sm text-zinc-300">
-                    <li className="flex items-start gap-2">
-                      <span className="text-white mt-1">•</span>
-                      <span>Full hyperrealistic detail</span>
+                  <h4 className="text-xl font-bold mb-2" style={{ color: '#ffffff' }}>Premium Portrait</h4>
+                  <p className="text-3xl font-bold mb-4" style={{ color: '#ffffff' }}>₱3,500</p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-2" style={{ color: '#d4d4d8' }}>
+                      <span className="mt-1" style={{ color: '#ffffff' }}>•</span>
+                      <span style={{ color: '#d4d4d8' }}>Full hyperrealistic detail</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-white mt-1">•</span>
-                      <span>3 revisions</span>
+                    <li className="flex items-start gap-2" style={{ color: '#d4d4d8' }}>
+                      <span className="mt-1" style={{ color: '#ffffff' }}>•</span>
+                      <span style={{ color: '#d4d4d8' }}>3 revisions</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-white mt-1">•</span>
-                      <span>High-res PNG + source file</span>
+                    <li className="flex items-start gap-2" style={{ color: '#d4d4d8' }}>
+                      <span className="mt-1" style={{ color: '#ffffff' }}>•</span>
+                      <span style={{ color: '#d4d4d8' }}>High-res PNG + source file</span>
                     </li>
                   </ul>
                 </div>
@@ -429,24 +429,24 @@ export function PortfolioExtraPage() {
                   </ul>
                 </div>
 
-                <div className="bg-black text-white border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <div className="bg-black border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow" style={{ backgroundColor: '#000000', color: '#ffffff' }}>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-bold tracking-wider">BEST VALUE</span>
                   </div>
-                  <h4 className="text-xl font-bold mb-2 text-white" style={{ color: 'white' }}>E-commerce / Apparel Site</h4>
-                  <p className="text-3xl font-bold mb-4 text-white" style={{ color: 'white' }}>₱18,000–₱30,000</p>
-                  <ul className="space-y-2 text-sm text-zinc-300">
-                    <li className="flex items-start gap-2">
-                      <span className="text-white mt-1">•</span>
-                      <span>Product catalog</span>
+                  <h4 className="text-xl font-bold mb-2" style={{ color: '#ffffff' }}>E-commerce / Apparel Site</h4>
+                  <p className="text-3xl font-bold mb-4" style={{ color: '#ffffff' }}>₱18,000–₱30,000</p>
+                  <ul className="space-y-2 text-sm" style={{ color: '#d4d4d8' }}>
+                    <li className="flex items-start gap-2" style={{ color: '#d4d4d8' }}>
+                      <span className="mt-1" style={{ color: '#ffffff' }}>•</span>
+                      <span style={{ color: '#d4d4d8' }}>Product catalog</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-white mt-1">•</span>
-                      <span>Voting system / polls</span>
+                    <li className="flex items-start gap-2" style={{ color: '#d4d4d8' }}>
+                      <span className="mt-1" style={{ color: '#ffffff' }}>•</span>
+                      <span style={{ color: '#d4d4d8' }}>Voting system / polls</span>
                     </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-white mt-1">•</span>
-                      <span>Admin dashboard</span>
+                    <li className="flex items-start gap-2" style={{ color: '#d4d4d8' }}>
+                      <span className="mt-1" style={{ color: '#ffffff' }}>•</span>
+                      <span style={{ color: '#d4d4d8' }}>Admin dashboard</span>
                     </li>
                   </ul>
                 </div>
