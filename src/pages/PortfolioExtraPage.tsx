@@ -331,11 +331,11 @@ export function PortfolioExtraPage() {
                 </div>
 
                 <div className="bg-black text-white border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-1 bg-white/20 rounded text-xs font-semibold">POPULAR</span>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-bold tracking-wider">POPULAR</span>
                   </div>
-                  <h4 className="text-xl font-bold mb-2">Premium Portrait</h4>
-                  <p className="text-3xl font-bold mb-4">₱3,500</p>
+                  <h4 className="text-xl font-bold mb-2 text-white">Premium Portrait</h4>
+                  <p className="text-3xl font-bold mb-4 text-white">₱3,500</p>
                   <ul className="space-y-2 text-sm text-zinc-300">
                     <li className="flex items-start gap-2">
                       <span className="text-white mt-1">•</span>
@@ -430,11 +430,11 @@ export function PortfolioExtraPage() {
                 </div>
 
                 <div className="bg-black text-white border-2 border-black rounded-xl p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2 py-1 bg-white/20 rounded text-xs font-semibold">BEST VALUE</span>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="px-3 py-1.5 bg-white text-black rounded-md text-xs font-bold tracking-wider">BEST VALUE</span>
                   </div>
-                  <h4 className="text-xl font-bold mb-2">E-commerce / Apparel Site</h4>
-                  <p className="text-3xl font-bold mb-4">₱18,000–₱30,000</p>
+                  <h4 className="text-xl font-bold mb-2 text-white">E-commerce / Apparel Site</h4>
+                  <p className="text-3xl font-bold mb-4 text-white">₱18,000–₱30,000</p>
                   <ul className="space-y-2 text-sm text-zinc-300">
                     <li className="flex items-start gap-2">
                       <span className="text-white mt-1">•</span>
