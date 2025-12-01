@@ -75,6 +75,7 @@ export function PortfolioExtraPage() {
                 { id: "illustration", label: "Illustration" },
                 { id: "branding", label: "Branding" },
                 { id: "merch", label: "Merch" },
+                { id: "pricing", label: "Pricing" },
                 { id: "contact", label: "Contact" },
               ].map((item) => (
                 <button
