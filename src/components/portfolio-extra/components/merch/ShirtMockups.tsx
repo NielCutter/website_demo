@@ -9,9 +9,9 @@ export function ShirtMockups() {
             view="Front - Black Tee"
             graphic={
               <div className="text-white text-center">
-                <div className="mb-2" style={{ fontSize: '28px', fontWeight: '900', letterSpacing: '2px' }}>NCTR</div>
+                <div className="mb-2 text-white" style={{ fontSize: '28px', fontWeight: '900', letterSpacing: '2px', color: 'white' }}>NCTR</div>
                 <div className="h-0.5 bg-white w-20 mx-auto my-2" />
-                <div style={{ fontSize: '10px', letterSpacing: '4px', opacity: 0.9 }}>NEW CULTURE</div>
+                <div className="text-white" style={{ fontSize: '10px', letterSpacing: '4px', opacity: 0.9, color: 'rgba(255, 255, 255, 0.9)' }}>NEW CULTURE</div>
               </div>
             }
           />
@@ -52,14 +52,14 @@ export function ShirtMockups() {
             title="Oversized Back Design"
             graphic={
               <div className="text-white text-center w-full">
-                <div style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1', letterSpacing: '-3px' }}>RISE</div>
+                <div className="text-white" style={{ fontSize: '72px', fontWeight: '900', lineHeight: '1', letterSpacing: '-3px', color: 'white' }}>RISE</div>
                 <div className="space-y-2 mt-6">
                   <div className="h-1 bg-white w-full" />
                   <div className="h-1 bg-white w-4/5 mx-auto" />
                   <div className="h-1 bg-white w-3/5 mx-auto" />
                   <div className="h-1 bg-white w-2/5 mx-auto" />
                 </div>
-                <div className="mt-6 text-xs tracking-widest opacity-80">EST. 2025</div>
+                <div className="mt-6 text-xs tracking-widest text-white opacity-80" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>EST. 2025</div>
               </div>
             }
           />
@@ -86,9 +86,9 @@ export function ShirtMockups() {
             <div className="aspect-[3/4] bg-gradient-to-br from-zinc-800 via-zinc-900 to-black relative">
               <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                 <div className="text-white text-center drop-shadow-2xl">
-                  <div style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '1px' }}>NCTR</div>
+                  <div className="text-white" style={{ fontSize: '36px', fontWeight: '900', letterSpacing: '1px', color: 'white' }}>NCTR</div>
                   <div className="h-px bg-white w-24 mx-auto my-3" />
-                  <div style={{ fontSize: '14px', letterSpacing: '4px' }}>DESIGN STUDIO</div>
+                  <div className="text-white" style={{ fontSize: '14px', letterSpacing: '4px', color: 'white' }}>DESIGN STUDIO</div>
                 </div>
               </div>
             </div>
@@ -101,8 +101,8 @@ export function ShirtMockups() {
             <div className="aspect-[3/4] bg-gradient-to-br from-zinc-700 via-zinc-800 to-black relative">
               <div className="absolute inset-0 flex items-center justify-center bg-black/30">
                 <div className="text-white text-center drop-shadow-2xl">
-                  <div style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-1px' }}>MINIMAL</div>
-                  <div style={{ fontSize: '16px', letterSpacing: '5px', marginTop: '6px' }}>AESTHETIC</div>
+                  <div className="text-white" style={{ fontSize: '40px', fontWeight: '900', letterSpacing: '-1px', color: 'white' }}>MINIMAL</div>
+                  <div className="text-white" style={{ fontSize: '16px', letterSpacing: '5px', marginTop: '6px', color: 'white' }}>AESTHETIC</div>
                 </div>
               </div>
             </div>
@@ -151,7 +151,7 @@ export function ShirtMockups() {
                 <div className="relative">
                   <div className="w-24 h-32 bg-zinc-900 rounded-t-2xl flex items-center justify-center">
                     <div className="text-white text-center">
-                      <div style={{ fontSize: '16px', fontWeight: '900' }}>RISE</div>
+                      <div className="text-white" style={{ fontSize: '16px', fontWeight: '900', color: 'white' }}>RISE</div>
                     </div>
                   </div>
                   <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-zinc-700 rounded-full border-2 border-zinc-500" />
