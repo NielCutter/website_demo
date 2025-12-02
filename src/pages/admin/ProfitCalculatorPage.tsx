@@ -4,6 +4,7 @@ import { ProfitCalculator } from "../../components/admin/profit/ProfitCalculator
 import { ProfitNav } from "../../components/admin/profit/ProfitNav";
 import { saveProfitCalculation } from "../../services/profitService";
 import { ProfitInputs, ProfitResults } from "../../types/profit";
+import { Calculator, CheckCircle2, AlertCircle } from "lucide-react";
 import "../../styles/portfolio-extra.css";
 
 export function ProfitCalculatorPage() {
@@ -49,9 +50,12 @@ export function ProfitCalculatorPage() {
         
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-black mb-2">
-            Business Profit Calculator
-          </h1>
+          <div className="flex items-center gap-3 mb-2">
+            <Calculator className="w-8 h-8 text-black" />
+            <h1 className="text-3xl sm:text-4xl font-bold text-black">
+              Business Profit Calculator
+            </h1>
+          </div>
           <p className="text-gray-600">
             Calculate profit margins, markup, ROI, and break-even points for your products
           </p>
@@ -59,13 +63,15 @@ export function ProfitCalculatorPage() {
 
         {/* Save Status */}
         {saveStatus === "success" && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
-            Calculation saved successfully!
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+            <p className="text-green-800 text-sm">Calculation saved successfully!</p>
           </div>
         )}
         {saveStatus === "error" && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-            Failed to save calculation. Please try again.
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            <p className="text-red-800 text-sm">Failed to save calculation. Please try again.</p>
           </div>
         )}
 
