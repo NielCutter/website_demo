@@ -155,11 +155,6 @@ export function ProfitCalculator({
           }}
           placeholder="e.g., Premium T-Shirt, Oversized Hoodie"
           className="w-full bg-white"
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && isFormValid) {
-              handleSave();
-            }
-          }}
         />
         <p className="text-xs text-gray-500">
           Give your product a descriptive name for easy identification
@@ -217,9 +212,6 @@ export function ProfitCalculator({
             placeholder="0.00"
           />
           <div className="space-y-2">
-            <Label htmlFor="profit-input-marketplace-fees" className="text-sm font-medium text-gray-700">
-              Marketplace Fees
-            </Label>
             {presets.length > 0 && inputs.sellingPrice > 0 && (
               <Select
                 onValueChange={handlePresetSelect}
@@ -281,9 +273,6 @@ export function ProfitCalculator({
             max={100}
           />
           <div className="space-y-2">
-            <Label htmlFor="profit-input-selling-price" className="text-sm font-medium text-gray-700">
-              Selling Price <span className="text-red-500">*</span>
-            </Label>
             <ProfitInputField
               label="Selling Price"
               value={inputs.sellingPrice}
@@ -291,7 +280,7 @@ export function ProfitCalculator({
               type="currency"
               placeholder="0.00"
             />
-            <div className="flex items-start gap-2 text-xs text-gray-500 mt-1">
+            <div className="flex items-start gap-2 text-xs text-gray-500 -mt-1">
               <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
               <span>This is the price you'll sell the product for</span>
             </div>
