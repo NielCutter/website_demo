@@ -47,6 +47,21 @@ export function DTIRegistration({
         },
         {
           "@type": "PropertyValue",
+          "name": "IRM URL",
+          "value": `${window.location.origin}/irm`,
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "IRM Acknowledgment Time",
+          "value": "24-48 hours",
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "IRM Resolution Time",
+          "value": "7-15 working days",
+        },
+        {
+          "@type": "PropertyValue",
           "name": "BIR TIN",
           "value": birTin,
         },
@@ -155,7 +170,10 @@ export function DTIRegistration({
     };
 
     addMetaTag("dti-registration-number", registrationNumber);
-    addMetaTag("dti-irm", registrationNumber);
+    addMetaTag("dti-irm", "yes");
+    addMetaTag("dti-irm-url", `${window.location.origin}/irm`);
+    addMetaTag("dti-irm-acknowledgment", "24-48 hours");
+    addMetaTag("dti-irm-resolution", "7-15 working days");
     addMetaTag("business-name", businessName);
     addMetaTag("business-type", businessType);
     addMetaTag("bir-tin", birTin);

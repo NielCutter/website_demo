@@ -189,6 +189,9 @@ export function Footer() {
               </div>
             </div>
             <div className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6 text-sm order-1 sm:order-2">
+              <a href="/irm" className="text-gray-500 hover:text-[#00FFE5] transition-colors duration-300 whitespace-nowrap">
+                Internal Redress Mechanism (IRM)
+              </a>
               <a href="#" className="text-gray-500 hover:text-[#00FFE5] transition-colors duration-300 whitespace-nowrap">
                 Privacy Policy
               </a>
