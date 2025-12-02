@@ -5,6 +5,9 @@ import { ProductsPage } from "./pages/ProductsPage";
 import { PortfolioPage } from "./pages/PortfolioPage";
 import { PortfolioExtraPage } from "./pages/PortfolioExtraPage";
 import { IRMPage } from "./pages/IRMPage";
+import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
+import { TermsOfServicePage } from "./pages/TermsOfServicePage";
+import { CookiePolicyPage } from "./pages/CookiePolicyPage";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
 
@@ -17,6 +20,9 @@ export default function App() {
         <Route path="/portfolio" element={<PortfolioExtraPage />} />
         <Route path="/p0rtf0li0" element={<PortfolioExtraPage />} />
         <Route path="/irm" element={<IRMPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+        <Route path="/cookie-policy" element={<CookiePolicyPage />} />
         <Route
           path="/admin"
           element={
