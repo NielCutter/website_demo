@@ -6,14 +6,16 @@ interface DTIRegistrationProps {
   businessAddress?: string;
   businessType?: string;
   registrationDate?: string;
+  birTin?: string;
 }
 
 export function DTIRegistration({
-  registrationNumber = "CS-XXXXXXXXX",
-  businessName = "New Culture Trends",
+  registrationNumber = "7297002",
+  businessName = "NCTR Apparel Shop",
   businessAddress = "Philippines",
   businessType = "Sole Proprietorship",
   registrationDate = "2024-01-01",
+  birTin = "409-146-642-000",
 }: DTIRegistrationProps) {
   useEffect(() => {
     // Add JSON-LD structured data for DTI detection
@@ -41,6 +43,11 @@ export function DTIRegistration({
           "@type": "PropertyValue",
           "name": "DTI-IRM",
           "value": registrationNumber,
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "BIR TIN",
+          "value": birTin,
         },
         {
           "@type": "PropertyValue",
@@ -81,6 +88,7 @@ export function DTIRegistration({
     addMetaTag("dti-irm", registrationNumber);
     addMetaTag("business-name", businessName);
     addMetaTag("business-type", businessType);
+    addMetaTag("bir-tin", birTin);
 
     return () => {
       const scriptToRemove = document.getElementById("dti-registration-data");
@@ -88,7 +96,7 @@ export function DTIRegistration({
         scriptToRemove.remove();
       }
     };
-  }, [registrationNumber, businessName, businessAddress, businessType, registrationDate]);
+  }, [registrationNumber, businessName, businessAddress, businessType, registrationDate, birTin]);
 
   return null; // This component only adds metadata, no visible UI
 }

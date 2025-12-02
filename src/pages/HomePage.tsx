@@ -10,11 +10,12 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-[#050506] text-white overflow-x-hidden">
       <DTIRegistration 
-        registrationNumber="CS-XXXXXXXXX"
-        businessName="New Culture Trends"
+        registrationNumber="7297002"
+        businessName="NCTR Apparel Shop"
         businessAddress="Philippines"
         businessType="Sole Proprietorship"
         registrationDate="2024-01-01"
+        birTin="409-146-642-000"
       />
       <Hero />
       <FeaturedProducts />

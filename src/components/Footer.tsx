@@ -170,9 +170,17 @@ export function Footer() {
               <p className="text-gray-500 text-sm">
                 © {currentYear} New Culture Trends®. All rights reserved.
               </p>
-              <p className="text-gray-600 text-xs">
-                DTI Registration No: <span className="font-semibold text-gray-400">CS-XXXXXXXXX</span>
-              </p>
+              <div className="text-gray-600 text-xs space-y-1">
+                <p>
+                  DTI Registration No: <span className="font-semibold text-gray-400">7297002</span>
+                </p>
+                <p>
+                  BIR TIN: <span className="font-semibold text-gray-400">409-146-642-000</span>
+                </p>
+                <p className="text-gray-500">
+                  Registered Name: <span className="text-gray-400">NCTR Apparel Shop</span>
+                </p>
+              </div>
             </div>
             <div className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6 text-sm order-1 sm:order-2">
               <a href="#" className="text-gray-500 hover:text-[#00FFE5] transition-colors duration-300 whitespace-nowrap">
