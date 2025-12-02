@@ -340,7 +340,12 @@ export function ProfitCalculator({
             </div>
           )}
           <Button
-            onClick={handleSave}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleSave();
+            }}
             disabled={!isFormValid || isLoading}
             className="bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto sm:ml-auto"
             size="lg"
