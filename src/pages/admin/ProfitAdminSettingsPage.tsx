@@ -26,7 +26,6 @@ import {
   X,
   Sparkles
 } from "lucide-react";
-import "../../styles/portfolio-extra.css";
 
 const SETTINGS_DOC_ID = "profitAdminSettings";
 

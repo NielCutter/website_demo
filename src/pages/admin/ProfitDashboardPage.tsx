@@ -38,7 +38,6 @@ import {
   Search,
   Plus,
 } from "lucide-react";
-import "../../styles/portfolio-extra.css";
 
 export function ProfitDashboardPage() {
   const { user } = useAdminAuth();

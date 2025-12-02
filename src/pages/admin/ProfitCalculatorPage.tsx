@@ -5,7 +5,6 @@ import { ProfitNav } from "../../components/admin/profit/ProfitNav";
 import { saveProfitCalculation } from "../../services/profitService";
 import { ProfitInputs, ProfitResults } from "../../types/profit";
 import { Calculator, CheckCircle2, AlertCircle } from "lucide-react";
-import "../../styles/portfolio-extra.css";
 
 export function ProfitCalculatorPage() {
   const { user } = useAdminAuth();

@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./styles/globals.css";
+import "./styles/portfolio-extra.css";
 import { HomePage } from "./pages/HomePage";
 import { ProductsPage } from "./pages/ProductsPage";
 import { PortfolioPage } from "./pages/PortfolioPage";
