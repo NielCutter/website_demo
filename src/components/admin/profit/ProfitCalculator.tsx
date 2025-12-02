@@ -330,15 +330,23 @@ export function ProfitCalculator({
         </div>
       )}
 
-      {/* Save Button */}
+      {/* Save Button - Always Visible */}
       <div className="pt-6 border-t border-gray-200">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          {!isFormValid && (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Info className="w-4 h-4 flex-shrink-0" />
-              <span>Fill in item name and selling price to save</span>
-            </div>
-          )}
+          <div className="flex-1">
+            {!isFormValid && (
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Info className="w-4 h-4 flex-shrink-0" />
+                <span>Fill in item name and selling price to save</span>
+              </div>
+            )}
+            {isFormValid && (
+              <div className="flex items-center gap-2 text-sm text-green-600">
+                <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+                <span>Ready to save</span>
+              </div>
+            )}
+          </div>
           <Button
             type="button"
             onClick={(e) => {
@@ -347,7 +355,7 @@ export function ProfitCalculator({
               handleSave();
             }}
             disabled={!isFormValid || isLoading}
-            className={`w-full sm:w-auto sm:ml-auto ${
+            className={`flex-shrink-0 w-full sm:w-auto ${
               isFormValid && !isLoading
                 ? "bg-black text-white hover:bg-gray-800"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
