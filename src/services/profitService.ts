@@ -70,6 +70,7 @@ export async function deleteProfitCalculation(id: string): Promise<void> {
 
 /**
  * Get all profit calculations for a user
+ * Note: For admins, we can query all documents, but for regular users, we filter by userId
  */
 export async function getProfitCalculations(
   userId?: string,
@@ -79,6 +80,8 @@ export async function getProfitCalculations(
   try {
     let q = query(collection(db, COLLECTION_NAME));
 
+    // Always filter by userId if provided (for security and performance)
+    // Admins can still read all documents due to rules, but filtering helps performance
     if (userId) {
       q = query(q, where("userId", "==", userId));
     }

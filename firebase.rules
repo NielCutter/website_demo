@@ -57,6 +57,34 @@ service cloud.firestore {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }
+
+    // Profit Calculator Collections
+    match /profitCalculations/{calculationId} {
+      // Users can read their own calculations, admins can read all
+      // Note: For queries, we check userId in the query itself, but rules allow if user owns it or is admin
+      allow read: if request.auth != null && (
+        resource.data.userId == request.auth.uid || 
+        isAdmin()
+      );
+      // Users can create calculations with their own userId
+      allow create: if request.auth != null && 
+        request.resource.data.userId == request.auth.uid;
+      // Users can update/delete their own calculations, admins can update/delete any
+      allow update, delete: if request.auth != null && (
+        resource.data.userId == request.auth.uid || 
+        isAdmin()
+      );
+    }
+
+    match /profitAdminSettings/{docId} {
+      // Only admins can read/write settings
+      allow read, write: if isAdmin();
+    }
+
+    match /marketplacePresets/{presetId} {
+      // Only admins can read/write presets
+      allow read, write: if isAdmin();
+    }
   }
 }
 

@@ -15,7 +15,17 @@ import { ProfitNav } from "../../components/admin/profit/ProfitNav";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { Trash2, Plus, Save } from "lucide-react";
+import { 
+  Trash2, 
+  Plus, 
+  Save, 
+  CheckCircle2, 
+  AlertCircle, 
+  Info, 
+  Edit2,
+  X,
+  Sparkles
+} from "lucide-react";
 import "../../styles/portfolio-extra.css";
 
 const SETTINGS_DOC_ID = "profitAdminSettings";
@@ -28,6 +38,11 @@ export function ProfitAdminSettingsPage() {
   const [saving, setSaving] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
   const [newPresetFee, setNewPresetFee] = useState(0);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "success" | "error">("idle");
+  const [editingPreset, setEditingPreset] = useState<string | null>(null);
+  const [editPresetName, setEditPresetName] = useState("");
+  const [editPresetFee, setEditPresetFee] = useState(0);
+  const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -65,7 +80,14 @@ export function ProfitAdminSettingsPage() {
   const saveSettings = async () => {
     if (!user) return;
 
+    if (defaultTaxRate < 0 || defaultTaxRate > 100) {
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus("idle"), 3000);
+      return;
+    }
+
     setSaving(true);
+    setSaveStatus("idle");
     try {
       const settingsRef = doc(db, "profitAdminSettings", SETTINGS_DOC_ID);
       await setDoc(
@@ -77,18 +99,24 @@ export function ProfitAdminSettingsPage() {
         },
         { merge: true }
       );
-      alert("Settings saved successfully!");
+      setSaveStatus("success");
+      setTimeout(() => setSaveStatus("idle"), 3000);
     } catch (error) {
       console.error("Error saving settings:", error);
-      alert("Failed to save settings");
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus("idle"), 3000);
     } finally {
       setSaving(false);
     }
   };
 
   const addPreset = async () => {
-    if (!newPresetName.trim() || newPresetFee <= 0) {
-      alert("Please enter a valid preset name and fee percentage");
+    if (!newPresetName.trim()) {
+      alert("Please enter a preset name");
+      return;
+    }
+    if (newPresetFee < 0 || newPresetFee > 100) {
+      alert("Fee percentage must be between 0 and 100");
       return;
     }
 
@@ -101,10 +129,50 @@ export function ProfitAdminSettingsPage() {
       });
       setNewPresetName("");
       setNewPresetFee(0);
+      setShowAddForm(false);
       loadSettings();
     } catch (error) {
       console.error("Error adding preset:", error);
       alert("Failed to add preset");
+    }
+  };
+
+  const startEditPreset = (preset: MarketplacePreset) => {
+    setEditingPreset(preset.id || null);
+    setEditPresetName(preset.name);
+    setEditPresetFee(preset.feePercentage);
+  };
+
+  const cancelEdit = () => {
+    setEditingPreset(null);
+    setEditPresetName("");
+    setEditPresetFee(0);
+  };
+
+  const saveEditPreset = async (id: string) => {
+    if (!editPresetName.trim()) {
+      alert("Please enter a preset name");
+      return;
+    }
+    if (editPresetFee < 0 || editPresetFee > 100) {
+      alert("Fee percentage must be between 0 and 100");
+      return;
+    }
+
+    try {
+      await setDoc(
+        doc(db, "marketplacePresets", id),
+        {
+          name: editPresetName.trim(),
+          feePercentage: editPresetFee,
+        },
+        { merge: true }
+      );
+      cancelEdit();
+      loadSettings();
+    } catch (error) {
+      console.error("Error updating preset:", error);
+      alert("Failed to update preset");
     }
   };
 
@@ -135,25 +203,49 @@ export function ProfitAdminSettingsPage() {
         
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-black mb-2">
-            Profit Calculator Settings
-          </h1>
+          <div className="flex items-center gap-3 mb-2">
+            <Sparkles className="w-8 h-8 text-black" />
+            <h1 className="text-3xl sm:text-4xl font-bold text-black">
+              Calculator Settings
+            </h1>
+          </div>
           <p className="text-gray-600">
-            Manage default tax rate and marketplace fee presets
+            Configure default tax rate and marketplace fee presets for quick calculations
           </p>
         </div>
 
+        {/* Save Status Messages */}
+        {saveStatus === "success" && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-3">
+            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+            <p className="text-green-800 text-sm">Settings saved successfully!</p>
+          </div>
+        )}
+        {saveStatus === "error" && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+            <p className="text-red-800 text-sm">Failed to save settings. Please try again.</p>
+          </div>
+        )}
+
         {/* Default Tax Rate */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 mb-6">
-          <h2 className="text-xl font-semibold text-black mb-4">
-            Default Tax Rate
-          </h2>
+        <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 mb-6 shadow-sm">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-black mb-1">
+                Default Tax Rate
+              </h2>
+              <p className="text-sm text-gray-500">
+                This rate will be pre-filled in new calculations (default: 12% VAT for Philippines)
+              </p>
+            </div>
+          </div>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="taxRate" className="text-sm font-medium text-gray-700">
                 Tax Rate (%)
               </Label>
-              <div className="relative">
+              <div className="relative max-w-xs">
                 <Input
                   id="taxRate"
                   type="number"
@@ -162,17 +254,21 @@ export function ProfitAdminSettingsPage() {
                   min={0}
                   max={100}
                   step={0.01}
-                  className="w-full pr-8"
+                  className="w-full pr-8 bg-white"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
                   %
                 </span>
               </div>
+              <div className="flex items-start gap-2 text-xs text-gray-500 mt-1">
+                <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>Enter a value between 0 and 100</span>
+              </div>
             </div>
             <Button
               onClick={saveSettings}
-              disabled={saving}
-              className="bg-black text-white hover:bg-gray-800"
+              disabled={saving || defaultTaxRate < 0 || defaultTaxRate > 100}
+              className="bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4 mr-2" />
               {saving ? "Saving..." : "Save Tax Rate"}
@@ -181,88 +277,229 @@ export function ProfitAdminSettingsPage() {
         </div>
 
         {/* Marketplace Presets */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8">
-          <h2 className="text-xl font-semibold text-black mb-4">
-            Marketplace Fee Presets
-          </h2>
-
-          {/* Add New Preset */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">
-              Add New Preset
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="presetName" className="text-sm text-gray-600">
-                  Preset Name
-                </Label>
-                <Input
-                  id="presetName"
-                  type="text"
-                  value={newPresetName}
-                  onChange={(e) => setNewPresetName(e.target.value)}
-                  placeholder="e.g., Shopee"
-                  className="w-full"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="presetFee" className="text-sm text-gray-600">
-                  Fee Percentage
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="presetFee"
-                    type="number"
-                    value={newPresetFee}
-                    onChange={(e) => setNewPresetFee(parseFloat(e.target.value) || 0)}
-                    placeholder="0"
-                    min={0}
-                    max={100}
-                    step={0.01}
-                    className="w-full pr-8"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
-                    %
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-end">
-                <Button
-                  onClick={addPreset}
-                  className="w-full bg-black text-white hover:bg-gray-800"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Preset
-                </Button>
-              </div>
+        <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 shadow-sm">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-black mb-1">
+                Marketplace Fee Presets
+              </h2>
+              <p className="text-sm text-gray-500">
+                Create presets for common marketplaces to quickly apply fees in calculations
+              </p>
             </div>
           </div>
+
+          {/* Add New Preset Button */}
+          {!showAddForm && (
+            <Button
+              onClick={() => setShowAddForm(true)}
+              variant="outline"
+              className="mb-6 border-gray-300 hover:bg-gray-50"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add New Preset
+            </Button>
+          )}
+
+          {/* Add New Preset Form */}
+          {showAddForm && (
+            <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-gray-700">
+                  Add New Preset
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setNewPresetName("");
+                    setNewPresetFee(0);
+                  }}
+                  className="h-6 w-6"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="presetName" className="text-sm font-medium text-gray-700">
+                    Preset Name
+                  </Label>
+                  <Input
+                    id="presetName"
+                    type="text"
+                    value={newPresetName}
+                    onChange={(e) => setNewPresetName(e.target.value)}
+                    placeholder="e.g., Shopee, Lazada"
+                    className="w-full bg-white"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        addPreset();
+                      }
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="presetFee" className="text-sm font-medium text-gray-700">
+                    Fee Percentage
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="presetFee"
+                      type="number"
+                      value={newPresetFee}
+                      onChange={(e) => setNewPresetFee(parseFloat(e.target.value) || 0)}
+                      placeholder="0.00"
+                      min={0}
+                      max={100}
+                      step={0.01}
+                      className="w-full pr-8 bg-white"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          addPreset();
+                        }
+                      }}
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+                      %
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-end gap-2">
+                  <Button
+                    onClick={addPreset}
+                    disabled={!newPresetName.trim() || newPresetFee < 0 || newPresetFee > 100}
+                    className="flex-1 bg-black text-white hover:bg-gray-800 disabled:opacity-50"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setNewPresetName("");
+                      setNewPresetFee(0);
+                    }}
+                    className="border-gray-300"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Presets List */}
           <div className="space-y-3">
             {presets.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                No presets yet. Add your first preset above.
-              </p>
+              <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg">
+                <Info className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-500 font-medium mb-1">No presets yet</p>
+                <p className="text-sm text-gray-400 mb-4">
+                  Create presets for quick access to marketplace fees
+                </p>
+                <Button
+                  onClick={() => setShowAddForm(true)}
+                  variant="outline"
+                  className="border-gray-300"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Your First Preset
+                </Button>
+              </div>
             ) : (
               presets.map((preset) => (
                 <div
                   key={preset.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200"
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
                 >
-                  <div>
-                    <p className="font-medium text-gray-900">{preset.name}</p>
-                    <p className="text-sm text-gray-500">
-                      {preset.feePercentage}% fee
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => preset.id && deletePreset(preset.id)}
-                  >
-                    <Trash2 className="w-4 h-4 text-red-600" />
-                  </Button>
+                  {editingPreset === preset.id ? (
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs text-gray-600">Name</Label>
+                        <Input
+                          value={editPresetName}
+                          onChange={(e) => setEditPresetName(e.target.value)}
+                          className="bg-white text-sm"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" && preset.id) {
+                              saveEditPreset(preset.id);
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs text-gray-600">Fee (%)</Label>
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            value={editPresetFee}
+                            onChange={(e) => setEditPresetFee(parseFloat(e.target.value) || 0)}
+                            min={0}
+                            max={100}
+                            step={0.01}
+                            className="bg-white text-sm pr-8"
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && preset.id) {
+                                saveEditPreset(preset.id);
+                              }
+                            }}
+                          />
+                          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+                            %
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-end gap-2">
+                        <Button
+                          onClick={() => preset.id && saveEditPreset(preset.id)}
+                          size="sm"
+                          className="bg-black text-white hover:bg-gray-800"
+                        >
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Save
+                        </Button>
+                        <Button
+                          onClick={cancelEdit}
+                          size="sm"
+                          variant="outline"
+                          className="border-gray-300"
+                        >
+                          <X className="w-3 h-3 mr-1" />
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-900 mb-1">{preset.name}</p>
+                        <p className="text-sm text-gray-500">
+                          {preset.feePercentage}% marketplace fee
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => startEditPreset(preset)}
+                          className="hover:bg-gray-200"
+                        >
+                          <Edit2 className="w-4 h-4 text-gray-600" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => preset.id && deletePreset(preset.id)}
+                          className="hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               ))
             )}
