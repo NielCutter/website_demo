@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Calculator, Save, RefreshCw, Info, AlertCircle, CheckCircle2, Zap } from "lucide-react";
+import { Calculator, Save, Info, AlertCircle, CheckCircle2, Zap } from "lucide-react";
 import { ProfitInputField } from "./ProfitInputField";
 import { ProfitResultsGrid } from "./ProfitResultCard";
 import { calculateAll, formatCurrency } from "../../../utils/profit";
@@ -91,13 +91,6 @@ export function ProfitCalculator({
     setInputs((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleReset = () => {
-    if (confirm("Are you sure you want to reset all fields? This cannot be undone.")) {
-      setInputs(defaultInputs);
-      setItemName("");
-      setValidationError(null);
-    }
-  };
 
   const handleSave = () => {
     setValidationError(null);
@@ -327,30 +320,25 @@ export function ProfitCalculator({
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200">
-        <Button
-          onClick={handleSave}
-          disabled={!isFormValid || isLoading}
-          className="bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Save className="w-4 h-4 mr-2" />
-          {isLoading ? "Saving..." : "Save Calculation"}
-        </Button>
-        <Button
-          onClick={handleReset}
-          variant="outline"
-          className="border-gray-300 hover:bg-gray-50"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Reset All
-        </Button>
-        {!isFormValid && (
-          <div className="flex items-center gap-2 text-sm text-gray-500 ml-auto">
-            <Info className="w-4 h-4" />
-            <span>Fill in item name and selling price to save</span>
-          </div>
-        )}
+      {/* Save Button */}
+      <div className="pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between">
+          {!isFormValid && (
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Info className="w-4 h-4" />
+              <span>Fill in item name and selling price to save</span>
+            </div>
+          )}
+          <Button
+            onClick={handleSave}
+            disabled={!isFormValid || isLoading}
+            className="bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+            size="lg"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            {isLoading ? "Saving..." : "Save Calculation"}
+          </Button>
+        </div>
       </div>
 
       {/* Results Grid */}
