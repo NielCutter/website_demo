@@ -254,8 +254,9 @@ export function IRMPage() {
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
-                  https://facebook.com/newculturetrends
+                  New Culture Trends
                 </a>
+                <span className="text-gray-600 text-sm ml-2">(https://facebook.com/newculturetrends)</span>
               </div>
             </li>
           </ul>
@@ -306,7 +307,7 @@ export function IRMPage() {
                   rel="noopener noreferrer"
                   className="text-blue-600 hover:underline"
                 >
-                  Message us on Facebook
+                  Message us on New Culture Trends Facebook Page
                 </a>
               </div>
             </li>
