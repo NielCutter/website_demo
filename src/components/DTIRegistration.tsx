@@ -23,11 +23,8 @@ export function DTIRegistration({
 }: DTIRegistrationProps) {
   useEffect(() => {
     // Add JSON-LD structured data for DTI detection
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.id = "dti-registration-data";
-    
-    const structuredData = {
+    // Organization data
+    const organizationData = {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": businessName,
@@ -82,15 +79,69 @@ export function DTIRegistration({
       "url": window.location.origin,
     };
 
-    script.text = JSON.stringify(structuredData);
-    
-    // Remove existing script if present
-    const existing = document.getElementById("dti-registration-data");
-    if (existing) {
-      existing.remove();
-    }
-    
-    document.head.appendChild(script);
+    // WebSite schema for platform detection
+    const websiteData = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "New Culture Trends",
+      "url": window.location.origin,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${window.location.origin}/products?q={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": businessName,
+        "identifier": `DTI-${registrationNumber}`
+      }
+    };
+
+    // OnlineStore schema for e-commerce platform detection
+    const onlineStoreData = {
+      "@context": "https://schema.org",
+      "@type": "OnlineStore",
+      "name": "New Culture Trends",
+      "url": window.location.origin,
+      "description": "Online apparel store - Streetwear and fashion products",
+      "priceRange": "$$",
+      "paymentAccepted": "Credit Card, Debit Card, GCash, PayMaya, Shopee Pay",
+      "currenciesAccepted": "PHP",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Philippines"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": businessName,
+        "identifier": {
+          "@type": "PropertyValue",
+          "name": "DTI Registration Number",
+          "value": registrationNumber
+        }
+      }
+    };
+
+    // Create multiple scripts for better detection
+    const scripts = [
+      { id: "dti-organization", data: organizationData },
+      { id: "dti-website", data: websiteData },
+      { id: "dti-onlinestore", data: onlineStoreData }
+    ];
+
+    scripts.forEach(({ id, data }) => {
+      const scriptEl = document.createElement("script");
+      scriptEl.type = "application/ld+json";
+      scriptEl.id = id;
+      scriptEl.text = JSON.stringify(data);
+      
+      const existing = document.getElementById(id);
+      if (existing) {
+        existing.remove();
+      }
+      
+      document.head.appendChild(scriptEl);
+    });
 
     // Add meta tags for DTI detection
     const addMetaTag = (name: string, content: string) => {
@@ -110,12 +161,17 @@ export function DTIRegistration({
     addMetaTag("bir-tin", birTin);
     addMetaTag("trademark-registration-number", trademarkNumber);
     addMetaTag("trademark-name", trademarkName);
+    addMetaTag("dti-platform-type", "e-commerce");
+    addMetaTag("dti-platform-url", window.location.origin);
 
     return () => {
-      const scriptToRemove = document.getElementById("dti-registration-data");
-      if (scriptToRemove) {
-        scriptToRemove.remove();
-      }
+      // Clean up all structured data scripts
+      ["dti-organization", "dti-website", "dti-onlinestore"].forEach(id => {
+        const scriptToRemove = document.getElementById(id);
+        if (scriptToRemove) {
+          scriptToRemove.remove();
+        }
+      });
     };
   }, [registrationNumber, businessName, businessAddress, businessType, registrationDate, birTin, trademarkNumber, trademarkName]);
 

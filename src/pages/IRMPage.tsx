@@ -4,11 +4,8 @@ import { Mail, MessageCircle, ShoppingBag, Facebook, ExternalLink } from "lucide
 export function IRMPage() {
   useEffect(() => {
     // Add JSON-LD structured data for automatic DTI IRM detection
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.id = "dti-irm-structured-data";
-    
-    const structuredData = {
+    // Multiple structured data objects for better platform detection
+    const organizationData = {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "NCTR Apparel Shop",
@@ -26,7 +23,7 @@ export function IRMPage() {
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "Customer Service",
-        "email": "nielcutter.nc@gmail.com",
+        "email": "info@newculturetrends.com",
         "availableLanguage": ["English", "Filipino"],
         "areaServed": "PH"
       },
@@ -64,6 +61,70 @@ export function IRMPage() {
       ]
     };
 
+    // WebSite schema for platform detection
+    const websiteData = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "New Culture Trends",
+      "url": "https://newculturetrends.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://newculturetrends.com/products?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "NCTR Apparel Shop",
+        "identifier": "DTI-7297002"
+      }
+    };
+
+    // OnlineStore schema for e-commerce platform detection
+    const onlineStoreData = {
+      "@context": "https://schema.org",
+      "@type": "OnlineStore",
+      "name": "New Culture Trends",
+      "url": "https://newculturetrends.com",
+      "description": "Online apparel store - Streetwear and fashion products",
+      "priceRange": "$$",
+      "paymentAccepted": "Credit Card, Debit Card, GCash, PayMaya, Shopee Pay",
+      "currenciesAccepted": "PHP",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Philippines"
+      },
+      "seller": {
+        "@type": "Organization",
+        "name": "NCTR Apparel Shop",
+        "identifier": {
+          "@type": "PropertyValue",
+          "name": "DTI Registration Number",
+          "value": "7297002"
+        }
+      }
+    };
+
+    // Create scripts for each structured data
+    const scripts = [
+      { id: "dti-irm-organization", data: organizationData },
+      { id: "dti-irm-website", data: websiteData },
+      { id: "dti-irm-onlinestore", data: onlineStoreData }
+    ];
+
+    scripts.forEach(({ id, data }) => {
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.id = id;
+      script.text = JSON.stringify(data);
+      
+      const existing = document.getElementById(id);
+      if (existing) {
+        existing.remove();
+      }
+      
+      document.head.appendChild(script);
+    });
+
     script.text = JSON.stringify(structuredData);
     
     // Remove existing script if present
@@ -99,6 +160,8 @@ export function IRMPage() {
     addMetaTag("dti-irm-resolution", "7-15 working days");
     addMetaTag("dti-registration-number", "7297002");
     addMetaTag("dti-business-name", "NCTR Apparel Shop");
+    addMetaTag("dti-platform-type", "e-commerce");
+    addMetaTag("dti-platform-url", "https://newculturetrends.com");
     
     // Open Graph and Twitter Card for better detection
     addMetaTag("og:type", "website", true);
@@ -116,10 +179,13 @@ export function IRMPage() {
     canonical.setAttribute("href", "https://newculturetrends.com/irm");
 
     return () => {
-      const scriptToRemove = document.getElementById("dti-irm-structured-data");
-      if (scriptToRemove) {
-        scriptToRemove.remove();
-      }
+      // Clean up all structured data scripts
+      ["dti-irm-organization", "dti-irm-website", "dti-irm-onlinestore"].forEach(id => {
+        const scriptToRemove = document.getElementById(id);
+        if (scriptToRemove) {
+          scriptToRemove.remove();
+        }
+      });
     };
   }, []);
 
@@ -209,10 +275,10 @@ export function IRMPage() {
               <div>
                 <strong className="text-gray-900 block mb-1">Email:</strong>
                 <a 
-                  href="mailto:nielcutter.nc@gmail.com" 
+                  href="mailto:info@newculturetrends.com" 
                   className="text-blue-600 hover:underline"
                 >
-                  nielcutter.nc@gmail.com
+                  info@newculturetrends.com
                 </a>
               </div>
             </li>
@@ -402,10 +468,10 @@ export function IRMPage() {
             <p className="text-gray-700 mt-4 text-sm">
               <strong>Your Rights:</strong> You have the right to access, correct, or delete your personal information. To exercise these rights, please contact us at{" "}
               <a 
-                href="mailto:nielcutter.nc@gmail.com" 
+                href="mailto:info@newculturetrends.com" 
                 className="text-blue-600 hover:underline"
               >
-                nielcutter.nc@gmail.com
+                info@newculturetrends.com
               </a>
             </p>
           </div>
@@ -429,10 +495,10 @@ export function IRMPage() {
             <p>
               <strong>Email:</strong>{" "}
               <a 
-                href="mailto:nielcutter.nc@gmail.com" 
+                href="mailto:info@newculturetrends.com" 
                 className="text-blue-600 hover:underline"
               >
-                nielcutter.nc@gmail.com
+                info@newculturetrends.com
               </a>
             </p>
             <p>
@@ -457,10 +523,10 @@ export function IRMPage() {
           <p className="mt-2">
             For questions about this policy, please contact us at{" "}
             <a 
-              href="mailto:nielcutter.nc@gmail.com" 
+              href="mailto:info@newculturetrends.com" 
               className="text-blue-600 hover:underline"
             >
-              nielcutter.nc@gmail.com
+              info@newculturetrends.com
             </a>
           </p>
         </footer>
