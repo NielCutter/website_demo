@@ -166,9 +166,14 @@ export function Footer() {
         {/* Bottom section */}
         <div className="pt-8 border-t border-white/10">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-            <p className="text-gray-500 text-sm order-2 sm:order-1">
-              © {currentYear} New Culture Trends®. All rights reserved.
-            </p>
+            <div className="order-2 sm:order-1 space-y-2">
+              <p className="text-gray-500 text-sm">
+                © {currentYear} New Culture Trends®. All rights reserved.
+              </p>
+              <p className="text-gray-600 text-xs">
+                DTI Registration No: <span className="font-semibold text-gray-400">CS-XXXXXXXXX</span>
+              </p>
+            </div>
             <div className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6 text-sm order-1 sm:order-2">
               <a href="#" className="text-gray-500 hover:text-[#00FFE5] transition-colors duration-300 whitespace-nowrap">
                 Privacy Policy
