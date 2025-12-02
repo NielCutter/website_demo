@@ -51,27 +51,41 @@ export function ProfitAdminSettingsPage() {
   const loadSettings = async () => {
     setLoading(true);
     try {
-      const settingsRef = doc(db, "profitAdminSettings", SETTINGS_DOC_ID);
-      const settingsSnap = await getDoc(settingsRef);
+      // Load default tax rate
+      try {
+        const settingsRef = doc(db, "profitAdminSettings", SETTINGS_DOC_ID);
+        const settingsSnap = await getDoc(settingsRef);
 
-      if (settingsSnap.exists()) {
-        const data = settingsSnap.data();
-        setDefaultTaxRate(data.defaultTaxRate || 12);
+        if (settingsSnap.exists()) {
+          const data = settingsSnap.data();
+          setDefaultTaxRate(data.defaultTaxRate || 12);
+        }
+      } catch (settingsError) {
+        // Settings collection might not exist yet, use default
+        console.log("Settings not found, using default tax rate");
       }
 
       // Load presets
-      const presetsRef = collection(db, "marketplacePresets");
-      const presetsSnap = await getDocs(presetsRef);
-      const presetsData: MarketplacePreset[] = [];
-      presetsSnap.forEach((doc) => {
-        presetsData.push({
-          id: doc.id,
-          ...doc.data(),
-        } as MarketplacePreset);
-      });
-      setPresets(presetsData);
+      try {
+        const presetsRef = collection(db, "marketplacePresets");
+        const presetsSnap = await getDocs(presetsRef);
+        const presetsData: MarketplacePreset[] = [];
+        presetsSnap.forEach((doc) => {
+          presetsData.push({
+            id: doc.id,
+            ...doc.data(),
+          } as MarketplacePreset);
+        });
+        setPresets(presetsData);
+      } catch (presetsError) {
+        // Presets collection might not exist yet, use empty array
+        console.log("Presets not found, using empty array");
+        setPresets([]);
+      }
     } catch (error) {
       console.error("Error loading settings:", error);
+      // Set defaults on error
+      setPresets([]);
     } finally {
       setLoading(false);
     }

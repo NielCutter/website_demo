@@ -58,28 +58,41 @@ export function ProfitCalculator({
   const loadSettings = async () => {
     try {
       // Load default tax rate
-      const settingsRef = doc(db, "profitAdminSettings", "profitAdminSettings");
-      const settingsSnap = await getDoc(settingsRef);
-      if (settingsSnap.exists()) {
-        const data = settingsSnap.data();
-        if (data.defaultTaxRate && !initialInputs?.taxRate) {
-          setInputs((prev) => ({ ...prev, taxRate: data.defaultTaxRate }));
+      try {
+        const settingsRef = doc(db, "profitAdminSettings", "profitAdminSettings");
+        const settingsSnap = await getDoc(settingsRef);
+        if (settingsSnap.exists()) {
+          const data = settingsSnap.data();
+          if (data.defaultTaxRate && !initialInputs?.taxRate) {
+            setInputs((prev) => ({ ...prev, taxRate: data.defaultTaxRate }));
+          }
         }
+      } catch (settingsError) {
+        // Settings collection might not exist yet, use default
+        console.log("Settings not found, using defaults");
       }
 
       // Load marketplace presets
-      const presetsRef = collection(db, "marketplacePresets");
-      const presetsSnap = await getDocs(presetsRef);
-      const presetsData: MarketplacePreset[] = [];
-      presetsSnap.forEach((doc) => {
-        presetsData.push({
-          id: doc.id,
-          ...doc.data(),
-        } as MarketplacePreset);
-      });
-      setPresets(presetsData);
+      try {
+        const presetsRef = collection(db, "marketplacePresets");
+        const presetsSnap = await getDocs(presetsRef);
+        const presetsData: MarketplacePreset[] = [];
+        presetsSnap.forEach((doc) => {
+          presetsData.push({
+            id: doc.id,
+            ...doc.data(),
+          } as MarketplacePreset);
+        });
+        setPresets(presetsData);
+      } catch (presetsError) {
+        // Presets collection might not exist yet, use empty array
+        console.log("Presets not found, using empty array");
+        setPresets([]);
+      }
     } catch (error) {
       console.error("Error loading settings:", error);
+      // Set defaults on error
+      setPresets([]);
     } finally {
       setLoadingPresets(false);
     }
