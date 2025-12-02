@@ -10,6 +10,9 @@ import { TermsOfServicePage } from "./pages/TermsOfServicePage";
 import { CookiePolicyPage } from "./pages/CookiePolicyPage";
 import { ProtectedRoute } from "./components/admin/ProtectedRoute";
 import { AdminDashboard } from "./components/admin/AdminDashboard";
+import { ProfitCalculatorPage } from "./pages/admin/ProfitCalculatorPage";
+import { ProfitDashboardPage } from "./pages/admin/ProfitDashboardPage";
+import { ProfitAdminSettingsPage } from "./pages/admin/ProfitAdminSettingsPage";
 
 export default function App() {
   return (
@@ -28,6 +31,30 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/profit/calculator"
+          element={
+            <ProtectedRoute>
+              <ProfitCalculatorPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/profit/dashboard"
+          element={
+            <ProtectedRoute>
+              <ProfitDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/profit/settings"
+          element={
+            <ProtectedRoute>
+              <ProfitAdminSettingsPage />
             </ProtectedRoute>
           }
         />
