@@ -355,12 +355,19 @@ export function ProfitCalculator({
               handleSave();
             }}
             disabled={!isFormValid || isLoading}
-            className={`flex-shrink-0 w-full sm:w-auto ${
+            className={`flex-shrink-0 w-full sm:w-auto !opacity-100 !visible ${
               isFormValid && !isLoading
-                ? "bg-black text-white hover:bg-gray-800"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                ? "!bg-black !text-white hover:!bg-gray-800"
+                : "!bg-gray-400 !text-gray-700 cursor-not-allowed"
             }`}
             size="lg"
+            style={{
+              display: "flex",
+              visibility: "visible",
+              opacity: 1,
+              minHeight: "40px",
+              padding: "0.75rem 1.5rem",
+            }}
           >
             <Save className="w-4 h-4 mr-2" />
             {isLoading ? "Saving..." : "Save Calculation"}
