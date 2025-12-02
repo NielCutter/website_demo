@@ -111,62 +111,72 @@ export function IRMPage() {
       { id: "dti-irm-onlinestore", data: onlineStoreData }
     ];
 
-    scripts.forEach(({ id, data }) => {
-      const script = document.createElement("script");
-      script.type = "application/ld+json";
-      script.id = id;
-      script.text = JSON.stringify(data);
-      
-      const existing = document.getElementById(id);
-      if (existing) {
-        existing.remove();
-      }
-      
-      document.head.appendChild(script);
-    });
+    try {
+      scripts.forEach(({ id, data }) => {
+        const script = document.createElement("script");
+        script.type = "application/ld+json";
+        script.id = id;
+        script.text = JSON.stringify(data);
+        
+        const existing = document.getElementById(id);
+        if (existing) {
+          existing.remove();
+        }
+        
+        document.head.appendChild(script);
+      });
+    } catch (error) {
+      console.error("Error adding structured data:", error);
+      // Continue execution - page content will still be visible
+    }
 
     // Add meta tags for automatic DTI IRM detection
-    const addMetaTag = (name: string, content: string, property?: string) => {
-      const selector = property 
-        ? `meta[property="${name}"]` 
-        : `meta[name="${name}"]`;
-      let meta = document.querySelector(selector);
-      if (!meta) {
-        meta = document.createElement("meta");
-        if (property) {
-          meta.setAttribute("property", name);
-        } else {
-          meta.setAttribute("name", name);
+    try {
+      const addMetaTag = (name: string, content: string, property?: string) => {
+        const selector = property 
+          ? `meta[property="${name}"]` 
+          : `meta[name="${name}"]`;
+        let meta = document.querySelector(selector);
+        if (!meta) {
+          meta = document.createElement("meta");
+          if (property) {
+            meta.setAttribute("property", name);
+          } else {
+            meta.setAttribute("name", name);
+          }
+          document.head.appendChild(meta);
         }
-        document.head.appendChild(meta);
-      }
-      meta.setAttribute("content", content);
-    };
+        meta.setAttribute("content", content);
+      };
 
-    // DTI IRM specific meta tags
-    addMetaTag("dti-irm", "yes");
-    addMetaTag("dti-irm-url", "https://newculturetrends.com/irm");
-    addMetaTag("dti-irm-acknowledgment", "24-48 hours");
-    addMetaTag("dti-irm-resolution", "7-15 working days");
-    addMetaTag("dti-registration-number", "7297002");
-    addMetaTag("dti-business-name", "NCTR Apparel Shop");
-    addMetaTag("dti-platform-type", "e-commerce");
-    addMetaTag("dti-platform-url", "https://newculturetrends.com");
-    
-    // Open Graph and Twitter Card for better detection
-    addMetaTag("og:type", "website", true);
-    addMetaTag("og:title", "Internal Redress Mechanism (IRM) - NCTR Apparel Shop", true);
-    addMetaTag("og:url", "https://newculturetrends.com/irm", true);
-    addMetaTag("og:description", "DTI-compliant Internal Redress Mechanism Policy for NCTR Apparel Shop", true);
-    
-    // Add canonical link
-    let canonical = document.querySelector("link[rel='canonical']");
-    if (!canonical) {
-      canonical = document.createElement("link");
-      canonical.setAttribute("rel", "canonical");
-      document.head.appendChild(canonical);
+      // DTI IRM specific meta tags
+      addMetaTag("dti-irm", "yes");
+      addMetaTag("dti-irm-url", "https://newculturetrends.com/irm");
+      addMetaTag("dti-irm-acknowledgment", "24-48 hours");
+      addMetaTag("dti-irm-resolution", "7-15 working days");
+      addMetaTag("dti-registration-number", "7297002");
+      addMetaTag("dti-business-name", "NCTR Apparel Shop");
+      addMetaTag("dti-platform-type", "e-commerce");
+      addMetaTag("dti-platform-url", "https://newculturetrends.com");
+      
+      // Open Graph and Twitter Card for better detection
+      addMetaTag("og:type", "website", true);
+      addMetaTag("og:title", "Internal Redress Mechanism (IRM) - NCTR Apparel Shop", true);
+      addMetaTag("og:url", "https://newculturetrends.com/irm", true);
+      addMetaTag("og:description", "DTI-compliant Internal Redress Mechanism Policy for NCTR Apparel Shop", true);
+      
+      // Add canonical link
+      let canonical = document.querySelector("link[rel='canonical']");
+      if (!canonical) {
+        canonical = document.createElement("link");
+        canonical.setAttribute("rel", "canonical");
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute("href", "https://newculturetrends.com/irm");
+    } catch (error) {
+      console.error("Error adding meta tags:", error);
+      // Continue execution - page content will still be visible
     }
-    canonical.setAttribute("href", "https://newculturetrends.com/irm");
 
     return () => {
       // Clean up all structured data scripts
