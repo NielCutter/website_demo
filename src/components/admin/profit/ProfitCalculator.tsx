@@ -189,6 +189,7 @@ export function ProfitCalculator({
             onChange={handleInputChange("rawMaterials")}
             type="currency"
             placeholder="0.00"
+            tooltip="Cost of materials used to create the product (fabric, thread, etc.)"
           />
           <ProfitInputField
             label="Labor"
@@ -196,6 +197,7 @@ export function ProfitCalculator({
             onChange={handleInputChange("labor")}
             type="currency"
             placeholder="0.00"
+            tooltip="Cost of labor or manufacturing time to produce the item"
           />
           <ProfitInputField
             label="Packaging"
@@ -203,6 +205,7 @@ export function ProfitCalculator({
             onChange={handleInputChange("packaging")}
             type="currency"
             placeholder="0.00"
+            tooltip="Cost of packaging materials (boxes, bags, labels, etc.)"
           />
           <ProfitInputField
             label="Marketing"
@@ -210,6 +213,7 @@ export function ProfitCalculator({
             onChange={handleInputChange("marketing")}
             type="currency"
             placeholder="0.00"
+            tooltip="Marketing and advertising costs allocated per product"
           />
           <div className="space-y-2">
             {presets.length > 0 && inputs.sellingPrice > 0 && (
@@ -243,6 +247,7 @@ export function ProfitCalculator({
               onChange={handleInputChange("marketplaceFees")}
               type="currency"
               placeholder="0.00"
+              tooltip="Fees charged by marketplace platforms (Shopee, Lazada, etc.) as a percentage or fixed amount of the selling price"
             />
           </div>
           <ProfitInputField
@@ -251,6 +256,7 @@ export function ProfitCalculator({
             onChange={handleInputChange("overhead")}
             type="currency"
             placeholder="0.00"
+            tooltip="General business overhead costs allocated per product (rent, utilities, admin costs, etc.)"
           />
         </div>
       </div>
@@ -271,6 +277,7 @@ export function ProfitCalculator({
             placeholder="12"
             min={0}
             max={100}
+            tooltip="Tax rate percentage applied to gross profit (e.g., 12% VAT in Philippines). Tax is calculated on profit, not revenue."
           />
           <div className="space-y-2">
             <ProfitInputField
@@ -279,6 +286,7 @@ export function ProfitCalculator({
               onChange={handleInputChange("sellingPrice")}
               type="currency"
               placeholder="0.00"
+              tooltip="The final price at which you will sell the product to customers. This is used to calculate profit margins and ROI."
             />
             <div className="flex items-start gap-2 text-xs text-gray-500 -mt-1">
               <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />

@@ -1,5 +1,11 @@
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../../ui/tooltip";
+import { Info } from "lucide-react";
 
 interface ProfitInputFieldProps {
   label?: string;
@@ -11,6 +17,7 @@ interface ProfitInputFieldProps {
   min?: number;
   max?: number;
   step?: number;
+  tooltip?: string;
 }
 
 export function ProfitInputField({
@@ -23,6 +30,7 @@ export function ProfitInputField({
   min = 0,
   max,
   step = 0.01,
+  tooltip,
 }: ProfitInputFieldProps) {
   // Generate a unique ID from the label text
   const inputId = label 
@@ -39,10 +47,28 @@ export function ProfitInputField({
   return (
     <div className="space-y-2">
       {label && (
-        <Label htmlFor={inputId} className="text-sm font-medium text-gray-700">
-          {label}
-          {suffix && <span className="text-gray-500 ml-1">({suffix})</span>}
-        </Label>
+        <div className="flex items-center gap-2">
+          <Label htmlFor={inputId} className="text-sm font-medium text-gray-700">
+            {label}
+            {suffix && <span className="text-gray-500 ml-1">({suffix})</span>}
+          </Label>
+          {tooltip && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  aria-label="More information"
+                >
+                  <Info className="w-4 h-4" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="text-sm">{tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
       )}
       <div className="relative">
         {type === "currency" && (

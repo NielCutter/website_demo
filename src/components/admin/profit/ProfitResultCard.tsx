@@ -1,6 +1,11 @@
-import { TrendingUp, TrendingDown, DollarSign, Percent, Target, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Percent, Target, BarChart3, Info } from "lucide-react";
 import { formatCurrency, formatPercentage } from "../../../utils/profit";
 import { ProfitResults } from "../../../types/profit";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 
 interface ProfitResultCardProps {
   title: string;
@@ -39,7 +44,25 @@ export function ProfitResultCard({
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2">
           {icon || <BarChart3 className="w-5 h-5 text-gray-400" />}
-          <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="text-sm font-medium text-gray-600">{title}</h3>
+            {description && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                    aria-label="More information"
+                  >
+                    <Info className="w-3.5 h-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent className="max-w-xs">
+                  <p className="text-sm">{description}</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
         </div>
         {trend && (
           <div className={`flex items-center gap-1 ${getTrendColor()}`}>
@@ -47,12 +70,9 @@ export function ProfitResultCard({
           </div>
         )}
       </div>
-      <p className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">
+      <p className="text-2xl sm:text-3xl font-bold text-gray-900">
         {formattedValue}
       </p>
-      {description && (
-        <p className="text-xs text-gray-500">{description}</p>
-      )}
     </div>
   );
 }
@@ -69,7 +89,7 @@ export function ProfitResultsGrid({ results }: ProfitResultsGridProps) {
         value={results.totalCost}
         type="currency"
         icon={<DollarSign className="w-5 h-5 text-gray-400" />}
-        description="Sum of all costs"
+        description="The sum of all costs: raw materials, labor, packaging, marketing, marketplace fees, and overhead. This is your total investment per product."
       />
       <ProfitResultCard
         title="Gross Profit"
@@ -77,7 +97,7 @@ export function ProfitResultsGrid({ results }: ProfitResultsGridProps) {
         type="currency"
         icon={<TrendingUp className="w-5 h-5 text-green-500" />}
         trend={results.grossProfit >= 0 ? "up" : "down"}
-        description="Before tax"
+        description="Profit before taxes. Calculated as: Selling Price - Total Cost. This shows your profit before tax deductions."
       />
       <ProfitResultCard
         title="Net Profit"
@@ -85,7 +105,7 @@ export function ProfitResultsGrid({ results }: ProfitResultsGridProps) {
         type="currency"
         icon={<DollarSign className="w-5 h-5 text-blue-500" />}
         trend={results.netProfit >= 0 ? "up" : "down"}
-        description="After tax"
+        description="Your actual profit after taxes. Calculated as: Gross Profit - Tax. This is the money you keep after all costs and taxes."
       />
       <ProfitResultCard
         title="Profit Margin"
@@ -93,21 +113,21 @@ export function ProfitResultsGrid({ results }: ProfitResultsGridProps) {
         type="percentage"
         icon={<Percent className="w-5 h-5 text-purple-500" />}
         trend={results.profitMargin >= 20 ? "up" : results.profitMargin >= 10 ? "neutral" : "down"}
-        description="Net profit / Selling price"
+        description="Net profit as a percentage of selling price. Formula: (Net Profit / Selling Price) × 100. Higher is better - aim for 20%+ for healthy margins."
       />
       <ProfitResultCard
         title="Markup"
         value={results.markup}
         type="percentage"
         icon={<Percent className="w-5 h-5 text-orange-500" />}
-        description="Markup on cost"
+        description="The percentage increase from cost to selling price. Formula: ((Selling Price - Total Cost) / Total Cost) × 100. Shows how much you're marking up your costs."
       />
       <ProfitResultCard
         title="Break-Even"
         value={results.breakEven}
         type="currency"
         icon={<Target className="w-5 h-5 text-red-500" />}
-        description="Minimum selling price"
+        description="The minimum selling price needed to cover all costs (no profit, no loss). Selling below this price results in a loss."
       />
       <ProfitResultCard
         title="ROI"
@@ -115,7 +135,7 @@ export function ProfitResultsGrid({ results }: ProfitResultsGridProps) {
         type="percentage"
         icon={<BarChart3 className="w-5 h-5 text-indigo-500" />}
         trend={results.roi >= 50 ? "up" : results.roi >= 20 ? "neutral" : "down"}
-        description="Return on investment"
+        description="Return on Investment - how much profit you make per peso invested. Formula: (Net Profit / Total Cost) × 100. Higher ROI means better efficiency."
       />
     </div>
   );
