@@ -7,6 +7,8 @@ interface DTIRegistrationProps {
   businessType?: string;
   registrationDate?: string;
   birTin?: string;
+  trademarkNumber?: string;
+  trademarkName?: string;
 }
 
 export function DTIRegistration({
@@ -16,6 +18,8 @@ export function DTIRegistration({
   businessType = "Sole Proprietorship",
   registrationDate = "2024-01-01",
   birTin = "409-146-642-000",
+  trademarkNumber = "4/2025/00525886",
+  trademarkName = "New Culture Trends",
 }: DTIRegistrationProps) {
   useEffect(() => {
     // Add JSON-LD structured data for DTI detection
@@ -59,7 +63,22 @@ export function DTIRegistration({
           "name": "Registration Date",
           "value": registrationDate,
         },
+        {
+          "@type": "PropertyValue",
+          "name": "Trademark Registration Number",
+          "value": trademarkNumber,
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Trademark Name",
+          "value": trademarkName,
+        },
       ],
+      "brand": {
+        "@type": "Brand",
+        "name": trademarkName,
+        "identifier": trademarkNumber,
+      },
       "url": window.location.origin,
     };
 
@@ -89,6 +108,8 @@ export function DTIRegistration({
     addMetaTag("business-name", businessName);
     addMetaTag("business-type", businessType);
     addMetaTag("bir-tin", birTin);
+    addMetaTag("trademark-registration-number", trademarkNumber);
+    addMetaTag("trademark-name", trademarkName);
 
     return () => {
       const scriptToRemove = document.getElementById("dti-registration-data");
@@ -96,7 +117,7 @@ export function DTIRegistration({
         scriptToRemove.remove();
       }
     };
-  }, [registrationNumber, businessName, businessAddress, businessType, registrationDate, birTin]);
+  }, [registrationNumber, businessName, businessAddress, businessType, registrationDate, birTin, trademarkNumber, trademarkName]);
 
   return null; // This component only adds metadata, no visible UI
 }

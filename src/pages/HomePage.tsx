@@ -16,6 +16,8 @@ export function HomePage() {
         businessType="Sole Proprietorship"
         registrationDate="2024-01-01"
         birTin="409-146-642-000"
+        trademarkNumber="4/2025/00525886"
+        trademarkName="New Culture Trends"
       />
       <Hero />
       <FeaturedProducts />

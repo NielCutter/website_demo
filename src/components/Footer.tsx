@@ -180,6 +180,12 @@ export function Footer() {
                 <p className="text-gray-500">
                   Registered Name: <span className="text-gray-400">NCTR Apparel Shop</span>
                 </p>
+                <p>
+                  Trademark Reg. No: <span className="font-semibold text-gray-400">4/2025/00525886</span>
+                </p>
+                <p className="text-gray-500">
+                  Trademark: <span className="text-gray-400">New Culture Trends®</span>
+                </p>
               </div>
             </div>
             <div className="flex flex-wrap justify-center sm:justify-end gap-4 sm:gap-6 text-sm order-1 sm:order-2">
