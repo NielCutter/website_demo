@@ -125,16 +125,6 @@ export function IRMPage() {
       document.head.appendChild(script);
     });
 
-    script.text = JSON.stringify(structuredData);
-    
-    // Remove existing script if present
-    const existing = document.getElementById("dti-irm-structured-data");
-    if (existing) {
-      existing.remove();
-    }
-    
-    document.head.appendChild(script);
-
     // Add meta tags for automatic DTI IRM detection
     const addMetaTag = (name: string, content: string, property?: string) => {
       const selector = property 
