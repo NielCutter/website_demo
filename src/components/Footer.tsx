@@ -13,7 +13,7 @@ export function Footer() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 mb-12">
           {/* Legal Links Section */}
           <div>
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-6">
@@ -50,7 +50,7 @@ export function Footer() {
           {/* Business Information Section */}
           <div>
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-6">
-              Business Information
+              Registration
             </h3>
             <div className="space-y-4">
               <div>
@@ -64,6 +64,39 @@ export function Footer() {
               <div>
                 <p className="text-gray-500 text-xs mb-1">Trademark Registration No</p>
                 <p className="text-gray-300 font-medium text-sm">4/2025/00525886</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Section */}
+          <div>
+            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-6">
+              Contact
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-gray-500 text-xs mb-1">Email</p>
+                <a 
+                  href="mailto:info@newculturetrends.com"
+                  className="text-gray-300 font-medium text-sm hover:text-[#00FFE5] transition-colors duration-300"
+                >
+                  info@newculturetrends.com
+                </a>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs mb-1">Website</p>
+                <a 
+                  href="https://www.newculturetrends.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-300 font-medium text-sm hover:text-[#00FFE5] transition-colors duration-300"
+                >
+                  newculturetrends.com
+                </a>
+              </div>
+              <div>
+                <p className="text-gray-500 text-xs mb-1">Business Name</p>
+                <p className="text-gray-300 font-medium text-sm">NCTR Apparel Shop</p>
               </div>
             </div>
           </div>
