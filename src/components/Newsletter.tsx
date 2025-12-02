@@ -43,7 +43,7 @@ export function Newsletter() {
       {/* Overlay */}
       <div className="absolute inset-0 bg-[#1D1D2C]/70 backdrop-blur-sm" />
 
-      <div className="max-w-4xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
