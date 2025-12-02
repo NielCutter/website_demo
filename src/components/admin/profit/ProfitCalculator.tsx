@@ -347,7 +347,11 @@ export function ProfitCalculator({
               handleSave();
             }}
             disabled={!isFormValid || isLoading}
-            className="bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto sm:ml-auto"
+            className={`w-full sm:w-auto sm:ml-auto ${
+              isFormValid && !isLoading
+                ? "bg-black text-white hover:bg-gray-800"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
             size="lg"
           >
             <Save className="w-4 h-4 mr-2" />
