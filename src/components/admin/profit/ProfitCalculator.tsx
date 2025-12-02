@@ -323,18 +323,18 @@ export function ProfitCalculator({
       )}
 
       {/* Save Button */}
-      <div className="pt-4 border-t border-gray-200">
-        <div className="flex items-center justify-between">
+      <div className="pt-6 border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           {!isFormValid && (
             <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Info className="w-4 h-4" />
+              <Info className="w-4 h-4 flex-shrink-0" />
               <span>Fill in item name and selling price to save</span>
             </div>
           )}
           <Button
             onClick={handleSave}
             disabled={!isFormValid || isLoading}
-            className="bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+            className="bg-black text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto sm:ml-auto"
             size="lg"
           >
             <Save className="w-4 h-4 mr-2" />
