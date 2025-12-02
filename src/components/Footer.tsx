@@ -15,7 +15,7 @@ export function Footer() {
         {/* Copyright */}
         <div className="mb-6 text-center">
           <p className="text-gray-400 text-sm">
-            © {currentYear} All rights reserved.
+            © {currentYear} New Culture Trends®. All rights reserved.
           </p>
         </div>
 
@@ -48,7 +48,7 @@ export function Footer() {
         </div>
 
         {/* Business Information */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 text-center sm:text-left text-xs text-gray-500">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left text-xs text-gray-500">
           <div>
             <span className="block mb-1">DTI Registration No:</span>
             <span className="text-gray-300 font-medium">7297002</span>
@@ -58,16 +58,8 @@ export function Footer() {
             <span className="text-gray-300 font-medium">409-146-642-000</span>
           </div>
           <div>
-            <span className="block mb-1">Registered Name:</span>
-            <span className="text-gray-300 font-medium">NCTR Apparel Shop</span>
-          </div>
-          <div>
             <span className="block mb-1">Trademark Reg. No:</span>
             <span className="text-gray-300 font-medium">4/2025/00525886</span>
-          </div>
-          <div>
-            <span className="block mb-1">Trademark:</span>
-            <span className="text-gray-300 font-medium">NCTR®</span>
           </div>
         </div>
       </div>
