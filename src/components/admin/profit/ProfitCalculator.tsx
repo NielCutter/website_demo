@@ -217,7 +217,7 @@ export function ProfitCalculator({
             placeholder="0.00"
           />
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">
+            <Label htmlFor="profit-input-marketplace-fees" className="text-sm font-medium text-gray-700">
               Marketplace Fees
             </Label>
             {presets.length > 0 && inputs.sellingPrice > 0 && (
@@ -225,7 +225,7 @@ export function ProfitCalculator({
                 onValueChange={handlePresetSelect}
                 value=""
               >
-                <SelectTrigger className="w-full bg-white mb-2">
+                <SelectTrigger className="w-full bg-white mb-2" aria-label="Select marketplace preset">
                   <SelectValue placeholder="Quick select preset" />
                 </SelectTrigger>
                 <SelectContent>
@@ -281,11 +281,11 @@ export function ProfitCalculator({
             max={100}
           />
           <div className="space-y-2">
-            <Label className="text-sm font-medium text-gray-700">
+            <Label htmlFor="profit-input-selling-price" className="text-sm font-medium text-gray-700">
               Selling Price <span className="text-red-500">*</span>
             </Label>
             <ProfitInputField
-              label=""
+              label="Selling Price"
               value={inputs.sellingPrice}
               onChange={handleInputChange("sellingPrice")}
               type="currency"
