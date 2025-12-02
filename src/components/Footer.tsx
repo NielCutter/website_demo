@@ -15,12 +15,18 @@ export function Footer() {
         {/* Copyright */}
         <div className="mb-6 text-center">
           <p className="text-gray-400 text-sm">
-            © {currentYear} New Culture Trends®. All rights reserved.
+            © {currentYear} All rights reserved.
           </p>
         </div>
 
         {/* Legal Links */}
         <div className="mb-6 flex flex-wrap justify-center gap-4 sm:gap-6 text-sm">
+          <a 
+            href="/irm" 
+            className="text-gray-400 hover:text-[#00FFE5] transition-colors duration-300"
+          >
+            Internal Redress Mechanism (IRM)
+          </a>
           <a 
             href="/privacy-policy" 
             className="text-gray-400 hover:text-[#00FFE5] transition-colors duration-300"
@@ -61,7 +67,7 @@ export function Footer() {
           </div>
           <div>
             <span className="block mb-1">Trademark:</span>
-            <span className="text-gray-300 font-medium">New Culture Trends®</span>
+            <span className="text-gray-300 font-medium">NCTR®</span>
           </div>
         </div>
       </div>
