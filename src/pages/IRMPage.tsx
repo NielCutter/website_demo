@@ -1,12 +1,136 @@
+import { useEffect } from "react";
 import { Mail, MessageCircle, ShoppingBag, Facebook, ExternalLink } from "lucide-react";
 
 export function IRMPage() {
+  useEffect(() => {
+    // Add JSON-LD structured data for automatic DTI IRM detection
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.id = "dti-irm-structured-data";
+    
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "NCTR Apparel Shop",
+      "legalName": "NCTR Apparel Shop",
+      "identifier": {
+        "@type": "PropertyValue",
+        "name": "DTI Registration Number",
+        "value": "7297002"
+      },
+      "url": "https://newculturetrends.com",
+      "sameAs": [
+        "https://shopee.ph/newculturetrends",
+        "https://facebook.com/newculturetrends"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "Customer Service",
+        "email": "nielcutter.nc@gmail.com",
+        "availableLanguage": ["English", "Filipino"],
+        "areaServed": "PH"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Apparel Products",
+        "itemListElement": []
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "DTI-IRM",
+          "value": "7297002"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "IRM URL",
+          "value": "https://newculturetrends.com/irm"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "IRM Acknowledgment Time",
+          "value": "24-48 hours"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "IRM Resolution Time",
+          "value": "7-15 working days"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "Complaint Channels",
+          "value": "Email, Website Contact Form, Facebook Messenger, Shopee Chat"
+        }
+      ]
+    };
+
+    script.text = JSON.stringify(structuredData);
+    
+    // Remove existing script if present
+    const existing = document.getElementById("dti-irm-structured-data");
+    if (existing) {
+      existing.remove();
+    }
+    
+    document.head.appendChild(script);
+
+    // Add meta tags for automatic DTI IRM detection
+    const addMetaTag = (name: string, content: string, property?: string) => {
+      const selector = property 
+        ? `meta[property="${name}"]` 
+        : `meta[name="${name}"]`;
+      let meta = document.querySelector(selector);
+      if (!meta) {
+        meta = document.createElement("meta");
+        if (property) {
+          meta.setAttribute("property", name);
+        } else {
+          meta.setAttribute("name", name);
+        }
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute("content", content);
+    };
+
+    // DTI IRM specific meta tags
+    addMetaTag("dti-irm", "yes");
+    addMetaTag("dti-irm-url", "https://newculturetrends.com/irm");
+    addMetaTag("dti-irm-acknowledgment", "24-48 hours");
+    addMetaTag("dti-irm-resolution", "7-15 working days");
+    addMetaTag("dti-registration-number", "7297002");
+    addMetaTag("dti-business-name", "NCTR Apparel Shop");
+    
+    // Open Graph and Twitter Card for better detection
+    addMetaTag("og:type", "website", true);
+    addMetaTag("og:title", "Internal Redress Mechanism (IRM) - NCTR Apparel Shop", true);
+    addMetaTag("og:url", "https://newculturetrends.com/irm", true);
+    addMetaTag("og:description", "DTI-compliant Internal Redress Mechanism Policy for NCTR Apparel Shop", true);
+    
+    // Add canonical link
+    let canonical = document.querySelector("link[rel='canonical']");
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", "https://newculturetrends.com/irm");
+
+    return () => {
+      const scriptToRemove = document.getElementById("dti-irm-structured-data");
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-white text-gray-900">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <article itemScope itemType="https://schema.org/Organization" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <meta itemProp="name" content="NCTR Apparel Shop" />
+        <meta itemProp="identifier" content="DTI-7297002" />
         {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+        <header className="mb-12">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4" itemProp="name">
             Internal Redress Mechanism (IRM) Policy
           </h1>
           <p className="text-lg text-gray-600">
@@ -15,7 +139,7 @@ export function IRMPage() {
           <p className="text-sm text-gray-500 mt-2">
             Last Updated: January 2025
           </p>
-        </div>
+        </header>
 
         {/* Business Platform URLs Section - MUST BE VISIBLE */}
         <section className="mb-12 p-6 bg-gray-50 rounded-lg border border-gray-200">
@@ -326,7 +450,7 @@ export function IRMPage() {
         </section>
 
         {/* Footer Note */}
-        <div className="mt-12 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
+        <footer className="mt-12 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
           <p>
             This IRM Policy is compliant with DTI Department Administrative Order No. 02, Series of 2021.
           </p>
@@ -339,8 +463,8 @@ export function IRMPage() {
               nielcutter.nc@gmail.com
             </a>
           </p>
-        </div>
-      </div>
+        </footer>
+      </article>
     </div>
   );
 }
