@@ -25,18 +25,20 @@ export function ProfitCalculatorPage() {
     setSaveStatus("idle");
 
     try {
-      await saveProfitCalculation({
+      const docId = await saveProfitCalculation({
         itemName,
         inputs,
         results,
         userId: user.uid,
       });
+      console.log("Calculation saved successfully with ID:", docId);
       setSaveStatus("success");
       setTimeout(() => setSaveStatus("idle"), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving calculation:", error);
       setSaveStatus("error");
-      alert("Failed to save calculation. Please try again.");
+      const errorMessage = error?.message || "Failed to save calculation. Please try again.";
+      alert(errorMessage);
     } finally {
       setIsSaving(false);
     }

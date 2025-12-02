@@ -24,15 +24,32 @@ export async function saveProfitCalculation(
   calculation: Omit<ProfitCalculation, "id" | "createdAt" | "updatedAt">
 ): Promise<string> {
   try {
+    // Validate required fields
+    if (!calculation.itemName || !calculation.userId) {
+      throw new Error("Item name and user ID are required");
+    }
+
     const docRef = await addDoc(collection(db, COLLECTION_NAME), {
       ...calculation,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
+    
+    console.log("Successfully saved calculation to Firestore:", docRef.id);
     return docRef.id;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error saving profit calculation:", error);
-    throw error;
+    
+    // Provide more specific error messages
+    if (error?.code === "permission-denied") {
+      throw new Error("Permission denied. Please check Firestore security rules.");
+    } else if (error?.code === "unavailable") {
+      throw new Error("Firestore is temporarily unavailable. Please try again.");
+    } else if (error?.message) {
+      throw error;
+    } else {
+      throw new Error("Failed to save calculation. Please check your connection and try again.");
+    }
   }
 }
 
